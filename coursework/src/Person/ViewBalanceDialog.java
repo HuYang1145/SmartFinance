@@ -1,10 +1,10 @@
 package Person;
 
 import javax.swing.*;
-import UI.PersonalUI;
 import java.awt.*;
 import model.AccountModel;
 import model.UserRegistrationCSVExporter;
+import UI.PersonalUI;
 
 public class ViewBalanceDialog extends JDialog {
 

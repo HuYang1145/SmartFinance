@@ -1,3 +1,4 @@
+
 package UI;
 
 import javax.swing.*;
@@ -19,140 +20,143 @@ public class AccountManagementUI extends JDialog {
     private JComboBox<String> genderComboBox;
     private JButton loginButton, createButton;
 
-    // 新增一个操作类型字段，用于区分是登录还是注册
     public AccountManagementUI(JFrame parent, String actionType) {
-        super(parent, "欢迎登录", true);
-        setSize(400, 350);  
+        super(parent, "Smart Finance", true);
+        setSize(900, 500);
         setLocationRelativeTo(parent);
-        setLayout(new GridBagLayout());
+        setLayout(null);
 
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(5, 5, 5, 5);
-        gbc.fill = GridBagConstraints.HORIZONTAL;
+        // 背景面板
+        JPanel backgroundPanel = new JPanel() {
+            Image bgImage = new ImageIcon(getClass().getResource("/Main/background.png")).getImage();
 
-        if (actionType.equals("register")) {
-            // 注册界面
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                g.drawImage(bgImage, 0, 0, getWidth(), getHeight(), this);
+            }
+        };
+        backgroundPanel.setLayout(null);
+        backgroundPanel.setBounds(0, 0, 900, 500);
+        add(backgroundPanel);
+
+        ImageIcon originalIcon = new ImageIcon(getClass().getResource("/Main/log_img.png"));
+        Image originalImage = originalIcon.getImage();
+
+        // 缩放到 300x250
+        Image scaledImage = originalImage.getScaledInstance(300, 250, Image.SCALE_SMOOTH);
+        ImageIcon scaledIcon = new ImageIcon(scaledImage);
+
+        JLabel imageLabel = new JLabel(scaledIcon);
+        imageLabel.setBounds(150, 120, 300, 250);  // 尺寸和缩放后保持一致
+        backgroundPanel.add(imageLabel);
+
+        // 左上角艺术字
+        JLabel titleArtLabel = new JLabel("Smart Finance");
+        titleArtLabel.setFont(new Font("Georgia", Font.BOLD | Font.ITALIC, 32));
+        titleArtLabel.setForeground(Color.WHITE);
+        titleArtLabel.setBounds(30, 30, 400, 40);
+        backgroundPanel.add(titleArtLabel);
+
+        // 白色登录或注册卡片区域
+        JPanel panel = new JPanel() {
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                g2.setColor(Color.WHITE);
+                g2.fillRoundRect(0, 0, getWidth(), getHeight(), 30, 30);
+                g2.dispose();
+                super.paintComponent(g);
+            }
+
+            protected void paintBorder(Graphics g) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setColor(Color.LIGHT_GRAY);
+                g2.setStroke(new BasicStroke(1));
+                g2.drawRoundRect(0, 0, getWidth() - 1, getHeight() - 1, 30, 30);
+                g2.dispose();
+            }
+        };
+        panel.setLayout(null);
+        panel.setOpaque(false);
+        panel.setBounds(450, 120, 300, 250);
+        backgroundPanel.add(panel);
+
+        Font font = new Font("Segoe UI", Font.PLAIN, 16);
+        int labelX = 30, fieldX = 100, width = 150, height = 30;
+        int y = 30, gap = 50;
+
+        if (actionType.equals("login")) {
+            JLabel usernameLabel = new JLabel("用户名:");
+            usernameLabel.setBounds(labelX, y, 200, height);
+            panel.add(usernameLabel);
+            usernameField = new JTextField();
+            usernameField.setBounds(fieldX, y, width, height);
+            panel.add(usernameField);
+
+            y += gap;
+            JLabel passwordLabel = new JLabel("密码:");
+            passwordLabel.setBounds(labelX, y, 200, height);
+            panel.add(passwordLabel);
+            passwordField = new JPasswordField();
+            passwordField.setBounds(fieldX, y, width, height);
+            panel.add(passwordField);
+
+            y += gap;
+            loginButton = new JButton("Log in");
+            loginButton.setBounds(50, y, 210, 35);
+            loginButton.setBackground(new Color(0, 120, 215));
+            loginButton.setForeground(Color.WHITE);
+            loginButton.setFocusPainted(false);
+            loginButton.setFont(font);
+            panel.add(loginButton);
+
+            loginButton.addActionListener(e -> loginAccount(usernameField.getText(), new String(passwordField.getPassword())));
+        } else {
+            panel.setBounds(450, 30, 300, 420);
+            JLabel[] labels = {
+                    new JLabel("用户名:"), new JLabel("密码:"), new JLabel("手机号:"),
+                    new JLabel("邮箱:"), new JLabel("性别:"), new JLabel("地址:")
+            };
+            Component[] fields = {
+                    usernameField = new JTextField(), passwordField = new JPasswordField(),
+                    phoneField = new JTextField(), emailField = new JTextField(),
+                    genderComboBox = new JComboBox<>(new String[]{"男", "女"}),
+                    addressField = new JTextField()
+            };
+
+            for (int i = 0; i < labels.length; i++) {
+                labels[i].setBounds(labelX, y, 100, height);
+                panel.add(labels[i]);
+                fields[i].setBounds(fieldX, y, width, height);
+                panel.add(fields[i]);
+                y += gap;
+            }
+
+            //账户类型选择
+
             JLabel accountTypeLabel = new JLabel("账户类型:");
             JComboBox<String> accountTypeComboBox = new JComboBox<>(new String[]{"个人账户", "管理员账户"});
-            gbc.gridx = 0;
-            gbc.gridy = 0;
-            add(accountTypeLabel, gbc);
-            gbc.gridx = 1;
-            gbc.gridy = 0;
-            add(accountTypeComboBox, gbc);
+            accountTypeLabel.setBounds(labelX, y, 100, height);
+            panel.add(accountTypeLabel);
+            accountTypeComboBox.setBounds(fieldX, y, width, height);
+            panel.add(accountTypeComboBox);
+            y += gap;
 
-            // 用户名
-            JLabel usernameLabel = new JLabel("用户名:");
-            usernameField = new JTextField();
-            gbc.gridx = 0;
-            gbc.gridy = 1;
-            add(usernameLabel, gbc);
-            gbc.gridx = 1;
-            gbc.gridy = 1;
-            add(usernameField, gbc);
 
-            // 密码
-            JLabel passwordLabel = new JLabel("密码:");
-            passwordField = new JPasswordField();
-            gbc.gridx = 0;
-            gbc.gridy = 2;
-            add(passwordLabel, gbc);
-            gbc.gridx = 1;
-            gbc.gridy = 2;
-            add(passwordField, gbc);
+            createButton = new JButton("Register");
+            createButton.setBounds(60, y, 180, 35);
+            createButton.setBackground(new Color(0, 120, 215));
+            createButton.setForeground(Color.WHITE);
+            createButton.setFocusPainted(false);
+            createButton.setFont(font);
+            panel.add(createButton);
 
-            // 手机号
-            JLabel phoneLabel = new JLabel("手机号:");
-            phoneField = new JTextField();
-            gbc.gridx = 0;
-            gbc.gridy = 3;
-            add(phoneLabel, gbc);
-            gbc.gridx = 1;
-            gbc.gridy = 3;
-            add(phoneField, gbc);
 
-            // 邮箱
-            JLabel emailLabel = new JLabel("邮箱:");
-            emailField = new JTextField();
-            gbc.gridx = 0;
-            gbc.gridy = 4;
-            add(emailLabel, gbc);
-            gbc.gridx = 1;
-            gbc.gridy = 4;
-            add(emailField, gbc);
-
-            // 性别
-            JLabel genderLabel = new JLabel("性别:");
-            genderComboBox = new JComboBox<>(new String[]{"男", "女"});
-            gbc.gridx = 0;
-            gbc.gridy = 5;
-            add(genderLabel, gbc);
-            gbc.gridx = 1;
-            gbc.gridy = 5;
-            add(genderComboBox, gbc);
-
-            // 地址
-            JLabel addressLabel = new JLabel("地址:");
-            addressField = new JTextField();
-            gbc.gridx = 0;
-            gbc.gridy = 6;
-            add(addressLabel, gbc);
-            gbc.gridx = 1;
-            gbc.gridy = 6;
-            add(addressField, gbc);
-
-            // 创建账户按钮
-            createButton = new JButton("注册账户");
-            createButton.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent e) {
-                    createAccount(accountTypeComboBox.getSelectedItem().toString());  // 确保传递选择的账户类型
-                }
+            createButton.addActionListener(e -> {
+                String type = accountTypeComboBox.getSelectedItem().toString();
+                createAccount(type.equals("管理员账户") ? "Admin" : "personal");
             });
-            gbc.gridx = 0;
-            gbc.gridy = 7;
-            gbc.gridwidth = 2;
-            add(createButton, gbc);
-        } else if (actionType.equals("login")) {
-            // 登录界面
-            JLabel loginLabel = new JLabel("登录账户");
-            gbc.gridx = 0;
-            gbc.gridy = 0;
-            gbc.gridwidth = 2;
-            add(loginLabel, gbc);
-
-            // 用户名
-            JLabel usernameLabel = new JLabel("用户名:");
-            usernameField = new JTextField();
-            gbc.gridx = 0;
-            gbc.gridy = 1;
-            gbc.gridwidth = 1; // 设置宽度为 1
-            add(usernameLabel, gbc);
-            gbc.gridx = 1;
-            gbc.gridy = 1;
-            add(usernameField, gbc);
-
-            // 密码
-            JLabel passwordLabel = new JLabel("密码:");
-            passwordField = new JPasswordField(20);
-            gbc.gridx = 0;
-            gbc.gridy = 2;
-            add(passwordLabel, gbc);
-            gbc.gridx = 1;
-            gbc.gridy = 2;
-            add(passwordField, gbc);
-
-            // 登录按钮
-            loginButton = new JButton("登录");
-            loginButton.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent e) {
-                    loginAccount(usernameField.getText(), new String((passwordField).getPassword()));
-                }
-            });
-
-            gbc.gridx = 0;
-            gbc.gridy = 3;
-            gbc.gridwidth = 2; // 设置宽度为 2，使其居中
-            add(loginButton, gbc);
         }
 
         setVisible(true);
@@ -160,13 +164,12 @@ public class AccountManagementUI extends JDialog {
 
     private void createAccount(String selectedAccountType) {
         String username = usernameField.getText();
-        String password = new String(passwordField.getPassword()); // 从 JPasswordField 获取密码
+        String password = new String(passwordField.getPassword());
         String phone = phoneField.getText();
         String email = emailField.getText();
         String gender = genderComboBox.getSelectedItem().toString();
         String address = addressField.getText();
 
-        // 用户名验证，确保用户名不存在
         List<AccountModel> accounts = UserRegistrationCSVExporter.readFromCSV();
         for (AccountModel account : accounts) {
             if (account.getUsername().equals(username)) {
@@ -175,60 +178,51 @@ public class AccountManagementUI extends JDialog {
             }
         }
 
-        if (AccountValidator.isEmpty(username) || AccountValidator.isEmpty(password) || AccountValidator.isEmpty(phone) ||
-                AccountValidator.isEmpty(email) || AccountValidator.isEmpty(address)) {
+        if (AccountValidator.isEmpty(username) || AccountValidator.isEmpty(password) ||
+                AccountValidator.isEmpty(phone) || AccountValidator.isEmpty(email) || AccountValidator.isEmpty(address)) {
             JOptionPane.showMessageDialog(this, "所有字段都不能为空！", "错误", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
         String creationTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
         String accountStatus = "正常";
-        double initialBalance = 0.0; // 初始金额设置为 0
+        double initialBalance = 0.0;
 
         List<AccountModel> accountList = new ArrayList<>();
-
-        // 根据选择的账户类型创建相应的账户，并设置正确的 accountType 字符串
-        if (selectedAccountType.equals("个人账户")) {
-            accountList.add(new PersonalAccount(username, password, phone, email, gender, address, creationTime, accountStatus, "personal", initialBalance)); // 设置为 "personal"
-        } else if (selectedAccountType.equals("管理员账户")) {
-            accountList.add(new AdminAccount(username, password, phone, email, gender, address, creationTime, accountStatus, "Admin", initialBalance)); // 设置为 "Admin"
+        if (selectedAccountType.equals("personal")) {
+            accountList.add(new PersonalAccount(username, password, phone, email, gender, address, creationTime, accountStatus, "personal", initialBalance));
+        } else if (selectedAccountType.equals("Admin")) {
+            accountList.add(new AdminAccount(username, password, phone, email, gender, address, creationTime, accountStatus, "Admin", initialBalance));
         }
 
         UserRegistrationCSVExporter.saveToCSV(accountList, true);
-        System.out.println("账户创建成功！");
-        dispose();  // 关闭注册窗口
+        JOptionPane.showMessageDialog(this, "账户创建成功！");
+        dispose();
     }
-
 
     private void loginAccount(String username, String password) {
         List<AccountModel> accounts = UserRegistrationCSVExporter.readFromCSV();
-
         boolean loginSuccess = false;
 
         for (AccountModel account : accounts) {
             if (account.getUsername().equals(username) && account.getPassword().equals(password)) {
                 loginSuccess = true;
-
-                // 假设有一个名为 UserSession 来记录当前用户
                 model.UserSession.setCurrentUsername(username);
 
-                // 判断账户类型，跳转到对应的界面
-                if (account instanceof AdminAccount) {
-                    // 如果是管理员账户，跳转到管理员界面
-                    new AdminUI();  // 创建 AdminUI 窗口
-                } else if (account instanceof PersonalAccount) {
-                    // 如果是个人账户，跳转到个人账户界面
-                    new PersonalUI();  // 创建 PersonalUI 窗口
-                }
+                if (account instanceof AdminAccount) new AdminUI();
+                else if (account instanceof PersonalAccount) new PersonalUI();
                 break;
             }
         }
 
         if (loginSuccess) {
             JOptionPane.showMessageDialog(this, "登录成功！");
-            dispose();  // 关闭当前登录界面
+            dispose();
         } else {
             JOptionPane.showMessageDialog(this, "用户名或密码错误！");
         }
     }
 }
+
+
+
