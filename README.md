@@ -1,5 +1,26 @@
 # coursework
 coursework code of group19
-实现的功能：1可以注册和登录普通用用户或者管理员，在注册界面可以选择注册管理员或者是注册普通用户
-2：普通用户的功能：查看余额，向账户里转入资金，从账户里取出资金，向别的账户转账，查看个人信息，查看交易记录以及退出登录
-3：管理员的功能：查看管理员个人信息，查看用户信息，修改用户信息，删除客户信息，导入csv格式的交易记录以及退出登录
+
+# Getting Started
+
+Welcome to the VS Code Java world. Here is a guideline to help you get started to write Java code in Visual Studio Code.
+
+## Folder Structure
+
+The workspace contains two folders by default, where:
+
+- `src`: the folder to maintain sources
+- `lib`: the folder to maintain dependencies
+
+Meanwhile, the compiled output files will be generated in the `bin` folder by default.
+
+> If you want to customize the folder structure, open `.vscode/settings.json` and update the related settings there.
+管理员用户名和密码是9
+
+## Features (特性)
+
+- **查询余额:** 点击查询余额按钮，系统会调用 `viewbalanced.java` 代码来显示账户余额。未来可以在这里添加更多与余额查询相关的功能。
+
+## Dependency Management
+
+The `JAVA PROJECTS` view allows you to manage your dependencies. More details can be found [here](https://github.com/microsoft/vscode-java-dependency#manage-dependencies).
