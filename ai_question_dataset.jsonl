@@ -1,0 +1,94 @@
+{"id": 169, "text": "What's my balance?", "label": [], "Comments": []}
+{"id": 170, "text": "Do I still have money left in the account?", "label": [], "Comments": []}
+{"id": 171, "text": "Do I still have money left in the account?", "label": [], "Comments": []}
+{"id": 172, "text": "What's my balance?", "label": [], "Comments": []}
+{"id": 173, "text": "Can you show me my current balance?", "label": [], "Comments": []}
+{"id": 174, "text": "Tell me my account balance.", "label": [], "Comments": []}
+{"id": 175, "text": "How much money do I have?", "label": [], "Comments": []}
+{"id": 176, "text": "Paid $50 for transport last night.", "label": [[5, 8, "amount"], [13, 22, "category"], [23, 33, "time"]], "Comments": []}
+{"id": 177, "text": "Bought shopping for 30 USD last week.", "label": [[7, 15, "category"], [20, 26, "amount"], [27, 36, "time"]], "Comments": []}
+{"id": 178, "text": "Add an expense of $50 for shopping.", "label": [[18, 21, "amount"], [26, 34, "category"]], "Comments": []}
+{"id": 179, "text": "I spent $25 on shopping last night.", "label": [[8, 11, "amount"], [15, 23, "category"], [24, 34, "time"]], "Comments": []}
+{"id": 180, "text": "I spent $80 on repast yesterday.", "label": [[8, 11, "amount"], [15, 21, "category"], [22, 31, "time"]], "Comments": []}
+{"id": 181, "text": "Paid $10 for coffee yesterday.", "label": [[5, 9, "amount"], [13, 19, "category"], [19, 29, "time"]], "Comments": []}
+{"id": 182, "text": "I spent 30 USD on shopping last night.", "label": [[8, 14, "amount"], [18, 27, "category"], [27, 37, "time"]], "Comments": []}
+{"id": 183, "text": "Add an expense of 120 dollars for shopping.", "label": [[18, 29, "amount"], [34, 42, "category"]], "Comments": []}
+{"id": 184, "text": "I spent 120 dollars on transport last night.", "label": [[8, 19, "amount"], [23, 32, "category"], [33, 43, "time"]], "Comments": []}
+{"id": 185, "text": "I spent $800 on shopping last week.", "label": [[8, 12, "amount"], [16, 24, "category"], [25, 34, "time"]], "Comments": []}
+{"id": 186, "text": "Paid $25 for repast this morning.", "label": [[5, 8, "amount"], [13, 19, "category"], [20, 32, "time"]], "Comments": []}
+{"id": 187, "text": "I spent $25 on shopping last week.", "label": [[8, 11, "amount"], [15, 23, "category"], [24, 33, "time"]], "Comments": []}
+{"id": 188, "text": "Add an expense of $25 for shopping.", "label": [[18, 22, "amount"], [26, 34, "category"]], "Comments": []}
+{"id": 189, "text": "Paid $75.99 for rent last night.", "label": [[5, 11, "amount"], [16, 20, "category"], [21, 31, "time"]], "Comments": []}
+{"id": 190, "text": "Add an expense of 30 USD for groceries.", "label": [[18, 24, "amount"], [29, 38, "category"]], "Comments": []}
+{"id": 191, "text": "Paid $75.99 for books last week.", "label": [[5, 11, "amount"], [16, 21, "category"], [22, 31, "time"]], "Comments": []}
+{"id": 192, "text": "I spent 30 USD on repast on April 5th.", "label": [[8, 14, "amount"], [18, 24, "category"], [28, 37, "time"]], "Comments": []}
+{"id": 193, "text": "I spent 120 dollars on repast on April 5th.", "label": [[8, 19, "amount"], [23, 30, "category"], [32, 42, "time"]], "Comments": []}
+{"id": 194, "text": "Paid $50 for repast last week.", "label": [[5, 8, "amount"], [13, 19, "category"], [20, 29, "time"]], "Comments": []}
+{"id": 195, "text": "I spent $75.99 on groceries last week.", "label": [[8, 15, "amount"], [18, 27, "category"], [28, 37, "time"]], "Comments": []}
+{"id": 196, "text": "Got $200 as a gift.", "label": [[4, 8, "amount"], [14, 18, "category"]], "Comments": []}
+{"id": 197, "text": "Got $500 as a gift.", "label": [[4, 8, "amount"], [13, 18, "category"]], "Comments": []}
+{"id": 198, "text": "I received 500 USD from bonus on Monday.", "label": [[11, 18, "amount"], [24, 29, "category"], [33, 39, "time"]], "Comments": []}
+{"id": 199, "text": "Got $80000 as a investment.", "label": [[4, 10, "amount"], [16, 26, "category"]], "Comments": []}
+{"id": 200, "text": "I received $300 from gift this week.", "label": [[11, 15, "amount"], [21, 25, "category"], [26, 35, "time"]], "Comments": []}
+{"id": 201, "text": "Got $200 as a investment.", "label": [[4, 8, "amount"], [14, 24, "category"]], "Comments": []}
+{"id": 202, "text": "I received 500 USD from gift today.", "label": [[11, 18, "amount"], [24, 28, "category"], [29, 34, "time"]], "Comments": []}
+{"id": 203, "text": "Got $200 as a gift.", "label": [[4, 8, "amount"], [14, 18, "category"]], "Comments": []}
+{"id": 204, "text": "Earned 500 USD recently.", "label": [[7, 14, "amount"]], "Comments": []}
+{"id": 205, "text": "Earned $1000 this week.", "label": [[7, 12, "amount"], [13, 22, "time"]], "Comments": []}
+{"id": 206, "text": "I received $300 from freelance this week.", "label": [[11, 15, "amount"], [21, 30, "category"], [31, 40, "time"]], "Comments": []}
+{"id": 207, "text": "Earned $300 on Monday.", "label": [[7, 11, "amount"], [15, 21, "time"]], "Comments": []}
+{"id": 208, "text": "Add an income of 500 USD for bonus.", "label": [[17, 24, "amount"], [29, 34, "category"]], "Comments": []}
+{"id": 209, "text": "Earned $300 yesterday.", "label": [[7, 12, "amount"], [12, 21, "time"]], "Comments": []}
+{"id": 210, "text": "I received $300 from part-time job on Monday.", "label": [[11, 15, "amount"], [21, 34, "category"], [38, 44, "time"]], "Comments": []}
+{"id": 211, "text": "Add an income of $?00 for investment.", "label": [[17, 21, "amount"], [26, 36, "time"]], "Comments": []}
+{"id": 212, "text": "Add an income of 500 USD for part-time job.", "label": [[17, 24, "amount"], [29, 42, "category"]], "Comments": []}
+{"id": 213, "text": "I received $1000 from salary this week.", "label": [[11, 16, "amount"], [22, 28, "category"], [29, 38, "time"]], "Comments": []}
+{"id": 214, "text": "I received $300 from bonus yesterday.", "label": [[11, 15, "amount"], [21, 26, "category"], [27, 36, "time"]], "Comments": []}
+{"id": 215, "text": "Total spending this month?", "label": [[15, 25, "time"]], "Comments": []}
+{"id": 216, "text": "My spending over last week?", "label": [[17, 26, "time"]], "Comments": []}
+{"id": 217, "text": "Show me my expenses past 7 days.", "label": [[20, 31, "time"]], "Comments": []}
+{"id": 218, "text": "How much did I spend this month?", "label": [[21, 31, "time"]], "Comments": []}
+{"id": 219, "text": "How much did I spend last week?", "label": [[20, 30, "time"]], "Comments": []}
+{"id": 220, "text": "Total spending past 7 days?", "label": [[15, 26, "time"]], "Comments": []}
+{"id": 221, "text": "Total spending from March 1st to March 10th?", "label": [[15, 43, "time"]], "Comments": []}
+{"id": 222, "text": "My spending over past 7 days?", "label": [[22, 28, "time"]], "Comments": []}
+{"id": 223, "text": "My spending over from March 1st to March 10th?", "label": [[22, 45, "time"]], "Comments": []}
+{"id": 224, "text": "Show me my expenses in February.", "label": [[23, 31, "time"]], "Comments": []}
+{"id": 225, "text": "My spending over past 7 days?", "label": [[17, 28, "time"]], "Comments": []}
+{"id": 226, "text": "My spending over in February?", "label": [[20, 28, "time"]], "Comments": []}
+{"id": 227, "text": "Show me my expenses past 7 days.", "label": [[20, 31, "time"]], "Comments": []}
+{"id": 228, "text": "Total spending in February?", "label": [[18, 26, "time"]], "Comments": []}
+{"id": 229, "text": "My spending over from March 1st to March 10th?", "label": [[22, 45, "time"]], "Comments": []}
+{"id": 230, "text": "Show me my expenses past 7 days.", "label": [[20, 31, "time"]], "Comments": []}
+{"id": 231, "text": "Show me my expenses from March 1st to March 10th.", "label": [[20, 48, "time"]], "Comments": []}
+{"id": 232, "text": "My spending over last week?", "label": [[16, 26, "time"]], "Comments": []}
+{"id": 233, "text": "Show me my transport expenses last month.", "label": [[11, 20, "category"], [30, 40, "time"]], "Comments": []}
+{"id": 234, "text": "How much did I spend on transport this year?", "label": [[24, 33, "category"], [34, 43, "time"]], "Comments": []}
+{"id": 235, "text": "How much did I spend on groceries last month?", "label": [[24, 33, "category"], [34, 44, "time"]], "Comments": []}
+{"id": 236, "text": "What did I spend on groceries this year?", "label": [[20, 29, "category"], [30, 39, "time"]], "Comments": []}
+{"id": 237, "text": "How much did I spend on rent this year?", "label": [[24, 28, "category"], [29, 38, "time"]], "Comments": []}
+{"id": 238, "text": "What did I spend on groceries in January?", "label": [[20, 29, "category"], [30, 40, "time"]], "Comments": []}
+{"id": 239, "text": "How much did I spend on rent last Tuesday?", "label": [[28, 41, "time"]], "Comments": []}
+{"id": 240, "text": "Show me my rent expenses last month.", "label": [[11, 16, "category"], [25, 35, "time"]], "Comments": []}
+{"id": 241, "text": "How much did I spend on rent this week?", "label": [[24, 28, "category"], [29, 38, "time"]], "Comments": []}
+{"id": 242, "text": "How much did I spend on entertainment last month?", "label": [[24, 38, "category"], [38, 48, "time"]], "Comments": []}
+{"id": 243, "text": "What did I spend on entertainment last Tuesday?", "label": [[20, 34, "category"], [34, 46, "time"]], "Comments": []}
+{"id": 244, "text": "How much did I spend on groceries last month?", "label": [[24, 33, "category"], [34, 45, "time"]], "Comments": []}
+{"id": 245, "text": "What did I spend on entertainment last month?", "label": [[20, 33, "category"], [34, 44, "time"]], "Comments": []}
+{"id": 246, "text": "What did I spend on rent last Tuesday?", "label": [[20, 24, "category"], [25, 37, "time"]], "Comments": []}
+{"id": 247, "text": "How much did I spend on entertainment this week?", "label": [[24, 37, "category"], [38, 47, "time"]], "Comments": []}
+{"id": 248, "text": "Show me my rent expenses this week.", "label": [[11, 15, "category"], [25, 34, "time"]], "Comments": []}
+{"id": 249, "text": "How much did I spend on entertainment last month?", "label": [[23, 37, "category"], [38, 48, "time"]], "Comments": []}
+{"id": 250, "text": "What did I spend on entertainment this week?", "label": [[20, 33, "category"], [34, 43, "time"]], "Comments": []}
+{"id": 251, "text": "What did I spend on repast this week?", "label": [[20, 26, "category"], [27, 36, "time"]], "Comments": []}
+{"id": 252, "text": "How much did I spend on transport last Tuesday?", "label": [[24, 33, "category"], [34, 46, "time"]], "Comments": []}
+{"text": "How much did I spend on entertainment in June?", "labels": [[22, 35, "category"], [39, 46, "time"]]}
+{"text": "Show me my shopping expenses in 2025.", "labels": [[11, 19, "category"], [32, 39, "time"]]}
+{"text": "What was my repast spending this year?", "labels": [[12, 18, "category"], [28, 37, "time"]]}
+{"text": "How much have I spent on shopping in March?", "labels": [[25, 33, "category"], [37, 45, "time"]]}
+{"text": "Total spending for entertainment in December?", "labels": [[19, 32, "category"], [36, 47, "time"]]}
+{"text": "Give me the repast expenses in November.", "labels": [[12, 18, "category"], [31, 41, "time"]]}
+{"text": "Entertainment costs in 2024?", "labels": [[0, 13, "category"], [23, 30, "time"]]}
+{"text": "My total shopping expenses this year?", "labels": [[9, 17, "category"], [27, 36, "time"]]}
+{"text": "Repast expenses for July?", "labels": [[0, 6, "category"], [20, 24, "time"]]}
+{"text": "Show my entertainment spending in April.", "labels": [[8, 21, "category"], [33, 40, "time"]]}
