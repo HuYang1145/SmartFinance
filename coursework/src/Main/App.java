@@ -15,7 +15,7 @@ public class App extends JFrame {
 
         // 背景面板
         JPanel backgroundPanel = new JPanel() {
-            Image bgImage = new ImageIcon(getClass().getResource("/Main/background.png")).getImage(); // 替换为你的图片路径
+            Image bgImage = new ImageIcon(getClass().getResource("/Main/background.png")).getImage();
 
             @Override
             protected void paintComponent(Graphics g) {
@@ -85,7 +85,7 @@ public class App extends JFrame {
         loginButton.setBounds(60, 80, 180, 40);
         loginPanel.add(loginButton);
 
-        JButton registerButton = new JButton("Register");
+        JButton registerButton = new JButton("Sign in");
         styleRoundedButton(registerButton);
         registerButton.setBounds(60, 140, 180, 40);
         loginPanel.add(registerButton);

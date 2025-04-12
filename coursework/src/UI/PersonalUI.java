@@ -1,11 +1,6 @@
 package UI;
 
-import Person.DepositDialog;
 import Person.ViewPersonalInfo;
-import Person.ViewBalanceDialog;
-import Person.transferAccounts;
-import Person.WithdrawalDialog;
-import Person.TransactionHistoryDialog;
 import model.UserSession;
 
 import javax.swing.*;
@@ -27,40 +22,72 @@ public class PersonalUI extends JDialog {
         // ============== 左侧侧边栏 ==============
         JPanel sidebarPanel = new JPanel();
         sidebarPanel.setLayout(new BoxLayout(sidebarPanel, BoxLayout.Y_AXIS));
-        sidebarPanel.setPreferredSize(new Dimension(200, 0));
+        sidebarPanel.setPreferredSize(new Dimension(220, 0)); // 可以根据按钮宽度调整侧边栏宽度
         // 设置侧边栏背景为深蓝色
         sidebarPanel.setBackground(new Color(30, 60, 120));
 
-        Dimension btnSize = new Dimension(150, 30);
+        // 调整按钮大小以适应文本
+        Dimension btnSize = new Dimension(200, 35); // 增加宽度和高度
 
-        // 创建侧边栏按钮（顺序：主页、查看余额、转入资金、转账、提款、交易记录、AI交流区、退出登录）
-        JButton homeButton = createFunctionButton("Home", "/UI/icons/home.png", btnSize);
-        JButton viewBalanceButton = createFunctionButton("Balance", "/UI/icons/balance.png", btnSize);
-        JButton depositButton = createFunctionButton("Transfers in", "/UI/icons/transfer.png", btnSize);
-        JButton transferButton = createFunctionButton("transfer", "/UI/icons/transfer_out.png", btnSize);
-        JButton withdrawalButton = createFunctionButton("ATM", "/UI/icons/atm.png", btnSize);
-        JButton transactionHistoryButton = createFunctionButton("Transaction records", "/UI/icons/history.png", btnSize);
-        JButton aiChatButton = createFunctionButton("AI Communication", "/UI/icons/ai.png", btnSize);
-        JButton logoutButton = createFunctionButton("Log out", "/UI/icons/logout.png", btnSize);
+        // 创建新的侧边栏按钮 (无图标)
+        JButton incomeDetailButton = new JButton("Income and expenditure detail");
+        JButton periodicReportButton = new JButton("Periodic financial reporting");
+        JButton aiQAButton = new JButton("AI Q&A");
+        JButton financialSuggestionButton = new JButton("Financial management suggestion");
+        JButton individualCenterButton = new JButton("Individual center");
+        JButton depositWithdrawTransferButton = new JButton("Deposits, withdrawals and transfers");
+        JButton spendingProportionButton = new JButton("Monthly, annual spending proportion display");
+        JButton viewPersonalInfoButton = new JButton("View Personal Information"); // 从底部移到侧边栏
+        JButton logoutButton = new JButton("Log out");
 
-        // 添加按钮，使用垂直间隔，居中排列
-        sidebarPanel.add(Box.createVerticalGlue());
-        sidebarPanel.add(homeButton);
+        // 将所有需要设置样式的按钮放入数组统一处理
+        JButton[] sidebarButtons = {
+                incomeDetailButton, periodicReportButton, aiQAButton,
+                financialSuggestionButton, individualCenterButton, depositWithdrawTransferButton,
+                spendingProportionButton, viewPersonalInfoButton, logoutButton
+        };
+
+        // 设置按钮样式和居中对齐
+        for (JButton button : sidebarButtons) {
+            button.setAlignmentX(Component.CENTER_ALIGNMENT); // 水平居中对齐
+            if (btnSize != null) {
+                button.setPreferredSize(btnSize);
+                button.setMaximumSize(btnSize); // **重要**: 配合 BoxLayout 实现居中和固定大小
+            }
+            button.setFocusPainted(false);
+            button.setFont(new Font("Segoe UI", Font.PLAIN, 12)); // 字体调小一点以适应长文本
+            // 设置按钮背景为深蓝色，文字为白色
+            button.setBackground(new Color(20, 40, 80));
+            button.setForeground(Color.WHITE);
+            // 设置无边框样式
+            button.setBorderPainted(false);
+            button.setFocusPainted(false);
+            button.setContentAreaFilled(true); // 确保背景色生效
+            button.setOpaque(true); // 确保背景色生效
+        }
+
+
+        // 添加按钮到侧边栏，使用垂直间隔和 Glue 实现垂直居中效果
+        sidebarPanel.add(Box.createVerticalGlue()); // 顶部空白，将按钮向下推
+        sidebarPanel.add(individualCenterButton); // 将"个人中心"放在靠前的位置可能更符合习惯
         sidebarPanel.add(Box.createRigidArea(new Dimension(0, 10)));
-        sidebarPanel.add(viewBalanceButton);
+        sidebarPanel.add(incomeDetailButton);
         sidebarPanel.add(Box.createRigidArea(new Dimension(0, 10)));
-        sidebarPanel.add(depositButton);
+        sidebarPanel.add(periodicReportButton);
         sidebarPanel.add(Box.createRigidArea(new Dimension(0, 10)));
-        sidebarPanel.add(transferButton);
+        sidebarPanel.add(depositWithdrawTransferButton); // 存取转账
         sidebarPanel.add(Box.createRigidArea(new Dimension(0, 10)));
-        sidebarPanel.add(withdrawalButton);
+        sidebarPanel.add(spendingProportionButton);
         sidebarPanel.add(Box.createRigidArea(new Dimension(0, 10)));
-        sidebarPanel.add(transactionHistoryButton);
+        sidebarPanel.add(financialSuggestionButton);
         sidebarPanel.add(Box.createRigidArea(new Dimension(0, 10)));
-        sidebarPanel.add(aiChatButton);
-        sidebarPanel.add(Box.createVerticalGlue());
-        sidebarPanel.add(logoutButton);
+        sidebarPanel.add(aiQAButton);
         sidebarPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+        sidebarPanel.add(viewPersonalInfoButton); // 查看个人信息
+        sidebarPanel.add(Box.createVerticalGlue()); // 中间空白，将下面的按钮向下推
+        sidebarPanel.add(logoutButton); // 退出登录通常在最后
+        sidebarPanel.add(Box.createRigidArea(new Dimension(0, 20))); // 底部留一些空间
+
 
         // ============== 右侧内容区域（使用CardLayout） ==============
         contentPanel = new JPanel();
@@ -69,79 +96,53 @@ public class PersonalUI extends JDialog {
         // 设置右侧内容区背景为深蓝色
         contentPanel.setBackground(new Color(30, 60, 120));
 
-        // 主页面板：初始页面，显示一些概览信息（你可以根据需要替换内容）
-        JPanel mainDashboardPanel = new JPanel(null);
-        mainDashboardPanel.setBackground(new Color(30, 60, 120));
-        JLabel dashboardLabel = new JLabel("Overview of individual accounts");
-        dashboardLabel.setFont(new Font("Segoe UI", Font.BOLD, 24));
-        dashboardLabel.setForeground(Color.WHITE);
-        dashboardLabel.setBounds(30, 30, 200, 40);
-        mainDashboardPanel.add(dashboardLabel);
-        // 可添加图表、数据等占位元素
-        JLabel placeholder = new JLabel("[Display the contents of the homepage here]");
-        placeholder.setForeground(Color.WHITE);
-        placeholder.setBounds(30, 100, 300, 30);
-        mainDashboardPanel.add(placeholder);
+        // --- 为新按钮创建对应的面板 (占位符) ---
 
-        // 查看余额面板
-        JPanel viewBalancePanel = new JPanel(null);
-        viewBalancePanel.setBackground(new Color(30, 60, 120));
-        JLabel balanceLabel = new JLabel("View Balance Ribbon");
-        balanceLabel.setFont(new Font("Segoe UI", Font.PLAIN, 18));
-        balanceLabel.setForeground(Color.WHITE);
-        balanceLabel.setBounds(30, 30, 200, 30);
-        viewBalancePanel.add(balanceLabel);
+        // 个人中心 面板 (可以复用之前的 home 面板或新建)
+        JPanel individualCenterPanel = new JPanel(null);
+        individualCenterPanel.setBackground(new Color(30, 60, 120));
+        JLabel centerLabel = new JLabel("Individual Center Overview");
+        centerLabel.setFont(new Font("Segoe UI", Font.BOLD, 24));
+        centerLabel.setForeground(Color.WHITE);
+        centerLabel.setBounds(30, 30, 400, 40);
+        individualCenterPanel.add(centerLabel);
+        JLabel centerPlaceholder = new JLabel("[Display individual center content here]");
+        centerPlaceholder.setForeground(Color.WHITE);
+        centerPlaceholder.setBounds(30, 100, 400, 30);
+        individualCenterPanel.add(centerPlaceholder);
 
-        // 转入资金面板
-        JPanel depositPanel = new JPanel(null);
-        depositPanel.setBackground(new Color(30, 60, 120));
-        JLabel depositLabel = new JLabel("Transfer to funds functional area");
-        depositLabel.setFont(new Font("Segoe UI", Font.PLAIN, 18));
-        depositLabel.setForeground(Color.WHITE);
-        depositLabel.setBounds(30, 30, 200, 30);
-        depositPanel.add(depositLabel);
+        // 收支明细 面板
+        JPanel incomeDetailPanel = createPlaceholderPanel("Income and Expenditure Detail Area");
+        // 定期财报 面板
+        JPanel periodicReportPanel = createPlaceholderPanel("Periodic Financial Reporting Area");
+        // 存取转账 面板 (这里可以集成原来的存款、取款、转账逻辑)
+        JPanel depositWithdrawTransferPanel = createPlaceholderPanel("Deposits, Withdrawals, and Transfers Area");
+        // 月度/年度支出比例 面板
+        JPanel spendingProportionPanel = createPlaceholderPanel("Monthly/Annual Spending Proportion Display Area");
+        // 财务管理建议 面板
+        JPanel financialSuggestionPanel = createPlaceholderPanel("Financial Management Suggestion Area");
 
-        // 转账面板
-        JPanel transferPanel = new JPanel(null);
-        transferPanel.setBackground(new Color(30, 60, 120));
-        JLabel transferLabel = new JLabel("Transfer Function Area");
-        transferLabel.setFont(new Font("Segoe UI", Font.PLAIN, 18));
-        transferLabel.setForeground(Color.WHITE);
-        transferLabel.setBounds(30, 30, 200, 30);
-        transferPanel.add(transferLabel);
 
-        // 提款面板
-        JPanel withdrawalPanel = new JPanel(null);
-        withdrawalPanel.setBackground(new Color(30, 60, 120));
-        JLabel withdrawalLabel = new JLabel("cash withdrawal functional area");
-        withdrawalLabel.setFont(new Font("Segoe UI", Font.PLAIN, 18));
-        withdrawalLabel.setForeground(Color.WHITE);
-        withdrawalLabel.setBounds(30, 30, 200, 30);
-        withdrawalPanel.add(withdrawalLabel);
-
-        // 交易记录面板
-        JPanel transactionHistoryPanel = new JPanel(null);
-        transactionHistoryPanel.setBackground(new Color(30, 60, 120));
-        JLabel historyLabel = new JLabel("Transaction Record Function Area");
-        historyLabel.setFont(new Font("Segoe UI", Font.PLAIN, 18));
-        historyLabel.setForeground(Color.WHITE);
-        historyLabel.setBounds(30, 30, 200, 30);
-        transactionHistoryPanel.add(historyLabel);
-
-        // AI交流区面板
+        // AI 问答 面板 (复用之前的 AI 聊天区)
         JPanel aiPanel = new JPanel(new BorderLayout());
         aiPanel.setBackground(new Color(30, 60, 120));
         JTextArea aiChatArea = new JTextArea();
         aiChatArea.setEditable(false);
         aiChatArea.setLineWrap(true);
         aiChatArea.setForeground(Color.WHITE);
-        aiChatArea.setBackground(new Color(30, 60, 120));
+        aiChatArea.setBackground(new Color(40, 70, 130)); // 稍微不同的背景以便区分
         JScrollPane aiScrollPane = new JScrollPane(aiChatArea);
         aiPanel.add(aiScrollPane, BorderLayout.CENTER);
         JPanel aiInputPanel = new JPanel(new BorderLayout());
         JTextField aiInputField = new JTextField();
         JButton sendButton = new JButton("发送");
         sendButton.setPreferredSize(new Dimension(80, 30));
+        // 可以给输入区域也加上深色主题
+        aiInputField.setBackground(new Color(50, 80, 140));
+        aiInputField.setForeground(Color.WHITE);
+        aiInputField.setCaretColor(Color.WHITE); // 光标颜色
+        aiInputField.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5)); // 添加内边距
+        aiInputPanel.setBackground(new Color(30, 60, 120));
         aiInputPanel.add(aiInputField, BorderLayout.CENTER);
         aiInputPanel.add(sendButton, BorderLayout.EAST);
         aiPanel.add(aiInputPanel, BorderLayout.SOUTH);
@@ -150,126 +151,102 @@ public class PersonalUI extends JDialog {
             String text = aiInputField.getText().trim();
             if (!text.isEmpty()) {
                 aiChatArea.append("我: " + text + "\n");
-                aiChatArea.append("AI: " + "这是AI的回答\n");
+                aiChatArea.append("AI: " + "这是 AI 的回复...\n"); // 替换为实际的 AI 逻辑
                 aiInputField.setText("");
             }
         });
 
-        // 将各面板添加到内容区CardLayout中
-        contentPanel.add(mainDashboardPanel, "home");
-        contentPanel.add(viewBalancePanel, "viewBalance");
-        contentPanel.add(depositPanel, "deposit");
-        contentPanel.add(transferPanel, "transfer");
-        contentPanel.add(withdrawalPanel, "withdrawal");
-        contentPanel.add(transactionHistoryPanel, "transactionHistory");
-        contentPanel.add(aiPanel, "aiChat");
+        // 将各面板添加到内容区CardLayout中 (使用新的 key)
+        contentPanel.add(individualCenterPanel, "individualCenter"); // 默认显示个人中心
+        contentPanel.add(incomeDetailPanel, "incomeDetail");
+        contentPanel.add(periodicReportPanel, "periodicReport");
+        contentPanel.add(depositWithdrawTransferPanel, "depositWithdrawTransfer");
+        contentPanel.add(spendingProportionPanel, "spendingProportion");
+        contentPanel.add(financialSuggestionPanel, "financialSuggestion");
+        contentPanel.add(aiPanel, "aiQA"); // AI 问答使用 aiPanel
 
-        // 默认显示主页
-        cardLayout.show(contentPanel, "home");
+        // 默认显示个人中心面板
+        cardLayout.show(contentPanel, "individualCenter");
 
-        // ============== 底部区域（单独放置“查看个人信息”按钮） ==============
-        JPanel bottomPanel = new JPanel();
-        bottomPanel.setBackground(new Color(20, 40, 80));
-        JButton viewPersonalInfoButton = createFunctionButton("View Personal Information", "/UI/icons/person.png", btnSize);
-        bottomPanel.add(viewPersonalInfoButton);
-
-        // ============== 添加整体布局 ==============
+        // ============== 整体布局 ==============
         add(sidebarPanel, BorderLayout.WEST);
         add(contentPanel, BorderLayout.CENTER);
-        add(bottomPanel, BorderLayout.SOUTH);
+        // 不再需要 bottomPanel
+        // add(bottomPanel, BorderLayout.SOUTH);
 
         // ============== 按钮事件处理 ==============
-        homeButton.addActionListener(e -> cardLayout.show(contentPanel, "home"));
-        viewBalanceButton.addActionListener(e -> {
-            if (UserSession.getCurrentUsername() != null) {
-                cardLayout.show(contentPanel, "viewBalance");
-            } else {
-                JOptionPane.showMessageDialog(this, "请先登录", "错误", JOptionPane.ERROR_MESSAGE);
-            }
-        });
-        depositButton.addActionListener(e -> {
-            if (UserSession.getCurrentUsername() != null) {
-                cardLayout.show(contentPanel, "deposit");
-            } else {
-                JOptionPane.showMessageDialog(this, "请先登录", "错误", JOptionPane.ERROR_MESSAGE);
-            }
-        });
-        transferButton.addActionListener(e -> {
-            if (UserSession.getCurrentUsername() != null) {
-                cardLayout.show(contentPanel, "transfer");
-            } else {
-                JOptionPane.showMessageDialog(this, "请先登录", "错误", JOptionPane.ERROR_MESSAGE);
-            }
-        });
-        withdrawalButton.addActionListener(e -> {
-            if (UserSession.getCurrentUsername() != null) {
-                cardLayout.show(contentPanel, "withdrawal");
-            } else {
-                JOptionPane.showMessageDialog(this, "请先登录", "错误", JOptionPane.ERROR_MESSAGE);
-            }
-        });
-        transactionHistoryButton.addActionListener(e -> {
-            if (UserSession.getCurrentUsername() != null) {
-                cardLayout.show(contentPanel, "transactionHistory");
-            } else {
-                JOptionPane.showMessageDialog(this, "请先登录", "错误", JOptionPane.ERROR_MESSAGE);
-            }
-        });
-        aiChatButton.addActionListener(e -> cardLayout.show(contentPanel, "aiChat"));
-        logoutButton.addActionListener(e -> dispose());
+        // 为新按钮添加事件监听器
+        individualCenterButton.addActionListener(e -> cardLayout.show(contentPanel, "individualCenter"));
+        incomeDetailButton.addActionListener(e -> checkLoginAndShow("incomeDetail"));
+        periodicReportButton.addActionListener(e -> checkLoginAndShow("periodicReport"));
+        depositWithdrawTransferButton.addActionListener(e -> checkLoginAndShow("depositWithdrawTransfer"));
+        spendingProportionButton.addActionListener(e -> checkLoginAndShow("spendingProportion"));
+        financialSuggestionButton.addActionListener(e -> checkLoginAndShow("financialSuggestion"));
+        aiQAButton.addActionListener(e -> cardLayout.show(contentPanel, "aiQA")); // AI 区通常不需要登录检查? (按需修改)
+
+        // 查看个人信息按钮 (现在在侧边栏)
         viewPersonalInfoButton.addActionListener(e -> {
             if (UserSession.getCurrentUsername() != null) {
-                new ViewPersonalInfo(null, UserSession.getCurrentUsername()).setVisible(true);
+                // 创建并显示 ViewPersonalInfo 对话框
+                // 注意：如果 ViewPersonalInfo 依赖于 PersonalUI 作为父窗口，需要传递 this
+                new ViewPersonalInfo(this, UserSession.getCurrentUsername()).setVisible(true);
             } else {
-                JOptionPane.showMessageDialog(this, "请先登录", "错误", JOptionPane.ERROR_MESSAGE);
+                showLoginError();
             }
         });
 
         setVisible(true);
     }
 
-    /**
-     * 创建一个带图标的小按钮，文本居中
-     */
-    private JButton createFunctionButton(String text, String iconPath, Dimension size) {
-        ImageIcon icon = null;
-        try {
-            icon = new ImageIcon(getClass().getResource(iconPath));
-        } catch (Exception e) {
-            // 图标加载失败时不设置图标
-        }
-        try {
-            icon = new ImageIcon(getClass().getResource(iconPath));
-            // 假设想缩放到 20x20 像素
-            Image img = icon.getImage();
-            Image scaled = img.getScaledInstance(20, 20, Image.SCALE_SMOOTH);
-            icon = new ImageIcon(scaled);
-        } catch (Exception e) {
-            // 如果图标加载失败，继续
-        }
-        JButton button = new JButton(text, icon);
-        // 让文字与图标横向排列，且图标在左边
-        button.setHorizontalAlignment(SwingConstants.LEFT);
-        button.setIconTextGap(10);
+    // 辅助方法：创建占位符面板
+    private JPanel createPlaceholderPanel(String title) {
+        JPanel panel = new JPanel(null); // 使用 null 布局以便于放置标签
+        panel.setBackground(new Color(30, 60, 120));
+        JLabel label = new JLabel(title);
+        label.setFont(new Font("Segoe UI", Font.PLAIN, 18));
+        label.setForeground(Color.WHITE);
+        // 简单的位置设置，你可以根据需要使用更复杂的布局或组件
+        label.setBounds(30, 30, 500, 30); // 增加了宽度以防标题太长
+        panel.add(label);
 
-        // 如果你要固定大小，可以调大点
-        if (size != null) {
-            button.setPreferredSize(size);
-            // button.setMaximumSize(size); // <-- 视情况决定是否保留
-        }
-        button.setFocusPainted(false);
-        button.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        JLabel placeholder = new JLabel("[Content for " + title + " goes here]");
+        placeholder.setForeground(Color.GRAY);
+        placeholder.setBounds(30, 80, 400, 30);
+        panel.add(placeholder);
 
-        // 设置按钮背景为深蓝色，文字为白色
-        button.setBackground(new Color(20, 40, 80));
-        button.setForeground(Color.WHITE);
-        // 设置无边框样式
-        button.setBorderPainted(false);
-        button.setFocusPainted(false);
-        button.setContentAreaFilled(true);
-        button.setOpaque(true);
-
-        return button;
+        return panel;
     }
 
+    // 辅助方法：检查登录状态并切换卡片
+    private void checkLoginAndShow(String cardName) {
+        if (UserSession.getCurrentUsername() != null) {
+            cardLayout.show(contentPanel, cardName);
+        } else {
+            showLoginError();
+        }
+    }
+
+    // 辅助方法：显示登录错误信息
+    private void showLoginError() {
+        JOptionPane.showMessageDialog(this, "请先登录", "错误", JOptionPane.ERROR_MESSAGE);
+    }
+
+
+    // 添加 main 方法用于测试
+    /*
+    public static void main(String[] args) {
+        // 设置外观，可选
+        try {
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        // 模拟用户登录
+        UserSession.setCurrentUsername("TestUser");
+        // 运行 UI
+        SwingUtilities.invokeLater(() -> {
+            new PersonalUI().setVisible(true);
+        });
+    }
+    */
 }

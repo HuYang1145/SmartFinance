@@ -144,7 +144,7 @@ public class AccountManagementUI extends JDialog {
             y += gap;
 
 
-            createButton = new JButton("Register");
+            createButton = new JButton("Sign in");
             createButton.setBounds(60, y, 180, 35);
             createButton.setBackground(new Color(0, 120, 215));
             createButton.setForeground(Color.WHITE);
