@@ -96,7 +96,7 @@ Meanwhile, the compiled output files will be generated in the `bin` folder by de
 * **`icons/` 文件夹**:
     * 存放界面按钮所需的图标资源。
 
-## 数据存储
+### 数据存储
 
 * **`accounts.csv`**:
     * 存储所有用户（包括管理员和个人用户）的账户详细信息。
