@@ -109,9 +109,3 @@ Meanwhile, the compiled output files will be generated in the `bin` folder by de
     * 可由 `AdminUI` 导入外部交易记录。
 
 ---
-
-* 根据Prototype修改了GUI界面
-* 开发周期报告功能
-
----
- * 能够显示Financial management suggestion的所有预期功能GUI页面，实现高仿真
