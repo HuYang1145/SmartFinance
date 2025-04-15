@@ -3,6 +3,9 @@ package Person;
 import model.AccountModel;
 import model.PersonalAccount;
 import model.UserRegistrationCSVExporter;
+import model.Transaction;
+import model.CsvDataManager;
+import UI.AlertPanel;
 
 import javax.swing.*;
 import java.awt.*;
@@ -12,6 +15,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class transferAccounts extends JDialog {
     private JTextField recipientUsernameField, amountField;
@@ -92,15 +96,30 @@ public class transferAccounts extends JDialog {
                             JOptionPane.showMessageDialog(transferAccounts.this, "转出资金成功！", "成功", JOptionPane.INFORMATION_MESSAGE);
                             dispose(); // 关闭对话框
 
+                            // ===== 触发异常检测 =====
+                            CsvDataManager csvManager = new CsvDataManager();
+                            List<Transaction> transactions = csvManager.readTransactions().stream()
+                                    .filter(t -> t.getUsername().equals(loggedInUsername))
+                                    .collect(Collectors.toList());
+
+                            // 调试输出：打印读取到的交易记录
+                            System.out.println("读取到的交易记录: " + transactions);
+
+                            TransactionAnalyzer analyzer = new TransactionAnalyzer();
+                            List<Transaction> abnormal = analyzer.detectAbnormal(transactions);
+
+                            // 调试输出：打印检测到的异常交易
+                            System.out.println("检测到的异常交易: " + abnormal);
+
+                            if (abnormal != null && !abnormal.isEmpty()) {
+                                new AlertPanel(abnormal, "检测到交易异常").setVisible(true);
+                            }
                         } else {
                             JOptionPane.showMessageDialog(transferAccounts.this, "转入账户不存在", "错误", JOptionPane.ERROR_MESSAGE);
-                            return;
                         }
-
                     } else {
                         JOptionPane.showMessageDialog(transferAccounts.this, "该账户类型不支持转账", "错误", JOptionPane.ERROR_MESSAGE);
                     }
-
                 } catch (NumberFormatException ex) {
                     JOptionPane.showMessageDialog(transferAccounts.this, "请输入有效的金额", "错误", JOptionPane.ERROR_MESSAGE);
                 }
@@ -159,18 +178,19 @@ public class transferAccounts extends JDialog {
         try (FileWriter fw = new FileWriter(filePath, true)) {
             // 获取当前时间
             Date now = new Date();
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy/M/d HH:mm");
             String formattedDateTime = sdf.format(now);
-    
+
             // 记录转出方的交易
             fw.write(senderUsername + ",转出," + amount + "," + recipientUsername + "," + formattedDateTime + "\n");
-    
+
             // 记录转入方的交易
             fw.write(recipientUsername + ",转入," + amount + "," + senderUsername + "," + formattedDateTime + "\n");
-    
+            fw.flush();
         } catch (IOException e) {
             JOptionPane.showMessageDialog(this, "记录转账交易时发生错误: " + e.getMessage(), "错误", JOptionPane.ERROR_MESSAGE);
             e.printStackTrace();
         }
     }
+
 }

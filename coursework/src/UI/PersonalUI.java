@@ -6,8 +6,13 @@ import Person.ViewBalanceDialog;
 import Person.transferAccounts; // 确保这个类名是正确的
 import Person.WithdrawalDialog;
 import Person.TransactionHistoryDialog;
+import Person.TransactionAnalyzer;
 import model.UserSession; // 确保 UserSession 类及其方法可用
+import model.CsvDataManager;
+import model.Transaction;
 
+import java.util.List;
+import java.util.stream.Collectors;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -42,10 +47,13 @@ public class PersonalUI extends JDialog {
         JButton transactionHistoryButton = createFunctionButton("查看交易记录", "/UI/icons/history.png", btnSize);
         JButton aiChatButton = createFunctionButton("AI 交流区", "/UI/icons/ai.png", btnSize); // AI区
         JButton logoutButton = createFunctionButton("退出登录", "/UI/icons/logout.png", btnSize);
+        JButton securityAlertButton = createFunctionButton("安全警报", "/UI/icons/alert.png", btnSize); // 新增按钮
 
         // 添加按钮到侧边栏，使用垂直间隔，居中排列
         sidebarPanel.add(Box.createVerticalGlue()); // 顶部空白
         sidebarPanel.add(homeButton);
+        sidebarPanel.add(Box.createRigidArea(new Dimension(0, 15)));
+        sidebarPanel.add(securityAlertButton); // 新增按钮
         sidebarPanel.add(Box.createRigidArea(new Dimension(0, 15))); // 增加间距
         sidebarPanel.add(viewBalanceButton);
         sidebarPanel.add(Box.createRigidArea(new Dimension(0, 15)));
@@ -139,6 +147,38 @@ public class PersonalUI extends JDialog {
 
         // 主页按钮：切换到主页面板
         homeButton.addActionListener(e -> cardLayout.show(contentPanel, "home"));
+
+        // 在按钮事件处理部分添加以下代码
+        securityAlertButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                String loggedInUsername = UserSession.getCurrentUsername();
+                if (loggedInUsername != null) {
+                    try {
+                        // 1. 读取当前用户的交易记录
+                        CsvDataManager csvManager = new CsvDataManager();
+                        List<Transaction> transactions = csvManager.readTransactions().stream()
+                                .filter(t -> t.getUsername().equals(loggedInUsername))
+                                .collect(Collectors.toList());
+
+                        // 2. 检测异常交易
+                        TransactionAnalyzer analyzer = new TransactionAnalyzer();
+                        List<Transaction> abnormal = analyzer.detectAbnormal(transactions);
+
+                        // 3. 显示弹窗
+                        if (abnormal != null && !abnormal.isEmpty()) {
+                            new AlertPanel(abnormal, null).setVisible(true);
+                        } else {
+                            JOptionPane.showMessageDialog(PersonalUI.this, "未检测到异常交易", "安全状态", JOptionPane.INFORMATION_MESSAGE);
+                        }
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                        JOptionPane.showMessageDialog(PersonalUI.this, "读取交易记录失败", "错误", JOptionPane.ERROR_MESSAGE);
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(PersonalUI.this, "请先登录", "错误", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        });
 
         // 查看余额按钮：弹出 ViewBalanceDialog
         viewBalanceButton.addActionListener(new ActionListener() {
