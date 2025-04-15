@@ -1,0 +1,104 @@
+﻿user name, operation performed, amount, payment time, merchant name
+Bank of China,Deposit,67890.5,2023/7/15 10:30,Bank
+Alibaba,Transfer Out,12345.75,2024/3/20 15:45,Tencent
+Tencent,Transfer In,12345.75,2024/3/20 15:45,Alibaba
+Starbucks,Withdrawal,88,2021/11/1 8:00,ATM
+Meituan,Transfer Out,5678.9,2022/9/28 19:20,Ele.me
+Ele.me,Transfer In,5678.9,2022/9/28 19:20,Meituan
+ICBC,Deposit,987654.32,2020/5/10 12:00,Bank
+Huawei,Transfer Out,43210.5,2025/1/5 21:30,Xiaomi
+Xiaomi,Transfer In,43210.5,2025/1/5 21:30,Huawei
+KFC,Withdrawal,125.5,2023/4/3 14:00,ATM
+McDonald's,Transfer Out,7890.12,2021/6/18 9:55,Burger King
+Burger King,Transfer In,7890.12,2021/6/18 9:55,McDonald's
+China Mobile,Deposit,345678.9,2024/12/24 18:00,Bank
+China Unicom,Transfer Out,23456.78,2020/8/12 7:10,China Telecom
+China Telecom,Transfer In,23456.78,2020/8/12 7:10,China Unicom
+Mixue Ice Cream & Tea,Withdrawal,35,2022/2/14 16:45,ATM
+Coca-Cola,Transfer Out,19876.54,2023/10/1 23:05,Pepsi
+Pepsi,Transfer In,19876.54,2023/10/1 23:05,Coca-Cola
+PetroChina,Deposit,567890.12,2021/3/8 20:15,Bank
+Sinopec,Withdrawal,210.75,2025/3/30 11:20,ATM
+Siemens,Transfer Out,87654.32,2022/7/7 6:30,Bosch
+Bosch,Transfer In,87654.32,2022/7/7 6:30,Siemens
+Volkswagen,Deposit,456789.01,2024/9/19 13:40,Bank
+BMW,Withdrawal,999.99,2020/1/1 0:00,ATM
+Toyota,Transfer Out,32109.87,2023/5/22 17:50,Honda
+Honda,Transfer In,32109.87,2023/5/22 17:50,Toyota
+Sony,Deposit,789012.34,2021/8/5 11:05,Bank
+Samsung,Withdrawal,55.2,2024/6/12 22:10,ATM
+Apple,Transfer Out,65432.1,2020/12/31 14:25,Microsoft
+Microsoft,Transfer In,65432.1,2020/12/31 14:25,Apple
+Amazon,Deposit,234567.89,2022/4/18 9:30,Bank
+Google,Withdrawal,1500,2023/11/25 16:00,ATM
+Tesla,Transfer Out,90123.45,2025/4/10 20:40,BYD
+BYD,Transfer In,90123.45,2025/4/10 20:40,Tesla
+China Merchants Bank,Deposit,123456.78,2021/9/1 19:55,Bank
+China Construction Bank,Withdrawal,789.5,2024/1/31 7:45,ATM
+Kweichow Moutai,Transfer Out,54321.09,2022/6/3 12:15,Wuliangye
+Wuliangye,Transfer In,54321.09,2022/6/3 12:15,Kweichow Moutai
+SF Express,Deposit,345678.9,2023/3/15 15:30,Bank
+JD.com,Withdrawal,288.88,2020/7/22 21:05,ATM
+Alibaba,Transfer Out,67890.12,2024/11/8 10:20,Pinduoduo
+Pinduoduo,Transfer In,67890.12,2024/11/8 10:20,Alibaba
+Haidilao,Deposit,90123.45,2021/4/29 8:40,Bank
+Xi Bei You Mian Cun,Withdrawal,112.3,2025/2/2 13:50,ATM
+Walmart,Transfer Out,23456.78,2022/12/10 17:00,Carrefour
+Carrefour,Transfer In,23456.78,2022/12/10 17:00,Walmart
+Ping An Insurance,Deposit,456789.01,2023/8/1 20:25,Bank
+China Life Insurance,Withdrawal,567.9,2020/9/17 9:10,ATM
+Shell,Transfer Out,78901.23,2024/5/5 11:45,PetroChina
+PetroChina,Transfer In,78901.23,2024/5/5 11:45,Shell
+Nestlé,Deposit,123456.78,2021/1/20 14:05,Bank
+Unilever,Withdrawal,45.6,2025/4/5 18:30,ATM
+General Electric,Transfer Out,34567.89,2022/10/15 7:20,Siemens
+Siemens,Transfer In,34567.89,2022/10/15 7:20,General Electric
+Boeing,Deposit,567890.12,2023/6/22 23:40,Bank
+Airbus,Withdrawal,1999,2020/11/11 12:30,ATM
+Toyota,Transfer Out,90123.45,2024/2/29 16:55,Nissan
+Nissan,Transfer In,90123.45,2024/2/29 16:55,Toyota
+Sony,Deposit,234567.89,2021/7/3 9:00,Bank
+LG,Withdrawal,78.5,2023/9/8 20:05,ATM
+Microsoft,Transfer Out,45678.9,2025/3/12 10:15,Amazon
+Amazon,Transfer In,45678.9,2025/3/12 10:15,Microsoft
+Facebook,Deposit,678901.23,2022/5/27 15:20,Bank
+Twitter,Withdrawal,321,2020/4/1 19:40,ATM
+Intel,Transfer Out,12345.67,2023/11/19 6:35,Nvidia
+Nvidia,Transfer In,12345.67,2023/11/19 6:35,Intel
+Bank of China,Deposit,890123.45,2024/8/14 11:50,Bank
+China Construction Bank,Withdrawal,654.3,2021/12/5 17:10,ATM
+ICBC,Transfer Out,56789.01,2022/1/9 8:05,Agricultural Bank of China
+Agricultural Bank of China,Transfer In,56789.01,2022/1/9 8:05,ICBC
+China Merchants Bank,Deposit,345678.9,2023/9/22 14:35,Bank
+Bank of Communications,Withdrawal,98.76,2020/6/30 20:50,ATM
+SPD Bank,Transfer Out,78901.23,2025/4/1 9:20,China Everbright Bank
+China Everbright Bank,Transfer In,78901.23,2025/4/1 9:20,SPD Bank
+Ping An Bank,Deposit,123456.78,2021/2/18 16:00,Bank
+China CITIC Bank,Withdrawal,432.1,2024/10/28 21:25,ATM
+China Everbright Bank,Transfer Out,90123.45,2022/7/26 7:40,China Minsheng Bank
+China Minsheng Bank,Transfer In,90123.45,2022/7/26 7:40,China Everbright Bank
+HSBC,Deposit,567890.12,2023/4/9 13:05,Bank
+Standard Chartered,Withdrawal,210.5,2020/3/5 18:45,ATM
+Citigroup,Transfer Out,34567.89,2024/11/15 19:10,JPMorgan Chase
+JPMorgan Chase,Transfer In,34567.89,2024/11/15 19:10,Citigroup
+Goldman Sachs,Deposit,789012.34,2021/5/12 10:30,Bank
+Morgan Stanley,Withdrawal,678.9,2025/1/19 14:50,ATM
+Tencent,Transfer Out,123456.78,2022/9/3 20:00,Alibaba
+Alibaba,Transfer In,123456.78,2022/9/3 20:00,Tencent
+Baidu,Deposit,234567.89,2023/12/1 9:15,Bank
+ByteDance,Withdrawal,99,2020/8/20 15:30,ATM
+Sina,Transfer Out,456789.01,2024/6/10 11:40,Sohu
+Sohu,Transfer In,456789.01,2024/6/10 11:40,Sina
+NetEase,Deposit,678901.23,2021/3/25 17:05,Bank
+Sogou,Withdrawal,543.21,2025/4/14 19:00,ATM
+iQIYI,Transfer Out,901234.56,2022/11/22 8:20,Youku
+Youku,Transfer In,901234.56,2022/11/22 8:20,iQIYI
+Ctrip,Deposit,123456.78,2023/7/9 12:45,Bank
+Qunar,Withdrawal,188.88,2020/2/1 23:55,ATM
+2,Deposit,1000.0,2025/04/15 21:12,2
+2,Withdrawal,12.0,2025/04/15 21:16,ATM
+2,Withdrawal,1.0,2025/04/15 21:22,ATM
+2,Deposit,2.0,2025/04/15 21:22,ATM
+1,Deposit,1000.0,2025/04/15 21:12,22,
+2,Transfer Out,-12.0,2025/04/15 21:36,3
+3,Transfer In,12.0,2025/04/15 21:36,2

@@ -1,0 +1,78 @@
+Username,Password,Phone,Email,Gender,Address,CreationTime,AccountStatus,AccountType,Balance
+yaqi,1,1,1,女,1,2025-04-01 19:19:01,正常,personal,0.0
+1,1,1,1,女,1,2025-04-01 19:32:14,正常,Admin,0.0
+2,2,2,4532,男,2,2025-04-14 23:14:15,正常,personal,2100.0
+3,3,3,3,女,3,2025-04-14 23:14:15,正常,personal,50000.0
+Bank of China,9,13812345678,boc@example.com,男,北京市朝阳区,2023/07/01 09:00:00,正常,Personal,12345.67
+Alibaba,9,13987654321,alibaba@example.com,男,杭州市西湖区,2024/03/01 14:30:00,正常,Admin,987654.32
+Tencent,9,13701234567,tencent@example.com,女,深圳市南山区,2024/02/15 10:15:00,正常,Personal,56789.01
+Starbucks,9,13698765432,starbucks@example.com,女,上海市浦东新区,2021/10/15 18:45:00,正常,Personal,3456.78
+Meituan,9,13511122233,meituan@example.com,男,北京市海淀区,2022/09/01 20:00:00,正常,Personal,10987.65
+Ele.me,9,13422233344,eleme@example.com,女,上海市徐汇区,2022/08/20 11:30:00,正常,Personal,8765.43
+ICBC,9,13333344455,icbc@example.com,男,北京市西城区,2020/04/25 16:00:00,正常,Admin,1234567.89
+Huawei,9,13244455566,huawei@example.com,女,深圳市龙岗区,2025/01/01 22:15:00,正常,Personal,65432.1
+Xiaomi,9,13155566677,xiaomi@example.com,男,北京市昌平区,2024/12/10 08:00:00,正常,Personal,23456.78
+KFC,9,13066677788,kfc@example.com,女,广州市天河区,2023/03/20 13:45:00,正常,Personal,9012.34
+McDonald's,9,18977788899,mcdonalds@example.com,男,上海市闵行区,2021/05/01 07:30:00,正常,Personal,7890.12
+Burger King,9,18888899900,burgerking@example.com,女,北京市丰台区,2021/04/15 19:00:00,正常,Personal,4321.09
+China Mobile,9,18799900011,chinamobile@example.com,男,广州市越秀区,2024/11/15 12:15:00,正常,Admin,876543.21
+China Unicom,9,18600011122,chinaunicom@example.com,女,上海市静安区,2020/07/01 15:45:00,正常,Personal,21098.76
+China Telecom,9,18511122233,chinatelecom@example.com,男,深圳市福田区,2020/06/15 09:30:00,正常,Personal,6543.21
+Mixue Ice Cream & Tea,9,18422233344,mixue@example.com,女,郑州市金水区,2022/01/30 17:00:00,正常,Personal,123.45
+Coca-Cola,9,18333344455,cocacola@example.com,男,亚特兰大市,2023/09/15 21:45:00,正常,Personal,9876.54
+Pepsi,9,18244455566,pepsi@example.com,女,纽约市,2023/08/01 10:00:00,正常,Personal,5432.1
+PetroChina,9,18155566677,petrochina@example.com,男,北京市东城区,2021/02/20 14:15:00,正常,Admin,345678.9
+Sinopec,9,18066677788,sinopec@example.com,女,北京市朝阳区,2025/03/15 18:30:00,正常,Personal,1098.76
+Siemens,9,17977788899,siemens@example.com,男,慕尼黑市,2022/06/20 09:45:00,正常,Personal,7654.32
+Bosch,9,17888899900,bosch@example.com,女,斯图加特市,2022/05/01 20:00:00,正常,Personal,4321.09
+Volkswagen,9,17799900011,volkswagen@example.com,男,沃尔夫斯堡市,2024/08/15 11:15:00,正常,Admin,98765.43
+BMW,9,17600011122,bmw@example.com,女,慕尼黑市,2019/12/15 16:30:00,正常,Personal,3210.98
+Toyota,9,17511122233,toyota@example.com,男,丰田市,2023/04/10 08:45:00,正常,Personal,6543.21
+Honda,9,17422233344,honda@example.com,女,东京市,2023/03/01 19:00:00,正常,Personal,9012.34
+Sony,9,17333344455,sony@example.com,男,东京都,2021/07/20 13:15:00,正常,Admin,456789.01
+Samsung,9,17244455566,samsung@example.com,女,首尔市,2024/05/25 17:30:00,正常,Personal,2345.67
+Apple,9,17155566677,apple@example.com,男,库比蒂诺市,2020/11/15 09:00:00,正常,Personal,87654.32
+Microsoft,9,17066677788,microsoft@example.com,女,雷德蒙德市,2020/10/01 20:15:00,正常,Personal,54321.09
+Amazon,9,16977788899,amazon@example.com,男,西雅图市,2022/03/10 14:45:00,正常,Admin,198765.43
+Google,9,16888899900,google@example.com,女,山景城,2023/10/20 11:00:00,正常,Personal,65432.1
+Tesla,9,16799900011,tesla@example.com,男,奥斯汀市,2025/04/01 22:30:00,正常,Personal,32109.87
+BYD,9,16600011122,byd@example.com,女,深圳市坪山区,2025/03/10 08:15:00,正常,Personal,90123.45
+China Merchants Bank,9,16511122233,cmb@example.com,男,深圳市福田区,2021/08/15 16:00:00,正常,Admin,789012.34
+China Construction Bank,9,16422233344,ccb@example.com,女,北京市西城区,2023/12/20 19:30:00,正常,Personal,45678.9
+Kweichow Moutai,9,16333344455,moutai@example.com,男,茅台镇,2022/05/20 10:45:00,正常,Personal,23456.78
+Wuliangye,9,16244455566,wuliangye@example.com,女,宜宾市,2022/04/01 21:00:00,正常,Personal,12345.67
+SF Express,9,16155566677,sfexpress@example.com,男,深圳市南山区,2023/02/10 15:15:00,正常,Admin,567890.12
+JD.com,9,16066677788,jd@example.com,女,北京市大兴区,2020/06/30 07:00:00,正常,Personal,87654.32
+Pinduoduo,9,15977788899,pinduoduo@example.com,男,上海市长宁区,2024/10/25 18:45:00,正常,Personal,34567.89
+Haidilao,9,15888899900,haidilao@example.com,女,北京市朝阳区,2021/03/15 12:30:00,正常,Personal,9012.34
+Xi Bei You Mian Cun,9,15799900011,xibei@example.com,男,北京市海淀区,2025/01/20 09:00:00,正常,Personal,5432.1
+Walmart,9,15600011122,walmart@example.com,女,本顿维尔市,2022/11/25 20:15:00,正常,Personal,23456.78
+Carrefour,9,15511122233,carrefour@example.com,男,巴黎市,2022/10/01 11:45:00,正常,Personal,6789.01
+Ping An Insurance,9,15422233344,pingan@example.com,女,深圳市福田区,2023/07/15 15:00:00,正常,Admin,123456.78
+China Life Insurance,9,15333344455,chinalife@example.com,男,北京市西城区,2020/08/30 08:30:00,正常,Personal,98765.43
+Shell,9,15244455566,shell@example.com,女,海牙市,2024/04/20 19:45:00,正常,Personal,34567.89
+Nestlé,9,15155566677,nestle@example.com,男,沃韦市,2020/12/25 13:00:00,正常,Personal,67890.12
+Unilever,9,15066677788,unilever@example.com,女,伦敦市,2025/03/20 17:15:00,正常,Personal,2345.67
+General Electric,9,14977788899,ge@example.com,男,波士顿市,2022/09/30 10:30:00,正常,Personal,90123.45
+Boeing,9,14888899900,boeing@example.com,女,芝加哥市,2023/05/10 21:00:00,正常,Admin,456789.01
+Airbus,9,14799900011,airbus@example.com,男,图卢兹市,2020/10/25 14:45:00,正常,Personal,12345.67
+Nissan,9,14600011122,nissan@example.com,女,横滨市,2024/01/15 08:00:00,正常,Personal,78901.23
+LG,9,14511122233,lg@example.com,男,首尔市,2023/08/25 19:15:00,正常,Personal,34567.89
+Facebook,9,14422233344,facebook@example.com,女,门洛帕克市,2022/04/10 12:30:00,正常,Personal,901234.56
+Twitter,9,14333344455,twitter@example.com,男,旧金山市,2020/03/15 16:00:00,正常,Personal,54321.09
+Intel,9,14244455566,intel@example.com,女,圣克拉拉市,2023/10/30 09:45:00,正常,Personal,12345.67
+Nvidia,9,14155566677,nvidia@example.com,男,圣克拉拉市,2023/11/01 20:00:00,正常,Personal,67890.12
+Agricultural Bank of China,9,13888899900,abc@example.com,女,北京市东城区,2022/12/20 08:00:00,正常,Personal,45678.9
+JPMorgan Chase,9,18600011122,jpmorgan@example.com,女,纽约市,2024/11/01 20:45:00,正常,Personal,45678.9
+Goldman Sachs,9,18511122233,goldmansachs@example.com,男,纽约市,2021/04/25 13:00:00,正常,Personal,78901.23
+Morgan Stanley,9,18422233344,morganstanley@example.com,女,纽约市,2025/01/05 17:15:00,正常,Personal,34567.89
+Baidu,9,18333344455,baidu@example.com,男,北京市海淀区,2023/11/15 08:30:00,正常,Personal,901234.56
+ByteDance,9,18244455566,bytedance@example.com,女,北京市海淀区,2020/07/05 19:45:00,正常,Personal,54321.09
+Sina,9,18155566677,sina@example.com,男,北京市海淀区,2024/05/25 12:00:00,正常,Personal,123456.78
+Sohu,9,18066677788,sohu@example.com,女,北京市海淀区,2024/06/01 23:15:00,正常,Personal,67890.12
+NetEase,9,17977788899,netease@example.com,男,杭州市滨江区,2021/02/10 16:30:00,正常,Personal,234567.89
+Sogou,9,17888899900,sogou@example.com,女,北京市海淀区,2025/04/01 09:45:00,正常,Personal,90123.45
+iQIYI,9,17799900011,iqiyi@example.com,男,北京市海淀区,2022/10/20 20:00:00,正常,Personal,456789.01
+Youku,9,17600011122,youku@example.com,女,北京市朝阳区,2022/09/01 11:15:00,正常,Personal,123456.78
+Ctrip,9,17511122233,ctrip@example.com,男,上海市长宁区,2023/06/20 14:30:00,正常,Personal,67890.12
+Qunar,9,17422233344,qunar@example.com,女,北京市海淀区,2020/01/15 08:45:00,正常,Personal,23456.78
