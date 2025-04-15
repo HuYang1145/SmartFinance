@@ -82,7 +82,7 @@ public class App extends JFrame {
         loginButton.setBounds(60, 80, 180, 40);
         loginPanel.add(loginButton);
 
-        JButton registerButton = new JButton("Register");
+        JButton registerButton = new JButton("Sign in");
         styleRoundedButton(registerButton);
         registerButton.setBounds(60, 140, 180, 40);
         loginPanel.add(registerButton);
