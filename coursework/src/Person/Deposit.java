@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 package Person;
 
 import model.AccountModel;
@@ -145,4 +146,202 @@ public class Deposit extends JDialog {
 
         }
     }
+=======
+package Person;
+
+import model.AccountModel;
+import model.UserRegistrationCSVExporter;
+import model.Transaction;
+import model.CsvDataManager;
+import UI.AlertPanel;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
+
+public class Deposit extends JDialog {
+    private JTextField amountField;
+    private JPasswordField passwordField;
+    private JButton confirmButton, cancelButton;
+    private String currentUsername;
+
+<<<<<<<< HEAD:coursework/src/Person/DepositDialog.java
+    public DepositDialog(Dialog owner, String username) {
+        super(owner, "存款", true);
+        this.currentUsername = username;
+========
+    private String currentUsername; // 用于存储当前用户的用户名
+
+    public Deposit(Dialog owner, String username) { // 父类改为 Dialog
+        super(owner, "Deposit", true); // true 表示是模态对话框
+        this.currentUsername = username; // 保存当前用户名
+>>>>>>>> 382f4a22ceb10164f9c36fd7cadf0016088cd827:coursework/src/Person/Deposit.java
+        setSize(300, 200);
+        setLocationRelativeTo(owner);
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+
+        JPanel panel = new JPanel(new GridLayout(3, 2, 10, 10));
+
+        JLabel amountLabel = new JLabel("Deposit Amount:");
+        amountField = new JTextField();
+<<<<<<<< HEAD:coursework/src/Person/DepositDialog.java
+        JLabel passwordLabel = new JLabel("密码:");
+========
+
+        JLabel passwordLabel = new JLabel("Password:");
+>>>>>>>> 382f4a22ceb10164f9c36fd7cadf0016088cd827:coursework/src/Person/Deposit.java
+        passwordField = new JPasswordField();
+
+        confirmButton = new JButton("Confirm");
+        cancelButton = new JButton("Cancel");
+
+        confirmButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                String amountText = amountField.getText();
+                char[] passwordChars = passwordField.getPassword();
+                String enteredPassword = new String(passwordChars);
+
+                if (amountText.isEmpty() || enteredPassword.isEmpty()) {
+                    JOptionPane.showMessageDialog(Deposit.this, "Amount and password cannot be empty", "Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                try {
+                    double amount = Double.parseDouble(amountText);
+                    List<AccountModel> accounts = UserRegistrationCSVExporter.readFromCSV();
+                    String storedPassword = null;
+<<<<<<<< HEAD:coursework/src/Person/DepositDialog.java
+                    AccountModel currentUserAccount = null;
+========
+                    AccountModel currentUserAccount = null; // 用于存储当前用户的账户对象
+
+                    System.out.println("当前用户名: " + currentUsername); // 调试打印
+>>>>>>>> 382f4a22ceb10164f9c36fd7cadf0016088cd827:coursework/src/Person/Deposit.java
+
+                    for (AccountModel account : accounts) {
+                        if (account.getUsername().equals(currentUsername)) {
+                            storedPassword = account.getPassword();
+                            currentUserAccount = account;
+                            break;
+                        }
+                    }
+
+<<<<<<<< HEAD:coursework/src/Person/DepositDialog.java
+                    if (storedPassword != null && enteredPassword.equals(storedPassword)) {
+                        recordDeposit(currentUsername, amount);
+
+                        if (currentUserAccount != null) {
+                            currentUserAccount.setBalance(currentUserAccount.getBalance() + amount);
+                            UserRegistrationCSVExporter.saveToCSV(accounts, false);
+                            JOptionPane.showMessageDialog(DepositDialog.this, "成功转入资金 " + amount + " 元", "成功", JOptionPane.INFORMATION_MESSAGE);
+                            dispose();
+
+                            // ===== 触发异常检测 =====
+                            try {
+                                CsvDataManager csvManager = new CsvDataManager();
+                                List<Transaction> transactions = csvManager.readTransactions().stream()
+                                        .filter(t -> t.getUsername().equals(currentUsername))
+                                        .collect(Collectors.toList());
+
+                                TransactionAnalyzer analyzer = new TransactionAnalyzer();
+                                List<Transaction> abnormal = analyzer.detectAbnormal(transactions);
+
+                                if (abnormal != null && !abnormal.isEmpty()) {
+                                    new AlertPanel(abnormal, null).setVisible(true);
+                                }
+                            } catch (Exception ex) {
+                                ex.printStackTrace();
+                            }
+                        }
+                    } else {
+                        JOptionPane.showMessageDialog(DepositDialog.this, "密码错误", "错误", JOptionPane.ERROR_MESSAGE);
+                    }
+========
+                    if (storedPassword != null) {
+                        // 比较输入的密码和存储的密码
+                        if (enteredPassword.equals(storedPassword)) {
+                            // 将转入资金记录到 transactions.csv 文件
+                            recordDeposit(currentUsername, amount);
+
+                            // 更新 accounts.csv 文件中的余额
+                            if (currentUserAccount != null) {
+                                double currentBalance = currentUserAccount.getBalance();
+                                System.out.println("存入金额: " + amount); // 调试打印
+                                System.out.println("更新前余额: " + currentBalance); // 调试打印
+                                currentUserAccount.setBalance(currentBalance + amount);
+                                System.out.println("更新后余额 (内存中): " + currentUserAccount.getBalance()); // 调试打印
+
+                                // 将更新后的账户列表写回 accounts.csv 文件
+                                UserRegistrationCSVExporter.saveToCSV(accounts, false);
+                                System.out.println("账户信息已保存到 CSV 文件"); // 调试打印
+
+                                JOptionPane.showMessageDialog(Deposit.this, "Successfully deposited " + amount + " RMB, account balance updated", "Success", JOptionPane.INFORMATION_MESSAGE);
+                                dispose(); // 关闭对话框
+                            } else {
+                                JOptionPane.showMessageDialog(Deposit.this, "Account information not found for this username", "Error", JOptionPane.ERROR_MESSAGE);
+                            }
+                        } else {
+                            JOptionPane.showMessageDialog(Deposit.this, "Incorrect password", "Error", JOptionPane.ERROR_MESSAGE);
+                        }
+                    } else {
+                        JOptionPane.showMessageDialog(Deposit.this, "Account information not found for this username", "Error", JOptionPane.ERROR_MESSAGE);
+                    }
+
+>>>>>>>> 382f4a22ceb10164f9c36fd7cadf0016088cd827:coursework/src/Person/Deposit.java
+                } catch (NumberFormatException ex) {
+                    JOptionPane.showMessageDialog(Deposit.this, "Please enter a valid amount", "Error", JOptionPane.ERROR_MESSAGE);
+                } finally {
+                    passwordField.setText("");
+                }
+            }
+        });
+
+        cancelButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                dispose();
+            }
+        });
+
+        panel.add(amountLabel);
+        panel.add(amountField);
+        panel.add(passwordLabel);
+        panel.add(passwordField);
+        panel.add(confirmButton);
+        panel.add(cancelButton);
+        add(panel);
+    }
+
+<<<<<<<< HEAD:coursework/src/Person/DepositDialog.java
+    private void recordDeposit(String accountNumber, double amount) {
+        try (FileWriter fw = new FileWriter("transactions.csv", true)) {
+            Date now = new Date();
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            fw.write(accountNumber + ",存款," + amount + "," + accountNumber + "," + sdf.format(now) + "\n");
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(this, "记录交易失败: " + e.getMessage(), "错误", JOptionPane.ERROR_MESSAGE);
+========
+    private void recordDeposit(String username, double amount) {
+        String filePath = "transactions.csv"; // 文件名和路径，可以根据需要修改
+        try (FileWriter fw = new FileWriter(filePath, true)) { // true 表示追加写入
+            // 获取当前时间
+            Date now = new Date();
+            // 定义日期和时间格式
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm");
+            // 将 Date 对象格式化为字符串
+            String formattedDateTime = sdf.format(now);
+            // CSV 格式：用户名,进行的操作,转入或转出的金额,支付时间,商户名
+            fw.write(username + ",Deposit," + amount + "," + formattedDateTime + ",ATM\n");
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(this, "Error recording transaction: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+>>>>>>>> 382f4a22ceb10164f9c36fd7cadf0016088cd827:coursework/src/Person/Deposit.java
+        }
+    }
+>>>>>>> 382f4a22ceb10164f9c36fd7cadf0016088cd827
 }

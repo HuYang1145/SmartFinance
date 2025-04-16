@@ -12,7 +12,7 @@ import java.util.List;
 public class ViewPersonalInfo extends JDialog { // 类名改为 ViewPersonalInfo
 
     public ViewPersonalInfo(Dialog owner, String username) { // 父类改为 JDialog
-        super(owner, "个人信息", true);
+        super(owner, "Personal Information", true);
         setSize(400, 300);
         setLocationRelativeTo(owner);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
@@ -29,43 +29,43 @@ public class ViewPersonalInfo extends JDialog { // 类名改为 ViewPersonalInfo
         }
 
         if (userAccount != null) {
-            add(new JLabel("用户名:"));
-            add(new JLabel(userAccount.getUsername()));  
-        
-            add(new JLabel("手机号:"));
-            add(new JLabel(userAccount.getPhone()));  
+            add(new JLabel("Username:"));
+            add(new JLabel(userAccount.getUsername()));
 
-            add(new JLabel("邮箱:"));
-            add(new JLabel(userAccount.getEmail())); 
-        
-            add(new JLabel("性别:"));
-            add(new JLabel(userAccount.getGender()));  
-        
-            add(new JLabel("地址:"));
-            add(new JLabel(userAccount.getAddress()));  
-        
-            add(new JLabel("创建时间:"));
-            add(new JLabel(userAccount.getCreationTime()));  
+            add(new JLabel("Phone Number:"));
+            add(new JLabel(userAccount.getPhone()));
 
-            add(new JLabel("账户状态:"));
-            add(new JLabel(userAccount.getAccountStatus())); 
+            add(new JLabel("Email:"));
+            add(new JLabel(userAccount.getEmail()));
 
-            add(new JLabel("账户类型:"));
-            add(new JLabel(userAccount.getAccountType())); 
+            add(new JLabel("Gender:"));
+            add(new JLabel(userAccount.getGender()));
 
-            JButton returnButton = new JButton("返回");
-        returnButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                setVisible(false);
-                SwingUtilities.invokeLater(() -> {
-                    dispose();
-                });
-            }
-        });
-        add(new JLabel("")); // 用于占据一个网格位置，使按钮靠右
-        add(returnButton);
+            add(new JLabel("Address:"));
+            add(new JLabel(userAccount.getAddress()));
+
+            add(new JLabel("Creation Time:"));
+            add(new JLabel(userAccount.getCreationTime()));
+
+            add(new JLabel("Account Status:"));
+            add(new JLabel(userAccount.getAccountStatus()));
+
+            add(new JLabel("Account Type:"));
+            add(new JLabel(userAccount.getAccountType()));
+
+            JButton returnButton = new JButton("Return");
+            returnButton.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                    setVisible(false);
+                    SwingUtilities.invokeLater(() -> {
+                        dispose();
+                    });
+                }
+            });
+            add(new JLabel("")); // 用于占据一个网格位置，使按钮靠右
+            add(returnButton);
         } else {
-            JOptionPane.showMessageDialog(this, "找不到用户信息", "错误", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "User information not found", "Error", JOptionPane.ERROR_MESSAGE);
             dispose();
         }
 

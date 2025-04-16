@@ -9,10 +9,10 @@ public class AdminModifyService {
 
     // 获取账户
     public static AccountModel getAccount(String username, String password) {
-        System.out.println("正在查找用户名: [" + username + "]，密码: [" + password + "]"); // 添加这行
+        System.out.println("Searching for username: [" + username + "]，password: [" + password + "]"); // 添加这行
         List<AccountModel> accounts = UserRegistrationCSVExporter.readFromCSV();
         for (AccountModel account : accounts) {
-            System.out.println("读取到的账户 - 用户名: [" + account.getUsername() + "]，密码: [" + account.getPassword() + "]"); // 添加这行
+            System.out.println("Read account - Username: [" + account.getUsername() + "]，Password: [" + account.getPassword() + "]"); // 添加这行
             if (account.getUsername().equals(username) && account.getPassword().equals(password)) {
                 return account;
             }

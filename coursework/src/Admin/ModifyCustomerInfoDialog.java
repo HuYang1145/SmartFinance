@@ -16,35 +16,35 @@ public class ModifyCustomerInfoDialog extends JDialog {
     private JPasswordField adminPasswordField;
 
     public ModifyCustomerInfoDialog() {
-        setTitle("修改客户信息");
+        setTitle("Modify Customer Information");
         setSize(400, 400); // 增加垂直高度
         setLocationRelativeTo(null);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
         // 创建输入框和标签
-        JLabel usernameLabel = new JLabel("用户名 (不可修改):");
+        JLabel usernameLabel = new JLabel("Username (cannot be modified):");
         usernameField = new JTextField(20);
         usernameField.setEditable(false); // 用户名不可修改
 
-        JLabel passwordLabel = new JLabel("密码:");
+        JLabel passwordLabel = new JLabel("Password:");
         passwordField = new JPasswordField(20);
 
-        JLabel phoneLabel = new JLabel("手机号:");
+        JLabel phoneLabel = new JLabel("Phone Number:");
         phoneField = new JTextField(20);
 
-        JLabel emailLabel = new JLabel("邮箱:");
+        JLabel emailLabel = new JLabel("Email:");
         emailField = new JTextField(20);
 
-        JLabel genderLabel = new JLabel("性别:");
+        JLabel genderLabel = new JLabel("Gender:");
         genderField = new JTextField(20);
 
-        JLabel addressLabel = new JLabel("地址:");
+        JLabel addressLabel = new JLabel("Address:");
         addressField = new JTextField(20);
 
-        JLabel adminPasswordLabel = new JLabel("管理员密码:");
+        JLabel adminPasswordLabel = new JLabel("Admin Password:");
         adminPasswordField = new JPasswordField(20);  // 用来输入管理员密码
 
-        confirmButton = new JButton("确认修改");
+        confirmButton = new JButton("Confirm Modification");
 
         // 布局设置
         JPanel panel = new JPanel();
@@ -79,7 +79,7 @@ public class ModifyCustomerInfoDialog extends JDialog {
 
                 // 验证管理员密码是否正确
                 if (!isAdminPasswordValid(adminPassword)) {
-                    JOptionPane.showMessageDialog(null, "管理员密码错误！", "错误", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(null, "Incorrect admin password!", "Error", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
 
@@ -90,13 +90,13 @@ public class ModifyCustomerInfoDialog extends JDialog {
                     boolean updated = AdminModifyService.updateCustomerInfo(username, password, phone, email, gender, address);
 
                     if (updated) {
-                        JOptionPane.showMessageDialog(null, "客户信息修改成功！");
+                        JOptionPane.showMessageDialog(null, "Customer information updated successfully!");
                         dispose(); // 关闭对话框
                     } else {
-                        JOptionPane.showMessageDialog(null, "修改客户信息失败！", "错误", JOptionPane.ERROR_MESSAGE);
+                        JOptionPane.showMessageDialog(null, "Failed to update customer information!", "Error", JOptionPane.ERROR_MESSAGE);
                     }
                 } else {
-                    JOptionPane.showMessageDialog(null, "用户不存在或密码错误！", "错误", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(null, "User does not exist or password incorrect!", "Error", JOptionPane.ERROR_MESSAGE);
                 }
             }
         });
@@ -111,9 +111,9 @@ public class ModifyCustomerInfoDialog extends JDialog {
 private boolean isAdminPasswordValid(String adminPassword) {
     // 获取当前登录的管理员用户名
     String currentAdminUsername = UserSession.getCurrentUsername();
-    
+
     if (currentAdminUsername == null) {
-        JOptionPane.showMessageDialog(null, "管理员未登录！", "错误", JOptionPane.ERROR_MESSAGE);
+        JOptionPane.showMessageDialog(null, "Admin not logged in!", "Error", JOptionPane.ERROR_MESSAGE);
         return false;
     }
 
@@ -127,14 +127,14 @@ private boolean isAdminPasswordValid(String adminPassword) {
             if (account.getPassword().equals(adminPassword)) {
                 return true;
             } else {
-                JOptionPane.showMessageDialog(null, "密码错误！", "错误", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(null, "Incorrect password!", "Error", JOptionPane.ERROR_MESSAGE);
                 return false;
             }
         }
     }
 
     // 如果没有找到对应的管理员账户
-    JOptionPane.showMessageDialog(null, "没有找到该管理员账户！", "错误", JOptionPane.ERROR_MESSAGE);
+    JOptionPane.showMessageDialog(null, "Admin account not found!", "Error", JOptionPane.ERROR_MESSAGE);
     return false;
 }
 
@@ -142,7 +142,7 @@ private boolean isAdminPasswordValid(String adminPassword) {
     // 单独列出的修改用户状态函数 (不实现)
     public void modifyAccountStatus(String username, String newStatus) {
         // 这里将实现修改用户账户状态的逻辑
-        System.out.println("修改用户 " + username + " 的状态为: " + newStatus);
+        System.out.println("Modifying status of user " + username + " to: " + newStatus);
     }
 
     // 用于设置要修改的客户信息 (在显示对话框之前调用)

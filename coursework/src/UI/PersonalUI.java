@@ -1,5 +1,6 @@
 package UI;
 
+<<<<<<< HEAD
 import Person.DepositDialog;
 import Person.ViewPersonalInfo;
 import Person.ViewBalanceDialog;
@@ -13,21 +14,26 @@ import model.Transaction;
 
 import java.util.List;
 import java.util.stream.Collectors;
+=======
+>>>>>>> 382f4a22ceb10164f9c36fd7cadf0016088cd827
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
+import model.UserSession;
+import Person.IncomeExpenseChart;
 
 public class PersonalUI extends JDialog {
     private CardLayout cardLayout;
     private JPanel contentPanel;
-
+    private SidebarPanel sidebarPanel;
+    private ContentPanelManager contentManager;
+    
     public PersonalUI() {
-        setTitle("个人账户中心"); // 修改标题为中文
+        setTitle("Personal Account Center");
         setSize(900, 600);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-        // 整体使用 BorderLayout
         setLayout(new BorderLayout());
+<<<<<<< HEAD
 
         // ============== 左侧侧边栏 ==============
         JPanel sidebarPanel = new JPanel();
@@ -71,76 +77,24 @@ public class PersonalUI extends JDialog {
         sidebarPanel.add(Box.createRigidArea(new Dimension(0, 20))); // 底部间距
 
         // ============== 右侧内容区域（使用CardLayout） ==============
+=======
+        
+        // 创建侧边栏
+        sidebarPanel = new SidebarPanel(this);
+        add(sidebarPanel, BorderLayout.WEST);
+        
+        // 创建内容面板管理器
+>>>>>>> 382f4a22ceb10164f9c36fd7cadf0016088cd827
         contentPanel = new JPanel();
         cardLayout = new CardLayout();
         contentPanel.setLayout(cardLayout);
-        // 设置右侧内容区背景（可以保持或修改）
-        contentPanel.setBackground(new Color(240, 240, 240)); // 使用浅灰色背景可能更常见
-
-        // --- 主页面板 ---
-        JPanel mainDashboardPanel = createContentPanel("个人账户概览"); // 使用辅助方法创建面板
-        // 添加主页特有内容...
-        JLabel placeholder = new JLabel("[ 在这里显示主页内容，如图表、欢迎信息等 ]");
-        placeholder.setHorizontalAlignment(SwingConstants.CENTER);
-        mainDashboardPanel.add(placeholder, BorderLayout.CENTER);
-
-        // --- AI交流区面板 (保持不变) ---
-        JPanel aiPanel = new JPanel(new BorderLayout());
-        aiPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10)); // 添加边距
-        aiPanel.setBackground(Color.WHITE); // AI区域用白色背景
-        JTextArea aiChatArea = new JTextArea();
-        aiChatArea.setEditable(false);
-        aiChatArea.setLineWrap(true);
-        aiChatArea.setWrapStyleWord(true);
-        aiChatArea.setFont(new Font("Microsoft YaHei", Font.PLAIN, 14)); // 中文字体
-        JScrollPane aiScrollPane = new JScrollPane(aiChatArea);
-        aiPanel.add(aiScrollPane, BorderLayout.CENTER);
-        JPanel aiInputPanel = new JPanel(new BorderLayout(5, 0));
-        aiInputPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
-        JTextField aiInputField = new JTextField();
-        aiInputField.setFont(new Font("Microsoft YaHei", Font.PLAIN, 14));
-        JButton sendButton = new JButton("发送");
-        sendButton.setFont(new Font("Microsoft YaHei", Font.PLAIN, 12));
-        sendButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        aiInputPanel.add(aiInputField, BorderLayout.CENTER);
-        aiInputPanel.add(sendButton, BorderLayout.EAST);
-        aiPanel.add(aiInputPanel, BorderLayout.SOUTH);
-        // AI回复模拟
-        sendButton.addActionListener(e -> {
-            String text = aiInputField.getText().trim();
-            if (!text.isEmpty()) {
-                aiChatArea.append("我: " + text + "\n\n");
-                // 模拟延迟回复
-                Timer timer = new Timer(500, evt -> {
-                    aiChatArea.append("AI: " + "你好！这是一个模拟的AI回复。\n\n");
-                    ((Timer)evt.getSource()).stop(); // 只执行一次
-                });
-                timer.setRepeats(false);
-                timer.start();
-                aiInputField.setText("");
-            }
-        });
-        aiInputField.addActionListener(e -> sendButton.doClick()); // 回车发送
-
-        // 将面板添加到CardLayout
-        contentPanel.add(mainDashboardPanel, "home");
-        // 注意：其他功能现在直接弹出对话框，不再需要独立的CardLayout面板
-        // 如果仍想保留切换效果，可以在弹出对话框前切换到一个相应的占位面板
-        contentPanel.add(aiPanel, "aiChat"); // AI面板保留
-
-        // 默认显示主页
-        cardLayout.show(contentPanel, "home");
-
-        // ============== 底部区域（单独放置“查看个人信息”按钮） ==============
-        JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 10)); // 居中对齐，上下边距10
-        bottomPanel.setBackground(new Color(20, 40, 80)); // 深色底部背景
-        JButton viewPersonalInfoButton = createFunctionButton("查看个人信息", "/UI/icons/person.png", new Dimension(180, 35));
-        bottomPanel.add(viewPersonalInfoButton);
-
-
-        // ============== 添加整体布局 ==============
-        add(sidebarPanel, BorderLayout.WEST);
+        contentPanel.setBackground(new Color(30, 60, 120));
+        
+        contentManager = new ContentPanelManager(this, contentPanel, cardLayout);
+        contentManager.initializePanels();
+        
         add(contentPanel, BorderLayout.CENTER);
+<<<<<<< HEAD
         add(bottomPanel, BorderLayout.SOUTH);
 
         // ============== 按钮事件处理 (整合后的逻辑) ==============
@@ -274,100 +228,47 @@ public class PersonalUI extends JDialog {
 
 
         setVisible(true); // 显示主窗口
+=======
+        
+        // 设置默认视图
+        cardLayout.show(contentPanel, "individualCenter");
+        
+        setVisible(true);
+>>>>>>> 382f4a22ceb10164f9c36fd7cadf0016088cd827
     }
 
-    /**
-     * 创建一个内容面板的辅助方法
-     */
-    private JPanel createContentPanel(String title) {
-        JPanel panel = new JPanel(new BorderLayout());
-        panel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20)); // 内边距
-        panel.setBackground(Color.WHITE); // 内容区使用白色背景
-
-        JLabel titleLabel = new JLabel(title);
-        titleLabel.setFont(new Font("Microsoft YaHei", Font.BOLD, 24)); // 中文字体加粗
-        titleLabel.setHorizontalAlignment(SwingConstants.LEFT);
-        titleLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 15, 0)); // 标题下边距
-        panel.add(titleLabel, BorderLayout.NORTH);
-
-        return panel;
+    // 新增方法：显示收入支出图表
+    public void showIncomeExpenseChart() {
+        System.out.println("showIncomeExpenseChart() 方法被调用了！");
+        IncomeExpenseChart.showIncomeExpensePieChart("transactions.csv");
     }
 
-
-    /**
-     * 创建一个带图标和文本的功能按钮
-     */
-    private JButton createFunctionButton(String text, String iconPath, Dimension size) {
-        ImageIcon icon = null;
-        try {
-            // 尝试加载图标资源
-            java.net.URL imgURL = getClass().getResource(iconPath);
-            if (imgURL != null) {
-                icon = new ImageIcon(imgURL);
-                // 缩放图标到合适的大小，例如 24x24
-                Image img = icon.getImage();
-                Image scaled = img.getScaledInstance(24, 24, Image.SCALE_SMOOTH);
-                icon = new ImageIcon(scaled);
-            } else {
-                System.err.println("无法加载图标: " + iconPath); // 错误提示
-            }
-        } catch (Exception e) {
-            System.err.println("加载图标时出错: " + iconPath + " - " + e.getMessage());
+    // 检查登录状态并显示卡片
+    public void checkLoginAndShowCard(String cardName) {
+        if (UserSession.getCurrentUsername() != null) {
+            cardLayout.show(contentPanel, cardName);
+        } else {
+            UIUtils.showLoginError(this);
         }
-
-        JButton button = new JButton(text, icon);
-        button.setPreferredSize(size);
-        button.setMaximumSize(size); // 配合 BoxLayout，限制最大尺寸
-        button.setMinimumSize(size); // 确保最小尺寸
-
-        // 文本和图标的对齐与间距
-        button.setHorizontalAlignment(SwingConstants.LEFT); // 图标在左，文本在右
-        button.setVerticalAlignment(SwingConstants.CENTER);
-        button.setIconTextGap(15); // 图标和文本之间的距离
-        // 设置内边距，让内容不至于太靠边
-        button.setMargin(new Insets(5, 15, 5, 15)); // 上、左、下、右
-
-        // 外观设置
-        button.setFont(new Font("Microsoft YaHei", Font.PLAIN, 14)); // 使用微软雅黑字体
-        button.setBackground(new Color(45, 75, 140)); // 按钮背景色稍亮一点
-        button.setForeground(Color.WHITE); // 文字颜色
-        button.setFocusPainted(false); // 去掉焦点框
-        button.setBorderPainted(false); // 去掉边框
-        button.setOpaque(true); // 必须设置为 true 背景色才会显示
-        button.setCursor(new Cursor(Cursor.HAND_CURSOR)); // 鼠标悬停时显示手形光标
-
-        // 悬停效果 (可选)
-        button.addMouseListener(new MouseAdapter() {
-            Color originalColor = button.getBackground();
-            public void mouseEntered(MouseEvent evt) {
-                button.setBackground(new Color(70, 100, 170)); // 悬停时变亮
-            }
-            public void mouseExited(MouseEvent evt) {
-                button.setBackground(originalColor); // 离开时恢复原色
-            }
-        });
-
-
-        // 使按钮在 BoxLayout 中水平居中（如果需要的话）
-        button.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-        return button;
     }
-
-    // main 方法用于测试（如果需要）
-    public static void main(String[] args) {
-        // 运行前最好能模拟一个登录用户，否则功能按钮会提示未登录
-         // model.UserSession.setCurrentUsername("testUser"); // 假设有这样一个设置方法
-
-        // 使用 SwingUtilities.invokeLater 确保 UI 在事件调度线程上创建
-        SwingUtilities.invokeLater(() -> {
-            // 设置一个更好看的外观（可选）
-            try {
-                 UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-             } catch (Exception e) {
-                 e.printStackTrace();
-            }
-            new PersonalUI();
-        });
+    
+    // 检查登录状态并执行操作（通常是显示对话框）
+    public void checkLoginAndShowDialog(Runnable dialogCreator) {
+        if (UserSession.getCurrentUsername() != null) {
+            SwingUtilities.invokeLater(dialogCreator);
+        } else {
+            UIUtils.showLoginError(this);
+        }
+    }
+    
+    // 处理登出操作
+    public void handleLogout() {
+        int choice = JOptionPane.showConfirmDialog(this,
+                "Are you sure you want to log out?", "Confirm Logout",
+                JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+        if (choice == JOptionPane.YES_OPTION) {
+            UserSession.setCurrentUsername(null); // 清除会话数据
+            dispose(); // 关闭此窗口
+        }
     }
 }

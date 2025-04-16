@@ -215,12 +215,19 @@ public class AccountManagementUI extends JDialog {
         }
 
         if (loginSuccess) {
+<<<<<<< HEAD
         // 登录成功后，检测是否为个人账户并检查异常交易
         if (currentAccount instanceof PersonalAccount) {
             if (TransactionChecker.hasAbnormalTransactions(currentAccount)) { // 调用model包中的检测方法
                 JOptionPane.showMessageDialog(this, 
                     "Abnormal consumption is detected, please verify as soon as possible to avoid property damage.");
             }
+=======
+            JOptionPane.showMessageDialog(this, "Login successful!");
+            dispose();
+        } else {
+            JOptionPane.showMessageDialog(this, "Incorrect username or password!");
+>>>>>>> 382f4a22ceb10164f9c36fd7cadf0016088cd827
         }
 
         // 显示登录成功的提示

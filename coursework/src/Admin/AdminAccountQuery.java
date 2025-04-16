@@ -28,16 +28,16 @@ public class AdminAccountQuery extends JFrame {
     }
 
     public AdminAccountQuery() {
-        setTitle("管理员账户管理");
+        setTitle("Admin Account Management");
         setSize(800, 600);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
 
         // 创建查询按钮
-        queryButton = new JButton("查询已注册的用户");
+        queryButton = new JButton("Query Registered Users");
 
         // 创建表格模型
-        String[] columnNames = {"用户名", "密码", "手机号", "邮箱", "性别", "地址", "创建时间", "账号状态", "账户类型", "金额"};
+        String[] columnNames = {"Username", "Password", "Phone", "Email", "Gender", "Address", "CreationTime", "AccountStatus", "AccountType", "Balance"};
         tableModel = new NonEditableTableModel(columnNames, 0); // 使用自定义的 TableModel
         accountTable = new JTable(tableModel);
         JScrollPane scrollPane = new JScrollPane(accountTable);
@@ -63,7 +63,7 @@ public class AdminAccountQuery extends JFrame {
         try (BufferedReader reader = new BufferedReader(new FileReader("accounts.csv"))) {
             String line = reader.readLine(); // 读取并跳过表头
             if (line == null) {
-                JOptionPane.showMessageDialog(this, "accounts.csv 文件为空！", "提示", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(this, "accounts.csv file is empty!", "Information", JOptionPane.INFORMATION_MESSAGE);
                 return;
             }
 
@@ -72,14 +72,14 @@ public class AdminAccountQuery extends JFrame {
                 if (parts.length == 10) {
                     tableModel.addRow(parts);
                 } else {
-                    System.out.println("无效数据行: " + line + ". 期望 10 个字段，但找到 " + parts.length + " 个。");
+                    System.out.println("Invalid data row: " + line + ". Expected 10 fields but found " + parts.length + ".");
                 }
             }
 
             // 设置 "创建时间" 列的宽度
             TableColumnModel columnModel = accountTable.getColumnModel();
             for (int i = 0; i < tableModel.getColumnCount(); i++) {
-                if (tableModel.getColumnName(i).equals("创建时间")) {
+                if (tableModel.getColumnName(i).equals("CreationTime")) {
                     TableColumn creationTimeColumn = columnModel.getColumn(i);
                     creationTimeColumn.setPreferredWidth(150); // 设置一个较大的宽度，你可以根据实际情况调整
                     break;
@@ -88,7 +88,7 @@ public class AdminAccountQuery extends JFrame {
 
         } catch (IOException e) {
             e.printStackTrace();
-            JOptionPane.showMessageDialog(this, "读取 accounts.csv 文件时发生错误！", "错误", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Error reading accounts.csv file!", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 

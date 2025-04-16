@@ -1,3 +1,13 @@
+# 模型下载说明
+
+本项目需要以下两个模型文件，因体积过大未纳入 GitHub 仓库，请手动下载并放入指定目录：
+
+链接：https://pan.baidu.com/s/1tFIxDmDdK33rMuXv5c6IHQ 
+提取码：bz18
+
+下载后请解压放入项目路径：src/ai_model/  
+请确保该文件夹下包含 model.safetensors、config.json、tokenizer_config.json 等文件。
+
 # Folder Structure
 
 The workspace contains two folders by default, where:
