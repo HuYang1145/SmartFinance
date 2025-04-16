@@ -1,4 +1,3 @@
-
 package UI;
 
 import javax.swing.*;
@@ -86,7 +85,7 @@ public class AccountManagementUI extends JDialog {
         int y = 30, gap = 50;
 
         if (actionType.equals("login")) {
-            JLabel usernameLabel = new JLabel("用户名:");
+            JLabel usernameLabel = new JLabel("Username:");
             usernameLabel.setBounds(labelX, y, 200, height);
             panel.add(usernameLabel);
             usernameField = new JTextField();
@@ -94,7 +93,7 @@ public class AccountManagementUI extends JDialog {
             panel.add(usernameField);
 
             y += gap;
-            JLabel passwordLabel = new JLabel("密码:");
+            JLabel passwordLabel = new JLabel("Password:");
             passwordLabel.setBounds(labelX, y, 200, height);
             panel.add(passwordLabel);
             passwordField = new JPasswordField();
@@ -114,13 +113,13 @@ public class AccountManagementUI extends JDialog {
         } else {
             panel.setBounds(450, 30, 300, 420);
             JLabel[] labels = {
-                    new JLabel("用户名:"), new JLabel("密码:"), new JLabel("手机号:"),
-                    new JLabel("邮箱:"), new JLabel("性别:"), new JLabel("地址:")
+                    new JLabel("Username:"), new JLabel("Password:"), new JLabel("Phone Number:"),
+                    new JLabel("Email:"), new JLabel("Gender:"), new JLabel("Address:")
             };
             Component[] fields = {
                     usernameField = new JTextField(), passwordField = new JPasswordField(),
                     phoneField = new JTextField(), emailField = new JTextField(),
-                    genderComboBox = new JComboBox<>(new String[]{"男", "女"}),
+                    genderComboBox = new JComboBox<>(new String[]{"Male", "Female"}),
                     addressField = new JTextField()
             };
 
@@ -134,8 +133,8 @@ public class AccountManagementUI extends JDialog {
 
             //账户类型选择
 
-            JLabel accountTypeLabel = new JLabel("账户类型:");
-            JComboBox<String> accountTypeComboBox = new JComboBox<>(new String[]{"个人账户", "管理员账户"});
+            JLabel accountTypeLabel = new JLabel("Account Type:");
+            JComboBox<String> accountTypeComboBox = new JComboBox<>(new String[]{"Personal Account", "Admin Account"});
             accountTypeLabel.setBounds(labelX, y, 100, height);
             panel.add(accountTypeLabel);
             accountTypeComboBox.setBounds(fieldX, y, width, height);
@@ -154,7 +153,7 @@ public class AccountManagementUI extends JDialog {
 
             createButton.addActionListener(e -> {
                 String type = accountTypeComboBox.getSelectedItem().toString();
-                createAccount(type.equals("管理员账户") ? "Admin" : "personal");
+                createAccount(type.equals("Admin Account") ? "Admin" : "personal");
             });
         }
 
@@ -172,19 +171,19 @@ public class AccountManagementUI extends JDialog {
         List<AccountModel> accounts = UserRegistrationCSVExporter.readFromCSV();
         for (AccountModel account : accounts) {
             if (account.getUsername().equals(username)) {
-                JOptionPane.showMessageDialog(this, "用户名已存在！", "错误", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Username already exists!", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
         }
 
         if (AccountValidator.isEmpty(username) || AccountValidator.isEmpty(password) ||
                 AccountValidator.isEmpty(phone) || AccountValidator.isEmpty(email) || AccountValidator.isEmpty(address)) {
-            JOptionPane.showMessageDialog(this, "所有字段都不能为空！", "错误", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "All fields cannot be empty!", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
         String creationTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
-        String accountStatus = "正常";
+        String accountStatus = "Normal";
         double initialBalance = 0.0;
 
         List<AccountModel> accountList = new ArrayList<>();
@@ -195,17 +194,18 @@ public class AccountManagementUI extends JDialog {
         }
 
         UserRegistrationCSVExporter.saveToCSV(accountList, true);
-        JOptionPane.showMessageDialog(this, "账户创建成功！");
+        JOptionPane.showMessageDialog(this, "Account created successfully!");
         dispose();
     }
 
     private void loginAccount(String username, String password) {
         List<AccountModel> accounts = UserRegistrationCSVExporter.readFromCSV();
         boolean loginSuccess = false;
-
+        AccountModel currentAccount = null; // 保存当前登录的账户对象
         for (AccountModel account : accounts) {
             if (account.getUsername().equals(username) && account.getPassword().equals(password)) {
                 loginSuccess = true;
+                currentAccount = account; // 保存当前登录的账户对象
                 model.UserSession.setCurrentUsername(username);
 
                 if (account instanceof AdminAccount) new AdminUI();
@@ -215,13 +215,18 @@ public class AccountManagementUI extends JDialog {
         }
 
         if (loginSuccess) {
-            JOptionPane.showMessageDialog(this, "登录成功！");
-            dispose();
-        } else {
-            JOptionPane.showMessageDialog(this, "用户名或密码错误！");
+        // 登录成功后，检测是否为个人账户并检查异常交易
+        if (currentAccount instanceof PersonalAccount) {
+            if (TransactionChecker.hasAbnormalTransactions(currentAccount)) { // 调用model包中的检测方法
+                JOptionPane.showMessageDialog(this, 
+                    "Abnormal consumption is detected, please verify as soon as possible to avoid property damage.");
+            }
         }
+
+        // 显示登录成功的提示
+        JOptionPane.showMessageDialog(this, "Login successful!");
+        dispose();
+    } else {
+        JOptionPane.showMessageDialog(this, "Incorrect username or password!");
     }
 }
-
-
-
