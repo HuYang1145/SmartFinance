@@ -42,31 +42,32 @@ public class SidebarPanel extends JPanel {
         // 添加按钮到侧边栏 (逻辑顺序)
         add(Box.createVerticalGlue());
         add(individualCenterButton);
-        add(Box.createRigidArea(new Dimension(0, 10)));
+        add(Box.createRigidArea(new Dimension(0, 5)));
         add(viewBalanceButton);
-        add(Box.createRigidArea(new Dimension(0, 10)));
+        add(Box.createRigidArea(new Dimension(0, 5)));
         add(depositButton);
-        add(Box.createRigidArea(new Dimension(0, 10)));
+        add(Box.createRigidArea(new Dimension(0, 5)));
         add(withdrawalButton);
-        add(Box.createRigidArea(new Dimension(0, 10)));
+        add(Box.createRigidArea(new Dimension(0, 5)));
         add(transferButton);
-        add(Box.createRigidArea(new Dimension(0, 10)));
+        add(Box.createRigidArea(new Dimension(0, 5)));
         add(transactionHistoryButton);
-        add(Box.createRigidArea(new Dimension(0, 10)));
+        add(Box.createRigidArea(new Dimension(0, 5)));
         add(monthlyIncomeExpenseButton);
-        add(Box.createRigidArea(new Dimension(0, 15)));
+        add(Box.createRigidArea(new Dimension(0, 5)));
         add(periodicReportButton);
-        add(Box.createRigidArea(new Dimension(0, 10)));
+        add(Box.createRigidArea(new Dimension(0, 5)));
         add(spendingProportionButton);
-        add(Box.createRigidArea(new Dimension(0, 10)));
+        add(Box.createRigidArea(new Dimension(0, 5)));
         add(financialSuggestionButton);
-        add(Box.createRigidArea(new Dimension(0, 15)));
+        add(Box.createRigidArea(new Dimension(0, 5)));
         add(aiQAButton);
-        add(Box.createRigidArea(new Dimension(0, 10)));
+        add(Box.createRigidArea(new Dimension(0, 5)));
         add(viewPersonalInfoButton);
         add(Box.createVerticalGlue());
+        add(Box.createRigidArea(new Dimension(0, 5)));
         add(logoutButton);
-        add(Box.createRigidArea(new Dimension(0, 20)));
+
 
         // 添加按钮事件
         configureButtonActions(

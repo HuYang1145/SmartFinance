@@ -2,7 +2,11 @@ package UI;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import javax.swing.Timer;
+import java.io.File;
+
 
 public class AIPanel extends JPanel {
     private JTextArea aiChatArea;
@@ -66,21 +70,44 @@ public class AIPanel extends JPanel {
         sendButton.addActionListener(e -> sendMessage());
         aiInputField.addActionListener(e -> sendMessage());
     }
-    
+
     private void sendMessage() {
         String text = aiInputField.getText().trim();
         if (!text.isEmpty()) {
             aiChatArea.append("You: " + text + "\n\n");
-            
-            // 模拟回复
-            Timer timer = new Timer(500, evt -> {
-                aiChatArea.append("AI Assistant: " + "This is a simulated response based on your query about '" 
-                    + text.substring(0, Math.min(text.length(), 15)) + "...'.\n\n");
-                ((Timer)evt.getSource()).stop();
-            });
-            timer.setRepeats(false);
-            timer.start();
-            
+
+            try {
+
+                String pythonPath = "D:/python/envs/nlp/python.exe";
+                if (pythonPath == null || pythonPath.isEmpty()) {
+                    pythonPath = "python";
+                }
+
+// 使用相对路径：src/ai_model/predict.py
+                File scriptFile = new File("coursework/src/ai_model/predict.py");
+                String scriptPath = scriptFile.getCanonicalPath();
+
+                // ✅ 替换成你的虚拟环境路径
+                ProcessBuilder pb = new ProcessBuilder(pythonPath, scriptPath, text);
+
+                pb.redirectErrorStream(true);
+                Process process = pb.start();
+
+                BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+                StringBuilder response = new StringBuilder();
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    response.append(line).append("\n");
+                }
+
+                aiChatArea.append("AI Assistant:\n" + response.toString() + "\n");
+
+            } catch (Exception ex) {
+                aiChatArea.append("AI Assistant: Error calling AI model.\n");
+                ex.printStackTrace();
+            }
+
+
             aiInputField.setText("");
             aiChatArea.setCaretPosition(aiChatArea.getDocument().getLength());
         }
