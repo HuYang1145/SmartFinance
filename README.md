@@ -8,15 +8,6 @@
 下载后请解压放入项目路径：src/ai_model/  
 请确保该文件夹下包含 model.safetensors、config.json、tokenizer_config.json 等文件。
 
-# Folder Structure
-
-The workspace contains two folders by default, where:
-
-- `src`: the folder to maintain sources
-- `lib`: the folder to maintain dependencies
-
-Meanwhile, the compiled output files will be generated in the `bin` folder by default.
-
 ## 模块详细说明
 
 ### `Admin` 包 (管理员模块)
