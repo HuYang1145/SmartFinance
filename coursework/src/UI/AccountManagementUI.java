@@ -201,11 +201,10 @@ public class AccountManagementUI extends JDialog {
     private void loginAccount(String username, String password) {
         List<AccountModel> accounts = UserRegistrationCSVExporter.readFromCSV();
         boolean loginSuccess = false;
-        AccountModel currentAccount = null; // 保存当前登录的账户对象
+
         for (AccountModel account : accounts) {
             if (account.getUsername().equals(username) && account.getPassword().equals(password)) {
                 loginSuccess = true;
-                currentAccount = account; // 保存当前登录的账户对象
                 model.UserSession.setCurrentUsername(username);
 
                 if (account instanceof AdminAccount) new AdminUI();
@@ -215,25 +214,10 @@ public class AccountManagementUI extends JDialog {
         }
 
         if (loginSuccess) {
-<<<<<<< HEAD
-        // 登录成功后，检测是否为个人账户并检查异常交易
-        if (currentAccount instanceof PersonalAccount) {
-            if (TransactionChecker.hasAbnormalTransactions(currentAccount)) { // 调用model包中的检测方法
-                JOptionPane.showMessageDialog(this, 
-                    "Abnormal consumption is detected, please verify as soon as possible to avoid property damage.");
-            }
-=======
             JOptionPane.showMessageDialog(this, "Login successful!");
             dispose();
         } else {
             JOptionPane.showMessageDialog(this, "Incorrect username or password!");
->>>>>>> 382f4a22ceb10164f9c36fd7cadf0016088cd827
         }
-
-        // 显示登录成功的提示
-        JOptionPane.showMessageDialog(this, "Login successful!");
-        dispose();
-    } else {
-        JOptionPane.showMessageDialog(this, "Incorrect username or password!");
     }
 }
