@@ -1,11 +1,10 @@
-<<<<<<< HEAD
-package Person;
+package Person; // Assuming TransactionAnalyzer is also in this package
 
 import model.AccountModel;
 import model.UserRegistrationCSVExporter;
-import model.Transaction;
-import model.CsvDataManager;
-import UI.AlertPanel;
+import model.Transaction; // Needed for abnormal transaction detection
+import model.CsvDataManager; // Needed for abnormal transaction detection
+import UI.AlertPanel; // Needed for abnormal transaction detection
 
 import javax.swing.*;
 import java.awt.*;
@@ -15,7 +14,11 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.stream.Collectors; // Needed for abnormal transaction detection
+
+// Assuming TransactionAnalyzer class exists in the Person package
+// If it's elsewhere, adjust the import accordingly.
+// import Person.TransactionAnalyzer;
 
 public class Deposit extends JDialog {
     private JTextField amountField;
@@ -23,12 +26,9 @@ public class Deposit extends JDialog {
     private JButton confirmButton, cancelButton;
     private String currentUsername;
 
-
-    private String currentUsername; // 用于存储当前用户的用户名
-
-    public Deposit(Dialog owner, String username) { // 父类改为 Dialog
-        super(owner, "Deposit", true); // true 表示是模态对话框
-        this.currentUsername = username; // 保存当前用户名
+    public Deposit(Dialog owner, String username) { // Use Dialog as owner type
+        super(owner, "Deposit", true); // English Title, modal dialog
+        this.currentUsername = username; // Store current username
 
         setSize(300, 200);
         setLocationRelativeTo(owner);
@@ -36,15 +36,14 @@ public class Deposit extends JDialog {
 
         JPanel panel = new JPanel(new GridLayout(3, 2, 10, 10));
 
-        JLabel amountLabel = new JLabel("Deposit Amount:");
+        JLabel amountLabel = new JLabel("Deposit Amount:"); // English label
         amountField = new JTextField();
 
-        JLabel passwordLabel = new JLabel("Password:");
-
+        JLabel passwordLabel = new JLabel("Password:"); // English label
         passwordField = new JPasswordField();
 
-        confirmButton = new JButton("Confirm");
-        cancelButton = new JButton("Cancel");
+        confirmButton = new JButton("Confirm"); // English button
+        cancelButton = new JButton("Cancel");   // English button
 
         confirmButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -52,178 +51,30 @@ public class Deposit extends JDialog {
                 char[] passwordChars = passwordField.getPassword();
                 String enteredPassword = new String(passwordChars);
 
+                // Basic validation
                 if (amountText.isEmpty() || enteredPassword.isEmpty()) {
-                    JOptionPane.showMessageDialog(Deposit.this, "Amount and password cannot be empty", "Error", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(Deposit.this,
+                            "Amount and password cannot be empty.", // English message
+                            "Input Error", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
 
                 try {
                     double amount = Double.parseDouble(amountText);
-                    List<AccountModel> accounts = UserRegistrationCSVExporter.readFromCSV();
-                    String storedPassword = null;
 
-                    AccountModel currentUserAccount = null; // 用于存储当前用户的账户对象
-
-                    System.out.println("当前用户名: " + currentUsername); // 调试打印
-
-                    for (AccountModel account : accounts) {
-                        if (account.getUsername().equals(currentUsername)) {
-                            storedPassword = account.getPassword();
-                            currentUserAccount = account;
-                            break;
-                        }
+                    // Ensure deposit amount is positive
+                    if (amount <= 0) {
+                        JOptionPane.showMessageDialog(Deposit.this,
+                                "Deposit amount must be positive.", // English message
+                                "Input Error", JOptionPane.ERROR_MESSAGE);
+                        return;
                     }
 
-                    if (storedPassword != null) {
-                        // 比较输入的密码和存储的密码
-                        if (enteredPassword.equals(storedPassword)) {
-                            // 将转入资金记录到 transactions.csv 文件
-                            recordDeposit(currentUsername, amount);
-
-                            // 更新 accounts.csv 文件中的余额
-                            if (currentUserAccount != null) {
-                                double currentBalance = currentUserAccount.getBalance();
-                                System.out.println("存入金额: " + amount); // 调试打印
-                                System.out.println("更新前余额: " + currentBalance); // 调试打印
-                                currentUserAccount.setBalance(currentBalance + amount);
-                                System.out.println("更新后余额 (内存中): " + currentUserAccount.getBalance()); // 调试打印
-
-                                // 将更新后的账户列表写回 accounts.csv 文件
-                                UserRegistrationCSVExporter.saveToCSV(accounts, false);
-                                System.out.println("账户信息已保存到 CSV 文件"); // 调试打印
-
-                                JOptionPane.showMessageDialog(Deposit.this, "Successfully deposited " + amount + " RMB, account balance updated", "Success", JOptionPane.INFORMATION_MESSAGE);
-                                dispose(); // 关闭对话框
-                            } else {
-                                JOptionPane.showMessageDialog(Deposit.this, "Account information not found for this username", "Error", JOptionPane.ERROR_MESSAGE);
-                            }
-                        } else {
-                            JOptionPane.showMessageDialog(Deposit.this, "Incorrect password", "Error", JOptionPane.ERROR_MESSAGE);
-                        }
-                    } else {
-                        JOptionPane.showMessageDialog(Deposit.this, "Account information not found for this username", "Error", JOptionPane.ERROR_MESSAGE);
-                    }
-
-
-                } catch (NumberFormatException ex) {
-                    JOptionPane.showMessageDialog(Deposit.this, "Please enter a valid amount", "Error", JOptionPane.ERROR_MESSAGE);
-                } finally {
-                    passwordField.setText("");
-                }
-            }
-        });
-
-        cancelButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                dispose();
-            }
-        });
-
-        panel.add(amountLabel);
-        panel.add(amountField);
-        panel.add(passwordLabel);
-        panel.add(passwordField);
-        panel.add(confirmButton);
-        panel.add(cancelButton);
-        add(panel);
-    }
-
-
-    private void recordDeposit(String username, double amount) {
-        String filePath = "transactions.csv"; // 文件名和路径，可以根据需要修改
-        try (FileWriter fw = new FileWriter(filePath, true)) { // true 表示追加写入
-            // 获取当前时间
-            Date now = new Date();
-            // 定义日期和时间格式
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm");
-            // 将 Date 对象格式化为字符串
-            String formattedDateTime = sdf.format(now);
-            // CSV 格式：用户名,进行的操作,转入或转出的金额,支付时间,商户名
-            fw.write(username + ",Deposit," + amount + "," + formattedDateTime + ",ATM\n");
-        } catch (IOException e) {
-            JOptionPane.showMessageDialog(this, "Error recording transaction: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-            e.printStackTrace();
-
-        }
-    }
-=======
-package Person;
-
-import model.AccountModel;
-import model.UserRegistrationCSVExporter;
-import model.Transaction;
-import model.CsvDataManager;
-import UI.AlertPanel;
-
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.*;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.stream.Collectors;
-
-public class Deposit extends JDialog {
-    private JTextField amountField;
-    private JPasswordField passwordField;
-    private JButton confirmButton, cancelButton;
-    private String currentUsername;
-
-<<<<<<<< HEAD:coursework/src/Person/DepositDialog.java
-    public DepositDialog(Dialog owner, String username) {
-        super(owner, "存款", true);
-        this.currentUsername = username;
-========
-    private String currentUsername; // 用于存储当前用户的用户名
-
-    public Deposit(Dialog owner, String username) { // 父类改为 Dialog
-        super(owner, "Deposit", true); // true 表示是模态对话框
-        this.currentUsername = username; // 保存当前用户名
->>>>>>>> 382f4a22ceb10164f9c36fd7cadf0016088cd827:coursework/src/Person/Deposit.java
-        setSize(300, 200);
-        setLocationRelativeTo(owner);
-        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-
-        JPanel panel = new JPanel(new GridLayout(3, 2, 10, 10));
-
-        JLabel amountLabel = new JLabel("Deposit Amount:");
-        amountField = new JTextField();
-<<<<<<<< HEAD:coursework/src/Person/DepositDialog.java
-        JLabel passwordLabel = new JLabel("密码:");
-========
-
-        JLabel passwordLabel = new JLabel("Password:");
->>>>>>>> 382f4a22ceb10164f9c36fd7cadf0016088cd827:coursework/src/Person/Deposit.java
-        passwordField = new JPasswordField();
-
-        confirmButton = new JButton("Confirm");
-        cancelButton = new JButton("Cancel");
-
-        confirmButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                String amountText = amountField.getText();
-                char[] passwordChars = passwordField.getPassword();
-                String enteredPassword = new String(passwordChars);
-
-                if (amountText.isEmpty() || enteredPassword.isEmpty()) {
-                    JOptionPane.showMessageDialog(Deposit.this, "Amount and password cannot be empty", "Error", JOptionPane.ERROR_MESSAGE);
-                    return;
-                }
-
-                try {
-                    double amount = Double.parseDouble(amountText);
                     List<AccountModel> accounts = UserRegistrationCSVExporter.readFromCSV();
-                    String storedPassword = null;
-<<<<<<<< HEAD:coursework/src/Person/DepositDialog.java
                     AccountModel currentUserAccount = null;
-========
-                    AccountModel currentUserAccount = null; // 用于存储当前用户的账户对象
+                    String storedPassword = null;
 
-                    System.out.println("当前用户名: " + currentUsername); // 调试打印
->>>>>>>> 382f4a22ceb10164f9c36fd7cadf0016088cd827:coursework/src/Person/Deposit.java
-
+                    // Find the current user's account
                     for (AccountModel account : accounts) {
                         if (account.getUsername().equals(currentUsername)) {
                             storedPassword = account.getPassword();
@@ -232,116 +83,152 @@ public class Deposit extends JDialog {
                         }
                     }
 
-<<<<<<<< HEAD:coursework/src/Person/DepositDialog.java
-                    if (storedPassword != null && enteredPassword.equals(storedPassword)) {
+                    // Check if account was found
+                    if (currentUserAccount == null || storedPassword == null) {
+                        JOptionPane.showMessageDialog(Deposit.this,
+                                "Account information not found for this username.", // English message
+                                "Error", JOptionPane.ERROR_MESSAGE);
+                        return; // Exit if account not found
+                    }
+
+                    // Verify password
+                    if (enteredPassword.equals(storedPassword)) {
+                        // Record the deposit transaction
                         recordDeposit(currentUsername, amount);
 
-                        if (currentUserAccount != null) {
-                            currentUserAccount.setBalance(currentUserAccount.getBalance() + amount);
-                            UserRegistrationCSVExporter.saveToCSV(accounts, false);
-                            JOptionPane.showMessageDialog(DepositDialog.this, "成功转入资金 " + amount + " 元", "成功", JOptionPane.INFORMATION_MESSAGE);
-                            dispose();
+                        // Update balance in the account object
+                        currentUserAccount.setBalance(currentUserAccount.getBalance() + amount);
 
-                            // ===== 触发异常检测 =====
-                            try {
-                                CsvDataManager csvManager = new CsvDataManager();
-                                List<Transaction> transactions = csvManager.readTransactions().stream()
-                                        .filter(t -> t.getUsername().equals(currentUsername))
-                                        .collect(Collectors.toList());
+                        // Save the updated account list back to CSV
+                        UserRegistrationCSVExporter.saveToCSV(accounts, false);
 
-                                TransactionAnalyzer analyzer = new TransactionAnalyzer();
-                                List<Transaction> abnormal = analyzer.detectAbnormal(transactions);
+                        // Show success message
+                        JOptionPane.showMessageDialog(Deposit.this,
+                                "Successfully deposited " + amount + " RMB, account balance updated.", // English message
+                                "Success", JOptionPane.INFORMATION_MESSAGE);
 
-                                if (abnormal != null && !abnormal.isEmpty()) {
-                                    new AlertPanel(abnormal, null).setVisible(true);
-                                }
-                            } catch (Exception ex) {
-                                ex.printStackTrace();
+                        // Close the deposit dialog
+                        dispose();
+
+                        // --- Abnormal Transaction Detection ---
+                        // This part is retained from Branch 1
+                        try {
+                            CsvDataManager csvManager = new CsvDataManager();
+                            // Read all transactions and filter for the current user
+                            List<Transaction> transactions = csvManager.readTransactions().stream()
+                                    .filter(t -> t.getUsername().equals(currentUsername))
+                                    .collect(Collectors.toList());
+
+                            TransactionAnalyzer analyzer = new TransactionAnalyzer(); // Assumes this class exists
+                            List<Transaction> abnormal = analyzer.detectAbnormal(transactions); // Assumes this method exists
+
+                            // If abnormal transactions are detected, show the alert panel
+                            if (abnormal != null && !abnormal.isEmpty()) {
+                                // Assuming AlertPanel constructor takes list and optionally a parent window
+                                // Passing 'null' as parent might be okay, or pass 'owner' if needed.
+                                new AlertPanel(abnormal, null).setVisible(true); // Show alert
                             }
+                        } catch (Exception ex) {
+                            // Log error during detection but don't stop the user flow
+                            System.err.println("Error during abnormal transaction detection: " + ex.getMessage());
+                            ex.printStackTrace();
+                            // Optionally show a less intrusive warning to the user or log to a file
+                            // JOptionPane.showMessageDialog(null, "Could not perform transaction analysis.", "Warning", JOptionPane.WARNING_MESSAGE);
                         }
+                        // --- End of Abnormal Transaction Detection ---
+
                     } else {
-                        JOptionPane.showMessageDialog(DepositDialog.this, "密码错误", "错误", JOptionPane.ERROR_MESSAGE);
-                    }
-========
-                    if (storedPassword != null) {
-                        // 比较输入的密码和存储的密码
-                        if (enteredPassword.equals(storedPassword)) {
-                            // 将转入资金记录到 transactions.csv 文件
-                            recordDeposit(currentUsername, amount);
-
-                            // 更新 accounts.csv 文件中的余额
-                            if (currentUserAccount != null) {
-                                double currentBalance = currentUserAccount.getBalance();
-                                System.out.println("存入金额: " + amount); // 调试打印
-                                System.out.println("更新前余额: " + currentBalance); // 调试打印
-                                currentUserAccount.setBalance(currentBalance + amount);
-                                System.out.println("更新后余额 (内存中): " + currentUserAccount.getBalance()); // 调试打印
-
-                                // 将更新后的账户列表写回 accounts.csv 文件
-                                UserRegistrationCSVExporter.saveToCSV(accounts, false);
-                                System.out.println("账户信息已保存到 CSV 文件"); // 调试打印
-
-                                JOptionPane.showMessageDialog(Deposit.this, "Successfully deposited " + amount + " RMB, account balance updated", "Success", JOptionPane.INFORMATION_MESSAGE);
-                                dispose(); // 关闭对话框
-                            } else {
-                                JOptionPane.showMessageDialog(Deposit.this, "Account information not found for this username", "Error", JOptionPane.ERROR_MESSAGE);
-                            }
-                        } else {
-                            JOptionPane.showMessageDialog(Deposit.this, "Incorrect password", "Error", JOptionPane.ERROR_MESSAGE);
-                        }
-                    } else {
-                        JOptionPane.showMessageDialog(Deposit.this, "Account information not found for this username", "Error", JOptionPane.ERROR_MESSAGE);
+                        // Incorrect password
+                        JOptionPane.showMessageDialog(Deposit.this,
+                                "Incorrect password.", // English message
+                                "Authentication Error", JOptionPane.ERROR_MESSAGE);
                     }
 
->>>>>>>> 382f4a22ceb10164f9c36fd7cadf0016088cd827:coursework/src/Person/Deposit.java
                 } catch (NumberFormatException ex) {
-                    JOptionPane.showMessageDialog(Deposit.this, "Please enter a valid amount", "Error", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(Deposit.this,
+                            "Please enter a valid numerical amount.", // English message
+                            "Input Error", JOptionPane.ERROR_MESSAGE);
+                } catch (IOException ioEx) {
+                    // Handle errors reading/writing CSV files
+                    JOptionPane.showMessageDialog(Deposit.this,
+                            "Error accessing account data: " + ioEx.getMessage(), // English message
+                            "File Error", JOptionPane.ERROR_MESSAGE);
+                    ioEx.printStackTrace(); // Log the full error
                 } finally {
+                    // Clear the password field regardless of outcome
                     passwordField.setText("");
+                    // Consider clearing amountField as well: amountField.setText("");
                 }
             }
         });
 
         cancelButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                dispose();
+                dispose(); // Close the dialog
             }
         });
 
+        // Add components to the panel
         panel.add(amountLabel);
         panel.add(amountField);
         panel.add(passwordLabel);
         panel.add(passwordField);
         panel.add(confirmButton);
         panel.add(cancelButton);
+
+        // Add panel to the dialog window
         add(panel);
     }
 
-<<<<<<<< HEAD:coursework/src/Person/DepositDialog.java
-    private void recordDeposit(String accountNumber, double amount) {
-        try (FileWriter fw = new FileWriter("transactions.csv", true)) {
-            Date now = new Date();
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            fw.write(accountNumber + ",存款," + amount + "," + accountNumber + "," + sdf.format(now) + "\n");
-        } catch (IOException e) {
-            JOptionPane.showMessageDialog(this, "记录交易失败: " + e.getMessage(), "错误", JOptionPane.ERROR_MESSAGE);
-========
+
+    /**
+     * Records a deposit transaction to the transactions.csv file.
+     * Uses the format: username,Deposit,amount,yyyy/MM/dd HH:mm,ATM
+     *
+     * @param username The username making the deposit.
+     * @param amount   The amount being deposited.
+     */
     private void recordDeposit(String username, double amount) {
-        String filePath = "transactions.csv"; // 文件名和路径，可以根据需要修改
-        try (FileWriter fw = new FileWriter(filePath, true)) { // true 表示追加写入
-            // 获取当前时间
+        String filePath = "transactions.csv"; // Path to the transaction log file
+        // Use try-with-resources to ensure the writer is closed automatically
+        try (FileWriter fw = new FileWriter(filePath, true)) { // true for appending to the file
             Date now = new Date();
-            // 定义日期和时间格式
+            // Define the date and time format (English locale friendly)
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm");
-            // 将 Date 对象格式化为字符串
             String formattedDateTime = sdf.format(now);
-            // CSV 格式：用户名,进行的操作,转入或转出的金额,支付时间,商户名
+
+            // Write the transaction record in CSV format
+            // Format: Username,OperationType,Amount,Timestamp,Merchant/Source
             fw.write(username + ",Deposit," + amount + "," + formattedDateTime + ",ATM\n");
+
         } catch (IOException e) {
-            JOptionPane.showMessageDialog(this, "Error recording transaction: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-            e.printStackTrace();
->>>>>>>> 382f4a22ceb10164f9c36fd7cadf0016088cd827:coursework/src/Person/Deposit.java
+            // Show error message if transaction logging fails
+            JOptionPane.showMessageDialog(this, // 'this' refers to the JDialog
+                    "Error recording transaction: " + e.getMessage(), // English message
+                    "Transaction Log Error", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace(); // Print detailed error for debugging
         }
     }
->>>>>>> 382f4a22ceb10164f9c36fd7cadf0016088cd827
+
+    // --- Main method for testing (Optional) ---
+    /*
+    public static void main(String[] args) {
+        // Example of how to launch the dialog (requires a parent Frame or Dialog)
+        JFrame frame = new JFrame(); // Dummy parent frame
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setSize(100, 100);
+        frame.setLocationRelativeTo(null);
+
+        // You would typically get the username from a login session
+        String loggedInUsername = "testuser";
+
+        // Create and show the Deposit dialog
+        Deposit depositDialog = new Deposit(null, loggedInUsername); // Pass null or a real parent Dialog/Frame
+        depositDialog.setVisible(true);
+
+        // The program will wait here until the dialog is closed because it's modal
+        System.out.println("Deposit dialog closed.");
+        System.exit(0); // Exit after testing
+    }
+    */
 }
