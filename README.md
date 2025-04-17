@@ -1,11 +1,5 @@
 # Folder Structure
-
-The workspace contains two folders by default, where:
-
-- `src`: the folder to maintain sources
-- `lib`: the folder to maintain dependencies
-
-Meanwhile, the compiled output files will be generated in the `bin` folder by default.
+目前AI部分可以运行，但还在修改，ai_model,UI/AIplane在修改
 
 ## 模块详细说明
 
