@@ -1,26 +1,31 @@
-# coursework
-姓名： 胡杨
-学号： 2022213111
+coursework
+Name: Hu Yang
+Student ID: 2022213111
 
-本人负责的功能描述：
+Features Implemented:
 
-用户身份认证与注册系统：
-提供用户注册功能，支持注册管理员账户和普通用户账户两种类型。
-注册过程中包含详细的个人信息填写与有效性验证流程。
-实现用户登录功能，以验证用户身份并进入相应操作界面。
+User Authentication & Registration System:
 
-普通用户功能模块：
-账户管理： 支持查询账户当前余额、进行账户存款操作以及执行账户取款操作。
-资金转移： 提供向指定账户进行转账的功能（Pay）。
-信息查询： 允许用户查看和管理其个人详细信息。
-交易历史： 提供完整的交易记录查询功能，方便用户追踪账户活动。
-系统交互： 支持用户安全退出当前登录状态。
+User Registration: Provides a user registration interface, supporting the registration of Administrator Accounts and Ordinary User Accounts.
+Registration Information & Validation: The registration process includes detailed personal information input and necessary validity validation.
+User Login: Implements user login authentication, verifying user identity and directing to the corresponding functional interface.
+Ordinary User Module:
 
-管理员功能模块：
-管理员信息管理： 查看和管理管理员自身的个人信息。
-客户账户管理： 提供对普通用户账户的全面管理功能，包括查看、修改和删除客户账户信息。
-在修改客户账户信息时，管理员具备修改账户状态的权限，例如可以将异常账户的状态从 'ACTIVE' 设置为 'FROZEN'，从而限制或阻止该账户的进一步使用。
+View Balance: Users can query their current account balance.
+Deposit: Supports depositing funds into the user's account.
+Withdrawal: Supports withdrawing funds from the user's account.
+Transfer / Pay: Provides the function to transfer funds to specified other accounts.
+View Personal Info: Allows users to view and manage their detailed personal information.
+Transaction History: Provides a complete account transaction history query function.
+Logout: Supports users safely logging out of the current session.
+Administrator Module:
 
-数据导入功能： 支持通过导入 CSV 格式文件批量录入普通用户账户信息和交易记录。
-
-系统交互： 支持管理员和用户安全退出当前登录状态。
+Administrator Information Management: View and manage the administrator's own personal account information.
+Customer Account Management: Provides comprehensive management functions for ordinary user accounts:
+Customer Information Inquiry: Can query all registered ordinary customers' detailed personal information.
+Modify Customer Account Information: Can modify all customer information except the username. Has the authority to change account status, for example, can change the status of abnormal accounts from 'ACTIVE' to 'FROZEN' to restrict or prevent their use.
+Delete Customer Information: Supports deleting specified ordinary user accounts.
+Data Import: Supports batch data processing by importing CSV format files:
+Import Customer Accounts: Supports batch input of ordinary user account information.
+Import Transaction Records: Supports batch input of transaction records.
+Logout: Supports administrators safely logging out of the current session.
