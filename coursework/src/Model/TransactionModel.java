@@ -144,12 +144,12 @@ public class TransactionModel implements Serializable {
         // 实际应用中可能需要更健壮的 CSV 解析库
         String[] parts = csvLine.split(","); // 简单按逗号分割
         if (parts.length >= 7) {
-             try {
+            try {
                 // 反处理 description 中的引号
-                 String description = parts[5].replace("\"\"", "\"");
-                 if (description.startsWith("\"") && description.endsWith("\"")) {
-                     description = description.substring(1, description.length() - 1);
-                 }
+                String description = parts[5].replace("\"\"", "\"");
+                if (description.startsWith("\"") && description.endsWith("\"")) {
+                    description = description.substring(1, description.length() - 1);
+                }
 
                 return new TransactionModel(
                         parts[0], // transactionId
@@ -160,13 +160,13 @@ public class TransactionModel implements Serializable {
                         description, // description
                         parts[6].isEmpty() ? null : parts[6] // relatedAccountUsername (空字符串视为null)
                 );
-             } catch (NumberFormatException e) {
-                 System.err.println("从CSV解析交易金额失败: " + csvLine);
-                 return null;
-             } catch (ArrayIndexOutOfBoundsException e) {
-                 System.err.println("从CSV解析交易数据失败 - 部件不足: " + csvLine);
-                 return null;
-             }
+            } catch (NumberFormatException e) {
+                System.err.println("从CSV解析交易金额失败: " + csvLine);
+                return null;
+            } catch (ArrayIndexOutOfBoundsException e) {
+                System.err.println("从CSV解析交易数据失败 - 部件不足: " + csvLine);
+                return null;
+            }
         }
         System.err.println("从CSV解析交易数据失败 - 部件不足: " + csvLine);
         return null; // 格式不符

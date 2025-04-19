@@ -9,14 +9,18 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.JTableHeader;
 
 public class TransactionHistory extends JDialog {
 
     public TransactionHistory(Dialog owner) {
         super(owner, "Transaction History", true);
-        setSize(600, 400);
+        setSize(720, 460);
+        setResizable(false);
         setLocationRelativeTo(owner);
-        setLayout(new BorderLayout());
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        setLayout(new BorderLayout(10, 10));
+        getContentPane().setBackground(new Color(245, 245, 245));
 
         String loggedInUsername = UserSession.getCurrentUsername();
         if (loggedInUsername == null) {
@@ -25,31 +29,56 @@ public class TransactionHistory extends JDialog {
             return;
         }
 
-        // Create a DefaultTableModel that makes the table non-editable
-        DefaultTableModel tableModel = new DefaultTableModel(new Object[]{"Operation Performed", "Amount", "Payment Time", "Merchant Name"}, 0) {
+        // 标题
+        JLabel titleLabel = new JLabel("Your Transaction History");
+        titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 22));
+        titleLabel.setForeground(new Color(30, 60, 120));
+        titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        titleLabel.setBorder(BorderFactory.createEmptyBorder(15, 10, 5, 10));
+        add(titleLabel, BorderLayout.NORTH);
+
+        // 表格部分
+        DefaultTableModel tableModel = new DefaultTableModel(
+                new Object[]{"Operation", "Amount", "Time", "Merchant"}, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
-                return false; // Make all cells non-editable
+                return false; // 禁止编辑
             }
         };
         JTable transactionTable = new JTable(tableModel);
-        JScrollPane scrollPane = new JScrollPane(transactionTable);
+        transactionTable.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        transactionTable.setRowHeight(24);
 
+        JTableHeader header = transactionTable.getTableHeader();
+        header.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        header.setBackground(new Color(230, 230, 230));
+
+        JScrollPane scrollPane = new JScrollPane(transactionTable);
+        scrollPane.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
+        add(scrollPane, BorderLayout.CENTER);
+
+        // 加载数据
         List<String[]> transactions = loadTransactions(loggedInUsername);
         for (String[] transaction : transactions) {
             tableModel.addRow(transaction);
         }
 
-        add(scrollPane, BorderLayout.CENTER);
+        // 按钮面板
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 20, 10));
+        buttonPanel.setBackground(new Color(245, 245, 245));
 
         JButton closeButton = new JButton("Close");
-        closeButton.addActionListener(e -> {
-            setVisible(false);
-            SwingUtilities.invokeLater(() -> {
-                dispose();
-            });
-        });
-        add(closeButton, BorderLayout.SOUTH);
+        closeButton.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        closeButton.setForeground(Color.WHITE);
+        closeButton.setBackground(new Color(120, 120, 120));
+        closeButton.setFocusPainted(false);
+        closeButton.setBorderPainted(false);
+        closeButton.setPreferredSize(new Dimension(90, 30));
+
+        closeButton.addActionListener(e -> dispose());
+
+        buttonPanel.add(closeButton);
+        add(buttonPanel, BorderLayout.SOUTH);
 
         setVisible(true);
     }
@@ -62,7 +91,9 @@ public class TransactionHistory extends JDialog {
             while ((line = br.readLine()) != null) {
                 String[] data = line.split(",");
                 if (data.length == 5 && data[0].trim().equals(username.trim())) {
-                    userTransactions.add(new String[]{data[1].trim(), data[2].trim(), data[3].trim(), data[4].trim()});
+                    userTransactions.add(new String[]{
+                            data[1].trim(), data[2].trim(), data[3].trim(), data[4].trim()
+                    });
                 }
             }
         } catch (IOException e) {

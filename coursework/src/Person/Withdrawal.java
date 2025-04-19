@@ -1,7 +1,6 @@
 package Person;
 
 import javax.swing.*;
-
 import Model.AccountModel;
 import Model.PersonalAccount;
 import Model.UserRegistrationCSVExporter;
@@ -16,47 +15,112 @@ import java.util.List;
 
 public class Withdrawal extends JDialog {
     private JTextField amountField;
-    private JTextField merchantField; // 新增：用于输入商户名称的文本框
+    private JTextField merchantField;
     private JPasswordField passwordField;
     private JButton confirmButton;
     private JButton cancelButton;
-
-    private String currentUsername; // 用于存储当前用户的用户名
+    private String currentUsername;
 
     public Withdrawal(Dialog owner, String username) {
-        super(owner, "Withdrawal", true); // 对话框标题
+        super(owner, "Withdrawal", true);
         this.currentUsername = username;
-        // 稍微增大对话框尺寸以容纳新输入框
-        setSize(300, 220); // 原为 setSize(300, 180)
+        setSize(420, 300);
+        setResizable(false);
+        getContentPane().setBackground(new Color(245, 245, 245));
+        setLayout(new BorderLayout(10, 10));
         setLocationRelativeTo(owner);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
-        // 修改 GridLayout 行数以适应新行 (从 3 行改为 4 行: 金额, 商户, 密码, 按钮)
-        JPanel panel = new JPanel(new GridLayout(4, 2, 10, 10)); // 原为 GridLayout(3, 2, ...)
+        // 标题
+        JLabel titleLabel = new JLabel("Withdraw Funds");
+        titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 24));
+        titleLabel.setForeground(new Color(30, 60, 120));
+        titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        titleLabel.setBorder(BorderFactory.createEmptyBorder(15, 10, 5, 10));
+        add(titleLabel, BorderLayout.NORTH);
 
-        JLabel amountLabel = new JLabel("Withdrawal Amount:"); // 标签
+        // 表单面板
+        JPanel panel = new JPanel(new GridBagLayout());
+        panel.setBackground(new Color(245, 245, 245));
+        panel.setBorder(BorderFactory.createEmptyBorder(10, 30, 10, 30));
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(10, 10, 10, 10);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.weightx = 0;
+        JLabel amountLabel = new JLabel("Withdrawal Amount:");
+        amountLabel.setFont(new Font("Segoe UI", Font.PLAIN, 16));
+        panel.add(amountLabel, gbc);
+
+        gbc.gridx = 1;
+        gbc.weightx = 1.0;
         amountField = new JTextField();
+        amountField.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        amountField.setPreferredSize(new Dimension(180, 28));
+        panel.add(amountField, gbc);
 
-        // 商户名称标签和输入框
+        gbc.gridx = 0;
+        gbc.gridy++;
+        gbc.weightx = 0;
         JLabel merchantLabel = new JLabel("Merchant/Location:");
+        merchantLabel.setFont(new Font("Segoe UI", Font.PLAIN, 16));
+        panel.add(merchantLabel, gbc);
+
+        gbc.gridx = 1;
+        gbc.weightx = 1.0;
         merchantField = new JTextField();
+        merchantField.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        merchantField.setPreferredSize(new Dimension(180, 28));
+        panel.add(merchantField, gbc);
 
-        JLabel passwordLabel = new JLabel("Password:"); // 标签
+        gbc.gridx = 0;
+        gbc.gridy++;
+        gbc.weightx = 0;
+        JLabel passwordLabel = new JLabel("Password:");
+        passwordLabel.setFont(new Font("Segoe UI", Font.PLAIN, 16));
+        panel.add(passwordLabel, gbc);
+
+        gbc.gridx = 1;
+        gbc.weightx = 1.0;
         passwordField = new JPasswordField();
+        passwordField.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        passwordField.setPreferredSize(new Dimension(180, 28));
+        panel.add(passwordField, gbc);
 
-        confirmButton = new JButton("Confirm"); // 按钮文本
-        cancelButton = new JButton("Cancel"); // 按钮文本
+        add(panel, BorderLayout.CENTER);
 
+        // 按钮面板
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 15, 10));
+        buttonPanel.setBackground(new Color(245, 245, 245));
+
+        confirmButton = new JButton("Confirm");
+        confirmButton.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        confirmButton.setForeground(Color.WHITE);
+        confirmButton.setBackground(new Color(30, 60, 120));
+        confirmButton.setFocusPainted(false);
+        confirmButton.setBorderPainted(false);
+
+        cancelButton = new JButton("Cancel");
+        cancelButton.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        cancelButton.setBackground(new Color(200, 200, 200));
+        cancelButton.setFocusPainted(false);
+        cancelButton.setBorderPainted(false);
+
+        buttonPanel.add(confirmButton);
+        buttonPanel.add(cancelButton);
+        add(buttonPanel, BorderLayout.SOUTH);
+
+        // 事件逻辑（保持原样）
         confirmButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 String amountText = amountField.getText();
-                String merchantName = merchantField.getText(); // 新增：获取商户名称输入
+                String merchantName = merchantField.getText();
                 char[] passwordChars = passwordField.getPassword();
                 String enteredPassword = new String(passwordChars);
 
-                // 修改非空检查，加入对商户名称的检查
                 if (amountText.isEmpty() || merchantName.isEmpty() || enteredPassword.isEmpty()) {
-                    // 修改提示信息
                     JOptionPane.showMessageDialog(Withdrawal.this, "Amount, Merchant/Location, and password cannot be empty", "Error", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
@@ -64,7 +128,7 @@ public class Withdrawal extends JDialog {
                 try {
                     double amount = Double.parseDouble(amountText);
                     if (amount <= 0) {
-                        JOptionPane.showMessageDialog(Withdrawal.this, "Please enter a valid amount", "Error", JOptionPane.ERROR_MESSAGE); // 消息
+                        JOptionPane.showMessageDialog(Withdrawal.this, "Please enter a valid amount", "Error", JOptionPane.ERROR_MESSAGE);
                         return;
                     }
 
@@ -79,89 +143,56 @@ public class Withdrawal extends JDialog {
                     }
 
                     if (currentUserAccount == null) {
-                        JOptionPane.showMessageDialog(Withdrawal.this, "Account information not found for this username", "Error", JOptionPane.ERROR_MESSAGE); // 消息
+                        JOptionPane.showMessageDialog(Withdrawal.this, "Account information not found for this username", "Error", JOptionPane.ERROR_MESSAGE);
                         return;
                     }
 
-                    // --- 密码验证 ---
                     if (!currentUserAccount.getPassword().equals(enteredPassword)) {
-                        JOptionPane.showMessageDialog(Withdrawal.this, "Incorrect password", "Error", JOptionPane.ERROR_MESSAGE); // 消息
-                        // 清空密码和商户字段，保留金额
+                        JOptionPane.showMessageDialog(Withdrawal.this, "Incorrect password", "Error", JOptionPane.ERROR_MESSAGE);
                         passwordField.setText("");
-                        merchantField.setText(""); // 如果密码错误，也清空商户名？可选
+                        merchantField.setText("");
                         return;
                     }
-                    // --- 密码验证结束 ---
-
 
                     if (currentUserAccount instanceof PersonalAccount) {
                         PersonalAccount personalAccount = (PersonalAccount) currentUserAccount;
                         if (personalAccount.getBalance() < amount) {
-                            JOptionPane.showMessageDialog(Withdrawal.this, "Insufficient account balance", "Error", JOptionPane.ERROR_MESSAGE); // 消息
-                            // 清空密码和商户字段
+                            JOptionPane.showMessageDialog(Withdrawal.this, "Insufficient account balance", "Error", JOptionPane.ERROR_MESSAGE);
                             passwordField.setText("");
                             merchantField.setText("");
                             return;
                         }
 
-                        // 执行取款逻辑
                         personalAccount.setBalance(personalAccount.getBalance() - amount);
-                        UserRegistrationCSVExporter.saveToCSV(accounts, false); // 保存更新后的账户信息
+                        UserRegistrationCSVExporter.saveToCSV(accounts, false);
+                        recordWithdrawal(currentUsername, amount, merchantName);
 
-                        // 修改调用 recordWithdrawal，传入获取到的 merchantName
-                        recordWithdrawal(currentUsername, amount, merchantName); // 记录提款交易
-
-                        JOptionPane.showMessageDialog(Withdrawal.this, "Successfully withdrew " + amount + " RMB from " + merchantName, "Success", JOptionPane.INFORMATION_MESSAGE); // 修改成功消息
-                        dispose(); // 关闭对话框
+                        JOptionPane.showMessageDialog(Withdrawal.this, "Successfully withdrew " + amount + " RMB from " + merchantName, "Success", JOptionPane.INFORMATION_MESSAGE);
+                        dispose();
                     } else {
-                        JOptionPane.showMessageDialog(Withdrawal.this, "Withdrawal is not supported for this account type", "Error", JOptionPane.ERROR_MESSAGE); // 消息
+                        JOptionPane.showMessageDialog(Withdrawal.this, "Withdrawal is not supported for this account type", "Error", JOptionPane.ERROR_MESSAGE);
                     }
-
                 } catch (NumberFormatException ex) {
-                    JOptionPane.showMessageDialog(Withdrawal.this, "Please enter a valid amount", "Error", JOptionPane.ERROR_MESSAGE); // 消息
+                    JOptionPane.showMessageDialog(Withdrawal.this, "Please enter a valid amount", "Error", JOptionPane.ERROR_MESSAGE);
                 } finally {
                     passwordField.setText("");
                 }
             }
         });
 
-        cancelButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                dispose(); // 关闭对话框
-            }
-        });
-
-        // 调整添加组件的顺序以匹配 GridLayout
-        panel.add(amountLabel);
-        panel.add(amountField);
-        panel.add(merchantLabel);     // 添加商户标签
-        panel.add(merchantField);     // 添加商户输入框
-        panel.add(passwordLabel);
-        panel.add(passwordField);
-        panel.add(confirmButton);
-        panel.add(cancelButton);
-
-        add(panel);
+        cancelButton.addActionListener(e -> dispose());
     }
 
-    // 修改 recordWithdrawal 方法签名，接收 merchantName 参数
     private void recordWithdrawal(String username, double amount, String merchantName) {
         String filePath = "transactions.csv";
-        // 使用 try-with-resources 确保 FileWriter 被正确关闭
-        try (FileWriter fw = new FileWriter(filePath, true)) { // true 表示追加写入
-            // 获取当前时间
+        try (FileWriter fw = new FileWriter(filePath, true)) {
             Date now = new Date();
-            // 定义日期和时间格式
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm");
-            // 将 Date 对象格式化为字符串
             String formattedDateTime = sdf.format(now);
-
-            // CSV 格式：用户名,操作类型,金额,支付时间,商户名
             fw.write(username + ",Withdrawal," + amount + "," + formattedDateTime + "," + merchantName + "\n");
-
         } catch (IOException e) {
-            JOptionPane.showMessageDialog(this, "Error recording withdrawal transaction: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE); // 消息
-            e.printStackTrace(); // 打印堆栈跟踪，便于调试
+            JOptionPane.showMessageDialog(this, "Error recording withdrawal transaction: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
         }
     }
 }

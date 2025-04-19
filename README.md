@@ -1,5 +1,8 @@
 # Folder Structure
-目前AI部分可以运行，但还在修改，ai_model,UI/AIplane在修改
+## 模型文件
+通过网盘分享的文件：dist.zip
+链接: https://pan.baidu.com/s/1M3x8FVq7p5cE0sdAx2x9UA 提取码: pgpp
+下载解压后放入coursework目录下，与src同级。
 
 ## 模块详细说明
 

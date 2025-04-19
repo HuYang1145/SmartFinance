@@ -19,96 +19,145 @@ public class Pay extends JDialog {
     private JButton confirmButton, cancelButton;
 
     public Pay(Dialog owner) {
-        super(owner, "Pay", true); // Changed title to "Pay"
-        setSize(300, 200);
+        super(owner, "Pay", true);
+        setSize(420, 280);
+        setResizable(false);
         setLocationRelativeTo(owner);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        setLayout(new BorderLayout(10, 10));
+        getContentPane().setBackground(new Color(245, 245, 245));
 
-        // 创建面板和布局
-        JPanel panel = new JPanel(new GridLayout(4, 2, 10, 10));
+        // 标题
+        JLabel titleLabel = new JLabel("Make a Payment");
+        titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 24));
+        titleLabel.setForeground(new Color(30, 60, 120));
+        titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        titleLabel.setBorder(BorderFactory.createEmptyBorder(15, 10, 5, 10));
+        add(titleLabel, BorderLayout.NORTH);
 
-        JLabel merchantNameLabel = new JLabel("Merchant Name:"); // Changed label to "Merchant Name"
+        // 表单面板
+        JPanel panel = new JPanel(new GridBagLayout());
+        panel.setBackground(new Color(245, 245, 245));
+        panel.setBorder(BorderFactory.createEmptyBorder(10, 30, 10, 30));
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(10, 10, 10, 10);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.weightx = 0;
+        JLabel merchantNameLabel = new JLabel("Merchant Name:");
+        merchantNameLabel.setFont(new Font("Segoe UI", Font.PLAIN, 16));
+        panel.add(merchantNameLabel, gbc);
+
+        gbc.gridx = 1;
+        gbc.weightx = 1.0;
         merchantNameField = new JTextField();
-        JLabel paymentAmountLabel = new JLabel("Payment Amount:"); // Changed label to "Payment Amount"
+        merchantNameField.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        merchantNameField.setPreferredSize(new Dimension(180, 28));
+        panel.add(merchantNameField, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy++;
+        gbc.weightx = 0;
+        JLabel paymentAmountLabel = new JLabel("Payment Amount:");
+        paymentAmountLabel.setFont(new Font("Segoe UI", Font.PLAIN, 16));
+        panel.add(paymentAmountLabel, gbc);
+
+        gbc.gridx = 1;
+        gbc.weightx = 1.0;
         paymentAmountField = new JTextField();
+        paymentAmountField.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        paymentAmountField.setPreferredSize(new Dimension(180, 28));
+        panel.add(paymentAmountField, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy++;
+        gbc.weightx = 0;
         JLabel passwordLabel = new JLabel("Password:");
+        passwordLabel.setFont(new Font("Segoe UI", Font.PLAIN, 16));
+        panel.add(passwordLabel, gbc);
+
+        gbc.gridx = 1;
+        gbc.weightx = 1.0;
         passwordField = new JPasswordField();
+        passwordField.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        passwordField.setPreferredSize(new Dimension(180, 28));
+        panel.add(passwordField, gbc);
+
+        add(panel, BorderLayout.CENTER);
+
+        // 按钮面板
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 15, 10));
+        buttonPanel.setBackground(new Color(245, 245, 245));
 
         confirmButton = new JButton("Confirm");
-        cancelButton = new JButton("Cancel");
+        confirmButton.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        confirmButton.setForeground(Color.WHITE);
+        confirmButton.setBackground(new Color(30, 60, 120));
+        confirmButton.setFocusPainted(false);
+        confirmButton.setBorderPainted(false);
 
+        cancelButton = new JButton("Cancel");
+        cancelButton.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        cancelButton.setBackground(new Color(200, 200, 200));
+        cancelButton.setFocusPainted(false);
+        cancelButton.setBorderPainted(false);
+
+        buttonPanel.add(confirmButton);
+        buttonPanel.add(cancelButton);
+        add(buttonPanel, BorderLayout.SOUTH);
+
+        // 事件绑定（不变）
         confirmButton.addActionListener((ActionEvent e) -> {
-            String merchantName = merchantNameField.getText(); // Renamed variable
-            String paymentAmountText = paymentAmountField.getText(); // Renamed variable
+            String merchantName = merchantNameField.getText();
+            String paymentAmountText = paymentAmountField.getText();
             char[] passwordChars = passwordField.getPassword();
             String password = new String(passwordChars);
-            
+
             if (merchantName.isEmpty() || paymentAmountText.isEmpty() || password.isEmpty()) {
                 JOptionPane.showMessageDialog(Pay.this, "All fields cannot be empty", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
-            
+
             try {
-                double paymentAmount = Double.parseDouble(paymentAmountText); // Renamed variable
+                double paymentAmount = Double.parseDouble(paymentAmountText);
                 if (paymentAmount <= 0) {
                     JOptionPane.showMessageDialog(Pay.this, "Please enter a valid amount", "Error", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
-                
-                // 使用 UserSession 获取当前登录用户名 (付款方)
+
                 String loggedInUsername = UserSession.getCurrentUsername();
-                
-                // 验证用户账户余额和密码
                 AccountModel loggedInAccount = getAccount(loggedInUsername, password);
                 if (loggedInAccount == null) {
                     JOptionPane.showMessageDialog(Pay.this, "Incorrect password", "Error", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
-                
+
                 if (loggedInAccount instanceof PersonalAccount personalAccount) {
-                    
-                    if (personalAccount.getBalance() < paymentAmount) { // Renamed variable
+                    if (personalAccount.getBalance() < paymentAmount) {
                         JOptionPane.showMessageDialog(Pay.this, "Insufficient balance to make this payment", "Error", JOptionPane.ERROR_MESSAGE);
                         return;
                     }
-                    
-                    // 执行付款逻辑
-                    personalAccount.setBalance(personalAccount.getBalance() - paymentAmount); // Renamed variable
-                    UserRegistrationCSVExporter.saveToCSV(getAccounts(), false); // 保存更新后的账户信息
-                    
-                    // 记录付款信息
-                    recordPayment(loggedInUsername, merchantName, paymentAmount); // Renamed method and parameters
-                    
-                    JOptionPane.showMessageDialog(Pay.this, "Payment successful!", "Success", JOptionPane.INFORMATION_MESSAGE); // Changed message
-                    dispose(); // 关闭对话框
-                    
+
+                    personalAccount.setBalance(personalAccount.getBalance() - paymentAmount);
+                    UserRegistrationCSVExporter.saveToCSV(getAccounts(), false);
+                    recordPayment(loggedInUsername, merchantName, paymentAmount);
+
+                    JOptionPane.showMessageDialog(Pay.this, "Payment successful!", "Success", JOptionPane.INFORMATION_MESSAGE);
+                    dispose();
                 } else {
                     JOptionPane.showMessageDialog(Pay.this, "Payment is not supported for this account type", "Error", JOptionPane.ERROR_MESSAGE);
                 }
-                
+
             } catch (NumberFormatException ex) {
                 JOptionPane.showMessageDialog(Pay.this, "Please enter a valid amount", "Error", JOptionPane.ERROR_MESSAGE);
             }
         });
 
-        cancelButton.addActionListener((ActionEvent e) -> {
-            dispose(); // 关闭对话框
-        });
-
-        // 添加组件
-        panel.add(merchantNameLabel); // Renamed label
-        panel.add(merchantNameField); // Renamed field
-        panel.add(paymentAmountLabel); // Renamed label
-        panel.add(paymentAmountField); // Renamed field
-        panel.add(passwordLabel);
-        panel.add(passwordField);
-        panel.add(confirmButton);
-        panel.add(cancelButton);
-
-        add(panel);
+        cancelButton.addActionListener((ActionEvent e) -> dispose());
     }
 
-    // 从 CSV 中获取账户信息
     private AccountModel getAccount(String username, String password) {
         List<AccountModel> accounts = UserRegistrationCSVExporter.readFromCSV();
         for (AccountModel account : accounts) {
@@ -119,31 +168,18 @@ public class Pay extends JDialog {
         return null;
     }
 
-    // 从 CSV 中获取所有账户信息
     private List<AccountModel> getAccounts() {
         return UserRegistrationCSVExporter.readFromCSV();
     }
 
-    // 保存账户信息
-    private void saveAccounts() {
-        List<AccountModel> accounts = UserRegistrationCSVExporter.readFromCSV();
-        UserRegistrationCSVExporter.saveToCSV(accounts, false);
-    }
-
-    private void recordPayment(String payerUsername, String merchantName, double paymentAmount) { // Renamed method and parameters
+    private void recordPayment(String payerUsername, String merchantName, double paymentAmount) {
         String filePath = "transactions.csv";
         try (FileWriter fw = new FileWriter(filePath, true)) {
-            // 获取当前时间
             Date now = new Date();
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm");
             String formattedDateTime = sdf.format(now);
 
-            // CSV 格式：user name, operation performed, amount, payment time, merchant name
-            // 记录付款方的交易 (Transfer Out)
             fw.write(payerUsername + ",Transfer Out," + "-" + paymentAmount + "," + formattedDateTime + "," + merchantName + "\n");
-
-            // 记录收款方的交易 (Transfer In) - 这里假设收款方是商户，用户名就是商户名
-            // 如果需要更复杂的商户账户管理，这部分可能需要调整
             fw.write(merchantName + ",Transfer In," + paymentAmount + "," + formattedDateTime + "," + payerUsername + "\n");
 
         } catch (IOException e) {

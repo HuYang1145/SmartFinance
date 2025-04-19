@@ -72,7 +72,7 @@ public abstract class AccountModel implements Serializable {
 
     // --- 交易相关方法 ---
     public List<TransactionModel> getTransactions() {
-         return this.transactions;
+        return this.transactions;
     }
 
     public void addTransaction(TransactionModel transaction) {
@@ -80,10 +80,10 @@ public abstract class AccountModel implements Serializable {
             this.transactions = new ArrayList<>();
         }
         if (transaction != null && this.username.equals(transaction.getAccountUsername())) {
-             this.transactions.add(transaction);
-             // 可在此更新余额
+            this.transactions.add(transaction);
+            // 可在此更新余额
         } else {
-             System.err.println("警告：尝试向账户 " + this.username + " 添加无效或不匹配的交易。");
+            System.err.println("警告：尝试向账户 " + this.username + " 添加无效或不匹配的交易。");
         }
     }
 
@@ -133,15 +133,15 @@ public abstract class AccountModel implements Serializable {
                     // 确保 AdminAccount 构造函数匹配
                     return new AdminAccount(username, password, phone, email, gender, address, creationTime, accountStatus, accountType, balance);
                 } else if ("personal".equalsIgnoreCase(accountType)) {
-                     // 确保 PersonalAccount 构造函数匹配
+                    // 确保 PersonalAccount 构造函数匹配
                     return new PersonalAccount(username, password, phone, email, gender, address, creationTime, accountStatus, accountType, balance);
                 } else {
                     System.err.println("从 CSV 加载账户失败：未知的账户类型 '" + accountType + "' in line: " + csvLine);
                     return null;
                 }
             } catch (Exception e) {
-                 System.err.println("从 CSV 解析账户时发生错误 in line: " + csvLine + " Error: " + e.getMessage());
-                 return null;
+                System.err.println("从 CSV 解析账户时发生错误 in line: " + csvLine + " Error: " + e.getMessage());
+                return null;
             }
         } else {
             System.err.println("从 CSV 加载账户失败：字段数量不足 (" + parts.length + ") in line: " + csvLine);
