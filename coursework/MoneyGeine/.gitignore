@@ -1,0 +1,10 @@
+# Ignore Maven build directory
+target/
+
+# You might want to ignore other things like IDE files (.vscode/, .idea/)
+.vscode/
+.idea/
+
+# Also potentially ignore specific files like .class files if target isn't ignored
+# But ignoring target/ is usually sufficient for Maven projects
+# *.class
