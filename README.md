@@ -1,11 +1,8 @@
 # Folder Structure
-
-The workspace contains two folders by default, where:
-
-- `src`: the folder to maintain sources
-- `lib`: the folder to maintain dependencies
-
-Meanwhile, the compiled output files will be generated in the `bin` folder by default.
+## 模型文件
+通过网盘分享的文件：dist.zip
+链接: https://pan.baidu.com/s/1M3x8FVq7p5cE0sdAx2x9UA 提取码: pgpp
+下载解压后放入coursework目录下，与src同级。
 
 ## 模块详细说明
 
@@ -55,6 +52,16 @@ Meanwhile, the compiled output files will be generated in the `bin` folder by de
 * **`UserSession.java`**:
     * 管理当前登录用户的会话状态（存储当前用户名）。
     * 提供静态方法来获取、设置和清除当前用户名。
+* **`BudgetAdvisor`**:
+    * 包含预算建议的核心业务逻辑。
+    * 根据用户的历史消费习惯、月份（例如，购物节月份）等因素，计算并提供智能的预算和储蓄建议。
+    * 定义了不同的预算模式 `BudgetMode` 及其原因。
+    * 能够加载和保存用户的自定义预算到 `user_budget.csv` 文件。
+    * 能够清除用户的自定义预算，恢复到智能推荐。
+    * 提供方法来判断用户的消费是否不稳定。
+    * 能够读取用户的交易记录 `transactions.csv` 来进行分析和计算。
+
+
 
 ### `Person` 包 (个人用户功能模块)
 
@@ -91,10 +98,17 @@ Meanwhile, the compiled output files will be generated in the `bin` folder by de
 * **`PersonalUI.java`**:
     * 个人用户登录后的主界面框架 (`JDialog`)。
     * 包含左侧功能导航栏（带图标）和右侧内容显示区 (`CardLayout`)。
-    * 提供查看余额、存款、转账、取款、交易记录、查看个人信息等功能的入口。
+    * 提供查看余额、存款、转账、取款、交易记录、查看个人信息、查看金融建议等功能的入口。
     * *注意：当前部分按钮仅切换卡片布局，需要进一步开发以调用 `Person` 包中的相应功能对话框。*
 * **`icons/` 文件夹**:
     * 存放界面按钮所需的图标资源。
+* **`BudgetGoalDialog.java`**:
+    * 为个人用户提供管理其预算目标的功能界面。
+    * 允许用户查看当前的智能预算建议（实际预算、预算模式、模式原因）。
+    * 允许用户设置自定义的预算金额。
+    * 提供恢复到智能预算推荐的选项。
+    * 与 `Model.BudgetAdvisor` 交互，保存用户设置的自定义预算。
+    * 在用户设置或恢复预算后，会通知`UI.PersonalUI` 更新金融建议的显示。
 
 ## 数据存储
 
@@ -109,9 +123,3 @@ Meanwhile, the compiled output files will be generated in the `bin` folder by de
     * 可由 `AdminUI` 导入外部交易记录。
 
 ---
-
-* 根据Prototype修改了GUI界面
-* 开发周期报告功能
-
----
- * 能够显示Financial management suggestion的所有预期功能GUI页面，实现高仿真
