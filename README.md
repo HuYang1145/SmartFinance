@@ -10,8 +10,8 @@
     * Modifications to the Withdrawal functionality.
     These changes ensure the application's appearance and core interactions conform to the prototype specifications.
 
-* **Admin Module Enhancement:** Revised the method used to read the `transactions.csv` file within the Admin module. This modification aims to improve efficiency or reliability in handling transaction data (Adjust this sentence slightly if you have a specific reason for the change, e.g., "for better performance" or "to handle larger datasets").
+* **Admin Module Enhancement:** Updated the method for reading the transactions.csv file to ensure it correctly parses data from the file's modified format within the Admin module.
 
-* **Main Branch Maintenance:** Performed regular code integration and maintenance tasks within the `main` branch. This ongoing effort is crucial for maintaining a healthy and stable codebase, ensuring smooth and normal development progress.
+* **Main Branch Maintenance:** Performed regular code integration and maintenance tasks within the `main` branch. This ongoing effort ensures smooth and normal development progress.
 
 ---
