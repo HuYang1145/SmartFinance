@@ -1,11 +1,30 @@
-package UI;
+package src.UI;
 
-import Model.UserSession;
-import Person.*;
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Cursor;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Image;
+import java.awt.Insets;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.net.URL;
-import javax.swing.*;
+
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JPanel;
+import javax.swing.SwingConstants;
+
+import src.Model.UserSession;
+import src.Person.Deposit;
+import src.Person.Pay;
+import src.Person.TransactionHistory;
+import src.Person.ViewBalance;
+import src.Person.ViewPersonalInfo;
+import src.Person.Withdrawal;
 
 public class SidebarPanel extends JPanel {
     private PersonalUI parentUI;

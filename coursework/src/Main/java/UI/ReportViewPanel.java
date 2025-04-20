@@ -1,28 +1,43 @@
-package UI;
+package src.UI;
 
-import Model.UserSession;
-// 移除 JFreeChart 的 imports
-// import org.jfree.chart.ChartFactory;
-// import org.jfree.chart.ChartPanel;
-// import org.jfree.chart.JFreeChart;
-// ... (其他 JFreeChart imports)
-
-import javax.swing.*;
-import java.awt.*;
+import java.awt.BasicStroke;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Point;
+import java.awt.RenderingHints;
+import java.awt.Stroke;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.text.ParseException;
+import java.text.ParseException; // Import Collections for min/max
 import java.text.SimpleDateFormat;
-import java.util.List;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.concurrent.TimeUnit;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Collections; // Import Collections for min/max
+
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
+
+import src.Model.UserSession;
 
 public class ReportViewPanel extends JPanel {
 
