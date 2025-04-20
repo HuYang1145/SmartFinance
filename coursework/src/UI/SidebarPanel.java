@@ -89,7 +89,7 @@ public class SidebarPanel extends JPanel {
 
         // 卡片布局相关按钮
         individualCenterButton.addActionListener(e -> parentUI.checkLoginAndShowCard("individualCenter"));
-        periodicReportButton.addActionListener(e -> parentUI.checkLoginAndShowCard("periodicReport"));
+        periodicReportButton.addActionListener(e -> parentUI.showReportOptions());
         spendingProportionButton.addActionListener(e -> parentUI.checkLoginAndShowCard("spendingProportion"));
         financialSuggestionButton.addActionListener(e -> parentUI.checkLoginAndShowCard("financialSuggestion"));
         aiQAButton.addActionListener(e -> parentUI.checkLoginAndShowCard("aiQA"));
