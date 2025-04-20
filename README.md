@@ -121,5 +121,14 @@
     * 格式：`用户名,操作类型,金额,目标账户,时间`
     * 由 `Person` 包中的各个操作对话框（`DepositDialog`, `WithdrawalDialog`, `transferAccounts`）追加写入。
     * 可由 `AdminUI` 导入外部交易记录。
-
+* **`user_budget.csv`**:
+    * 存贮所有用户的自定义预算，在用户恢复智能预算建议后将对应自定义预算清零。
 ---
+
+## 任务分配
+* **陈静怡**：
+    * `user_budget.csv`
+    * `BudgetGoalDialog.java`
+    * `BudgetAdvisor`
+    * 部分`PersonalUI.java`功能建立及更改
+    * `transactions.csv`部分数据提供
