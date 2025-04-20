@@ -52,7 +52,7 @@
 * **`UserSession.java`**:
     * 管理当前登录用户的会话状态（存储当前用户名）。
     * 提供静态方法来获取、设置和清除当前用户名。
-* **`BudgetAdvisor`**:
+* **`BudgetAdvisor.java`**:
     * 包含预算建议的核心业务逻辑。
     * 根据用户的历史消费习惯、月份（例如，购物节月份）等因素，计算并提供智能的预算和储蓄建议。
     * 定义了不同的预算模式 `BudgetMode` 及其原因。
@@ -129,6 +129,6 @@
 * **陈静怡**：
     * `user_budget.csv`
     * `BudgetGoalDialog.java`
-    * `BudgetAdvisor`
+    * `BudgetAdvisor.java`
     * 部分`PersonalUI.java`功能建立及更改
     * `transactions.csv`部分数据提供
