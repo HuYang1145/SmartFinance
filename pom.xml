@@ -15,15 +15,27 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.source>21</maven.compiler.source>
     <maven.compiler.target>21</maven.compiler.target>
-  </properties>
+</properties>
 
-  <dependencies>
-    <!-- Gson: JSON 处理 -->
+<dependencies>
+  <!-- commons-csv: CSV 处理 -->
+  <dependency>
+    <groupId>org.apache.commons</groupId>
+    <artifactId>commons-csv</artifactId>
+    <version>1.8</version>
+  </dependency>
+  <!-- Gson: JSON 处理 -->
     <dependency>
       <groupId>com.google.code.gson</groupId>
       <artifactId>gson</artifactId>
       <version>2.10.1</version>
     </dependency>
+
+  <dependency>
+    <groupId>com.formdev</groupId>
+    <artifactId>flatlaf</artifactId>
+    <version>3.0</version>
+  </dependency>
 
     <!-- JUnit: 单元测试 -->
     <dependency>

@@ -1,8 +1,9 @@
 Username,Password,Phone,Email,Gender,Address,CreationTime,AccountStatus,AccountType,Balance
-yaqi,1,1,1,Female,1,2025/4/1 19:19,ACTIVE,personal,0
-1,1,1,1,Female,1,2025/4/1 19:32,ACTIVE,Admin,0
-2,2,2,4532,Male,2,2025/4/14 23:14,ACTIVE,personal,2100
-3,3,3,3,Female,3,2025/4/14 23:14,ACTIVE,personal,50000
+
+yaqi,1,1,1,Female,1,2025/4/1 19:19,ACTIVE,personal,950.0
+1,1,1,1,Female,1,2025/4/1 19:32,ACTIVE,Admin,0.0
+2,2,2,4532,Male,2,2025/4/14 23:14,ACTIVE,personal,1870.0
+3,3,3,3,Female,3,2025/4/14 23:14,ACTIVE,personal,50000.0
 Coca-Cola,9,18333344455,cocacola@example.com,Male,Atlanta,2023/9/15 21:45,ACTIVE,Personal,9876.54
 Pepsi,9,18244455566,pepsi@example.com,Female,New York City,2023/8/1 10:00,ACTIVE,Personal,5432.1
 Siemens,9,17977788899,siemens@example.com,Male,Munich,2022/6/20 9:45,ACTIVE,Personal,7654.32
@@ -37,5 +38,6 @@ Nvidia,9,14155566677,nvidia@example.com,Male,Santa Clara,2023/11/1 20:00,ACTIVE,
 JPMorgan Chase,9,18600011122,jpmorgan@example.com,Female,New York City,2024/11/1 20:45,ACTIVE,Personal,45678.9
 Goldman Sachs,9,18511122233,goldmansachs@example.com,Male,New York City,2021/4/25 13:00,ACTIVE,Personal,78901.23
 Morgan Stanley,9,18422233344,morganstanley@example.com,Female,New York City,2025/1/5 17:15,ACTIVE,Personal,34567.89
-huyang,1,1,1,Male,1,2025/4/17 16:29,ACTIVE,personal,7647522
-4,4,4,4,Female,4,2025/1/1 0:00,ACTIVE,Personal,27785
+huyang,1,1,1,Male,1,2025/4/17 16:29,ACTIVE,personal,7647522.0
+4,4,4,4,Female,4,2025/1/1 0:00,ACTIVE,Personal,27785.0
+5,5,5,5,Male,5,2025-04-20 23:40:56,ACTIVE,personal,0.0

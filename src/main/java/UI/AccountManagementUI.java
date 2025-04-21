@@ -1,450 +1,664 @@
 package UI;
 
-import java.awt.BasicStroke;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Image;
-import java.awt.RenderingHints;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.text.SimpleDateFormat;
+import AccountModel.AccountManagementController;
+import UI.RoundedInputField.*;
+
+import javax.swing.*;
+import javax.swing.border.AbstractBorder;
+import javax.swing.border.Border;
+import javax.swing.border.EmptyBorder;
+import javax.swing.text.JTextComponent;
+import java.awt.*;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.geom.RoundRectangle2D;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JDialog;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JPasswordField;
-import javax.swing.JTextField;
-import javax.swing.SwingUtilities;
+public class AccountManagementUI extends JFrame {
+    private JPanel sidebar;
+    private JPanel contentPanel;
+    private CardLayout cardLayout;
+    private AccountManagementController controller;
 
-import Model.AccountModel;
-import Model.AccountValidator;
-import Model.AdminAccount;
-import Model.PersonalAccount;
-import Model.TransactionChecker;
-import Model.TransactionModel;
-import Model.UserRegistrationCSVExporter;
-import Model.UserSession;
+    public AccountManagementUI(AccountManagementController controller) {
+        this.controller = controller;
+        initializeUI();
+    }
 
-public class AccountManagementUI extends JDialog {
-    private JTextField usernameField, phoneField, emailField, addressField;
-    private JPasswordField passwordField;
-    private JComboBox<String> genderComboBox;
-    private JButton loginButton, createButton;
+    private void initializeUI() {
+        setTitle("Smart Finance - Welcome");
+        setSize(750, 450);
+        setLocationRelativeTo(null);
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setLayout(new BorderLayout());
 
-    public AccountManagementUI(JFrame parent, String actionType) {
-        super(parent, "Smart Finance", true);
-        setSize(900, 500);
-        setLocationRelativeTo(parent);
-        setLayout(null);
+        // Main container with light blue background
+        JPanel mainPanel = new JPanel(new BorderLayout());
+        mainPanel.setBackground(new Color(230, 230, 250)); // #E6F0FA
+        add(mainPanel);
 
-        // --- UI Initialization Code (保持不变) ---
-        // 背景面板
-        JPanel backgroundPanel = new JPanel() {
-            Image bgImage = new ImageIcon(getClass().getResource("/Main/background.png")).getImage();
-            @Override
-            protected void paintComponent(Graphics g) {
-                super.paintComponent(g);
-                g.drawImage(bgImage, 0, 0, getWidth(), getHeight(), this);
-            }
-        };
-        backgroundPanel.setLayout(null);
-        backgroundPanel.setBounds(0, 0, 900, 500);
-        add(backgroundPanel);
+        // Sidebar (Left)
+        sidebar = createSidebar(false);
+        mainPanel.add(sidebar, BorderLayout.WEST);
 
-        // Image Label
-        ImageIcon originalIcon = new ImageIcon(getClass().getResource("/Main/log_img.png"));
-        Image originalImage = originalIcon.getImage();
-        Image scaledImage = originalImage.getScaledInstance(300, 250, Image.SCALE_SMOOTH);
-        ImageIcon scaledIcon = new ImageIcon(scaledImage);
-        JLabel imageLabel = new JLabel(scaledIcon);
-        imageLabel.setBounds(150, 120, 300, 250);
-        backgroundPanel.add(imageLabel);
+        // Content Panel (Right)
+        cardLayout = new CardLayout();
+        contentPanel = new JPanel(cardLayout);
+        contentPanel.setBackground(new Color(230, 230, 250));
+        mainPanel.add(contentPanel, BorderLayout.CENTER);
 
-        // Title Art Label
-        JLabel titleArtLabel = new JLabel("Smart Finance");
-        titleArtLabel.setFont(new Font("Georgia", Font.BOLD | Font.ITALIC, 32));
-        titleArtLabel.setForeground(Color.WHITE);
-        titleArtLabel.setBounds(30, 30, 400, 40);
-        backgroundPanel.add(titleArtLabel);
-
-        // White Card Panel
-        JPanel panel = new JPanel() {
-            @Override
-            protected void paintComponent(Graphics g) {
-                Graphics2D g2 = (Graphics2D) g.create();
-                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                g2.setColor(Color.WHITE);
-                g2.fillRoundRect(0, 0, getWidth(), getHeight(), 30, 30);
-                g2.dispose();
-                // 不要调用 super.paintComponent(g); 如果你想让它完全由自定义绘制决定
-            }
-            @Override
-            protected void paintBorder(Graphics g) {
-                // 可选：绘制边框
-                Graphics2D g2 = (Graphics2D) g.create();
-                g2.setColor(Color.LIGHT_GRAY); // 边框颜色
-                g2.setStroke(new BasicStroke(1)); // 边框粗细
-                g2.drawRoundRect(0, 0, getWidth() - 1, getHeight() - 1, 30, 30); // 绘制圆角矩形边框
-                g2.dispose();
-            }
-        };
-        panel.setLayout(null);
-        panel.setOpaque(false); // 使 JPanel 透明，以便圆角背景可见
-        panel.setBounds(450, 120, 300, 250); // 登录面板位置和大小
-        backgroundPanel.add(panel);
-
-
-        // Common Font and Layout variables
-        Font font = new Font("Segoe UI", Font.PLAIN, 16);
-        int labelX = 30, fieldX = 130, width = 150, height = 30;
-        int y = 30, gap = 50; // 登录界面垂直间距
-
-        // --- Conditional UI for Login or Register (保持不变) ---
-        if (actionType.equals("login")) {
-            // --- Login UI Elements ---
-            JLabel usernameLabel = new JLabel("Username:");
-            usernameLabel.setBounds(labelX, y, 100, height);
-            panel.add(usernameLabel);
-            usernameField = new JTextField();
-            usernameField.setBounds(fieldX, y, width, height);
-            panel.add(usernameField);
-
-            y += gap; // 下移
-            JLabel passwordLabel = new JLabel("Password:");
-            passwordLabel.setBounds(labelX, y, 100, height);
-            panel.add(passwordLabel);
-            passwordField = new JPasswordField();
-            passwordField.setBounds(fieldX, y, width, height);
-            panel.add(passwordField);
-
-            y += gap; // 下移
-            loginButton = new JButton("Log in");
-            loginButton.setBounds(50, y, 200, 35); // 按钮居中，更宽
-            loginButton.setBackground(new Color(0, 120, 215)); // 现代蓝色背景
-            loginButton.setForeground(Color.WHITE); // 白色文字
-            loginButton.setFocusPainted(false); // 去掉焦点边框
-            loginButton.setFont(font); // 应用字体
-            panel.add(loginButton);
-
-            // --- Login Button Action Listener ---
-            loginButton.addActionListener(e -> loginAccount(usernameField.getText(), new String(passwordField.getPassword())));
-
-        } else { // register
-            // --- Register UI Elements ---
-            panel.setBounds(450, 30, 300, 420); // 注册面板位置和大小调整以容纳更多字段
-            y = 20; // 重置 y 坐标
-            gap = 40; // 调整注册界面的垂直间距
-
-            JLabel[] labels = {
-                    new JLabel("Username:"), new JLabel("Password:"), new JLabel("Phone Number:"),
-                    new JLabel("Email:"), new JLabel("Gender:"), new JLabel("Address:")
-            };
-            Component[] fields = {
-                    usernameField = new JTextField(), passwordField = new JPasswordField(),
-                    phoneField = new JTextField(), emailField = new JTextField(),
-                    genderComboBox = new JComboBox<>(new String[]{"Male", "Female"}),
-                    addressField = new JTextField()
-            };
-
-            for (int i = 0; i < labels.length; i++) {
-                labels[i].setBounds(labelX, y, 100, height);
-                panel.add(labels[i]);
-                fields[i].setBounds(fieldX, y, width, height);
-                panel.add(fields[i]);
-                y += gap; // 下移
-            }
-
-            // Account Type Selection
-            JLabel accountTypeLabel = new JLabel("Account Type:");
-            JComboBox<String> accountTypeComboBox = new JComboBox<>(new String[]{"Personal Account", "Admin Account"});
-            accountTypeLabel.setBounds(labelX, y, 100, height);
-            panel.add(accountTypeLabel);
-            accountTypeComboBox.setBounds(fieldX, y, width, height);
-            panel.add(accountTypeComboBox);
-
-            y += gap + 10; // 增加间距
-
-            createButton = new JButton("Register");
-            createButton.setBounds(60, y, 180, 35); // 按钮居中
-            createButton.setBackground(new Color(0, 120, 215));
-            createButton.setForeground(Color.WHITE);
-            createButton.setFocusPainted(false);
-            createButton.setFont(font);
-            panel.add(createButton);
-
-            // --- Register Button Action Listener ---
-            createButton.addActionListener(e -> {
-                String type = accountTypeComboBox.getSelectedItem().toString();
-                createAccount(type.equals("Admin Account") ? "Admin" : "personal");
-            });
-        }
+        // 初始化各面板
+        initializeContentPanels();
 
         setVisible(true);
     }
 
-    // --- createAccount Method (保持不变) ---
-    private void createAccount(String selectedAccountType) {
-        String username = usernameField.getText();
-        String password = new String(passwordField.getPassword());
-        String phone = phoneField.getText();
-        String email = emailField.getText();
-        String gender = genderComboBox.getSelectedItem().toString();
-        String address = addressField.getText();
+    private List<NavItemPanel> navItems = new ArrayList<>();
 
-        // 检查用户名是否已存在
-        List<AccountModel> accounts = UserRegistrationCSVExporter.readFromCSV();
-        for (AccountModel account : accounts) {
-            if (account.getUsername().equals(username)) {
-                JOptionPane.showMessageDialog(this, "Username already exists!", "Error", JOptionPane.ERROR_MESSAGE);
-                return; // 用户名已存在，停止注册
-            }
+    private JPanel createSidebar(boolean isLoggedIn) {
+        JPanel sb = new JPanel();
+        sb.setLayout(new BoxLayout(sb, BoxLayout.Y_AXIS));
+        sb.setBackground(Color.WHITE);
+        sb.setPreferredSize(new Dimension(200, 0));
+
+        // 1) 顶部 logo (这里用文字代替)
+        GradientLabel logo = new GradientLabel("Smart Finance");
+        logo.setFont(new Font("Segoe UI", Font.BOLD, 20));
+        logo.setBorder(new EmptyBorder(20, 0, 20, 0));
+        logo.setAlignmentX(Component.CENTER_ALIGNMENT);
+        sb.add(logo);
+
+        // 3) 菜单项
+        String[] options = isLoggedIn
+                ? new String[]{"Personal Main", "Account Management"}
+                : new String[]{"Welcome", "Login", "Register"};
+
+        for (String opt : options) {
+            NavItemPanel item = new NavItemPanel(opt);
+            navItems.add(item);
+            sb.add(item);
+            sb.add(Box.createRigidArea(new Dimension(0, 8)));
         }
 
-        // 检查字段是否为空
-        if (AccountValidator.isEmpty(username) || AccountValidator.isEmpty(password) ||
-                AccountValidator.isEmpty(phone) || AccountValidator.isEmpty(email) || AccountValidator.isEmpty(address)) {
-            JOptionPane.showMessageDialog(this, "All fields cannot be empty!", "Error", JOptionPane.ERROR_MESSAGE);
-            return; // 有字段为空，停止注册
-        }
+        // 默认选中第一个
+        if (!navItems.isEmpty()) navItems.get(0).setSelected(true);
 
-        // 可以添加更复杂的验证，如邮箱格式、手机号格式等
-
-        String creationTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
-        String accountStatus = "ACTIVE"; // 新账户默认为激活状态
-        double initialBalance = 0.0; // 新账户初始余额为0
-
-        AccountModel newAccount = null;
-        if ("personal".equalsIgnoreCase(selectedAccountType)) {
-            newAccount = new PersonalAccount(username, password, phone, email, gender, address, creationTime, accountStatus, "personal", initialBalance);
-        } else if ("Admin".equalsIgnoreCase(selectedAccountType)) {
-            newAccount = new AdminAccount(username, password, phone, email, gender, address, creationTime, accountStatus, "Admin", initialBalance);
-        }
-
-        if (newAccount != null) {
-            List<AccountModel> accountListToAdd = new ArrayList<>();
-            accountListToAdd.add(newAccount);
-            // 使用追加模式保存新账户
-            UserRegistrationCSVExporter.saveToCSV(accountListToAdd, true);
-            JOptionPane.showMessageDialog(this, "Account created successfully!");
-            dispose(); // 关闭注册/登录窗口
-        } else {
-             JOptionPane.showMessageDialog(this, "Invalid account type selected!", "Error", JOptionPane.ERROR_MESSAGE);
-        }
+        return sb;
     }
 
-
-    // --- loginAccount Method (修正版：绝对只提醒，不冻结，继续流程) ---
-    private void loginAccount(String username, String password) {
-        System.out.println("DEBUG: loginAccount - 尝试登录用户: " + username);
-        List<AccountModel> accounts = UserRegistrationCSVExporter.readFromCSV();
-        AccountModel matchedAccount = null;
-
-        // 查找匹配的账户
-        for (AccountModel account : accounts) {
-            if (account.getUsername().equals(username) && account.getPassword().equals(password)) {
-                matchedAccount = account;
-                break;
-            }
-        }
-
-        // 处理查找结果
-        if (matchedAccount != null) {
-            System.out.println("DEBUG: loginAccount - 找到账户: " + username);
-            // 账户找到了
-
-            // 1. 检查是否 *已经* 被冻结 (这是防止已冻结账户登录的必要检查)
-            System.out.println("DEBUG: loginAccount - 检查账户状态...");
-            if ("FROZEN".equalsIgnoreCase(matchedAccount.getAccountStatus())) {
-                System.out.println("DEBUG: loginAccount - 账户已冻结，停止登录。");
-                JOptionPane.showMessageDialog(this,
-                    "This account is currently frozen. Please contact the administrator.",
-                    "Account Frozen", JOptionPane.ERROR_MESSAGE);
-                return; // 如果账户已经是冻结状态，则不允许登录
-            }
-            System.out.println("DEBUG: loginAccount - 账户状态为 ACTIVE。");
-
-            // --- 确认登录凭证有效且账户未冻结 ---
-            // 2. *** 首先显示“登录成功”提示 ***
-            System.out.println("DEBUG: loginAccount - 显示 'Login successful!' 对话框...");
-            JOptionPane.showMessageDialog(this, "Login successful!");
-            System.out.println("DEBUG: loginAccount - 'Login successful!' 对话框已关闭。");
-
-            // 3. 加载交易记录
-            System.out.println("DEBUG: loginAccount - 准备加载交易记录...");
-            loadTransactionsForAccount(matchedAccount); // 加载交易记录到 matchedAccount 对象中
-            System.out.println("DEBUG: loginAccount - 交易记录加载完成。");
-
-            // 4. 检查异常交易（只提醒）
-            System.out.println("DEBUG: loginAccount - 准备检查异常交易...");
-            boolean abnormalDetected = TransactionChecker.hasAbnormalTransactions(matchedAccount);
-            System.out.println("DEBUG: loginAccount - 异常交易检查结果: " + abnormalDetected);
-
-            if (abnormalDetected) {
-                // *** 如果检测到异常，只显示警告信息 ***
-                System.out.println("DEBUG: loginAccount - 检测到异常交易，显示警告对话框...");
-                JOptionPane.showMessageDialog(this,
-                    "Warning: Recent large transfer activity detected on your account. Please review your transaction history.", // 警告信息
-                    "Activity Alert", // 弹窗标题
-                    JOptionPane.WARNING_MESSAGE); // 使用警告图标
-                System.out.println("DEBUG: loginAccount - 'Activity Alert' 对话框已关闭。");
-                // *** 删除了所有冻结账户的代码和 return 语句 ***
-                // 不再调用 AdminModifyService.freezeAccount(...)
-                // 不再显示账户被冻结的消息
-                // 不再 return，允许登录继续
-            }
-
-            // 5. *** 最后，设置 Session，打开主界面，关闭登录窗口 ***
-            // (无论 abnormalDetected 是 true 还是 false，都会执行到这里)
-            System.out.println("DEBUG: loginAccount - 准备设置用户 Session...");
-            UserSession.setCurrentUsername(username); // 设置当前登录的用户名
-            // 可以考虑存储整个 matchedAccount 对象到 UserSession 如果需要更多用户信息
-            // UserSession.setCurrentAccount(matchedAccount);
-            System.out.println("DEBUG: loginAccount - 用户 Session 已设置。");
-
-            System.out.println("DEBUG: loginAccount - 准备打开主界面...");
-            try {
-                 // 根据账户类型打开不同的主界面
-                 if (matchedAccount instanceof AdminAccount) {
-                     System.out.println("DEBUG: loginAccount - 打开 AdminUI。");
-                     new AdminUI(); // 创建并显示管理员界面
-                 } else if (matchedAccount instanceof PersonalAccount) {
-                     System.out.println("DEBUG: loginAccount - 打开 PersonalUI。");
-                     new PersonalUI(); // 创建并显示个人用户界面
-                 }
-                 System.out.println("DEBUG: loginAccount - 主界面已创建。");
-
-                 System.out.println("DEBUG: loginAccount - 准备关闭登录窗口...");
-                 // 使用 SwingUtilities.invokeLater 确保 dispose 在事件分发线程中安全执行
-                 // 避免与新窗口的显示发生潜在的时序问题
-                 SwingUtilities.invokeLater(this::dispose); // 关闭当前的登录对话框
-                 System.out.println("DEBUG: loginAccount - dispose() 已调用。");
-
-            } catch (Exception ex) {
-                 // 捕获打开主界面或关闭登录窗口时可能发生的任何异常
-                 System.err.println("ERROR: loginAccount - 打开主界面或关闭登录窗口时发生错误！");
-                 ex.printStackTrace(); // 打印详细的错误堆栈信息
-                 // 向用户显示一个通用的错误消息
-                 JOptionPane.showMessageDialog(this, "An error occurred while opening the main window.", "Error", JOptionPane.ERROR_MESSAGE);
-            }
-
-        } else {
-            // 没有找到匹配的账户
-            System.out.println("DEBUG: loginAccount - 登录失败：用户名或密码错误。");
-            JOptionPane.showMessageDialog(this, "Incorrect username or password!", "Login Failed", JOptionPane.ERROR_MESSAGE);
-        }
-        System.out.println("DEBUG: loginAccount - 方法执行完毕。");
-    }
-
-
-    // --- Helper method to load transactions for a specific account (保持不变) ---
-    private void loadTransactionsForAccount(AccountModel account) {
-        if (account == null) return; // 如果账户为空，则不执行任何操作
-        String username = account.getUsername();
-        String transactionFilePath = "transactions.csv"; // 交易记录文件名，确保路径正确
-
-        account.getTransactions().clear(); // 清空账户对象中现有的交易列表，准备重新加载
-
-        File file = new File(transactionFilePath);
-        if (!file.exists()) {
-            System.err.println("ERROR: loadTransactionsForAccount - 交易文件未找到: " + transactionFilePath);
-            // 文件不存在，可能需要创建或提示用户
-            return; // 无法加载，直接返回
-        }
-         System.out.println("DEBUG: loadTransactionsForAccount - 开始读取文件: " + transactionFilePath + " 为用户: " + username);
-
-        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
-            String line;
-            // 读取并丢弃表头行
-            String header = br.readLine();
-            if (header == null) {
-                System.err.println("ERROR: loadTransactionsForAccount - " + transactionFilePath + " 为空或只有头部。");
-                return; // 文件为空
-            }
-
-            int loadedCount = 0;
-            // 逐行读取交易数据
-            while ((line = br.readLine()) != null) {
-                if (line.trim().isEmpty()) continue; // 跳过空行
-
-                String[] data = line.split(","); // 使用逗号分隔数据
-                // 确保至少有基本字段：用户名,类型,金额,时间戳,描述
-                if (data.length >= 5) {
-                    String csvUsername = data[0].trim(); // CSV中的用户名
-
-                    // 只加载属于当前登录用户的交易记录
-                    if (csvUsername.equalsIgnoreCase(username)) {
-                        try {
-                            // 生成一个唯一的交易ID（这里用时间戳+随机数，仅作示例）
-                            String transactionId = System.currentTimeMillis() + "_" + ((int)(Math.random() * 1000));
-                            String type = data[1].trim(); // 交易类型
-                            double amount = Double.parseDouble(data[2].trim()); // 交易金额
-                            String timestamp = data[3].trim(); // 时间戳
-                            String descriptionOrMerchant = data[4].trim(); // 描述或商户
-
-                            // 处理描述中可能包含逗号的情况 (如果CSV是用引号包围含逗号的字段)
-                            if (data.length > 5) {
-                                StringBuilder sb = new StringBuilder(descriptionOrMerchant);
-                                for (int i = 5; i < data.length; i++) {
-                                    sb.append(",").append(data[i]); // 将后续部分拼接回来
-                                }
-                                descriptionOrMerchant = sb.toString().trim();
-                                // 如果描述是用引号包围的，去除首尾引号，并将双引号替换为单引号
-                                if (descriptionOrMerchant.startsWith("\"") && descriptionOrMerchant.endsWith("\"") && descriptionOrMerchant.length() >= 2) {
-                                     descriptionOrMerchant = descriptionOrMerchant.substring(1, descriptionOrMerchant.length() - 1).replace("\"\"", "\"");
-                                }
-                            }
-
-                            // 如果有相关用户字段，可以在这里解析 data[index]
-                            String relatedUser = null; // 假设没有这个字段或暂时不用
-
-                            // 创建 TransactionModel 对象
-                            TransactionModel tx = new TransactionModel(
-                                    transactionId, // 使用生成的ID
-                                    username,      // 确认是当前用户的
-                                    type,
-                                    amount,
-                                    timestamp,
-                                    descriptionOrMerchant,
-                                    relatedUser    // 可能为 null
-                            );
-                            // 将交易添加到账户的交易列表中
-                            account.addTransaction(tx);
-                            loadedCount++;
-
-                        } catch (NumberFormatException ex) {
-                            System.err.println("ERROR: loadTransactionsForAccount - 跳过交易，金额解析错误: " + line + " | 错误: " + ex.getMessage());
-                        } catch (ArrayIndexOutOfBoundsException ex) {
-                             System.err.println("ERROR: loadTransactionsForAccount - 跳过交易，字段不足: " + line + " | 错误: " + ex.getMessage());
-                        } catch (Exception ex) {
-                             // 捕获其他潜在错误
-                             System.err.println("ERROR: loadTransactionsForAccount - 跳过交易，发生意外错误: " + line + " | 错误: " + ex.getMessage());
-                             ex.printStackTrace();
-                        }
-                    }
-                } else {
-                     // 行数据列数不足，记录警告
-                     System.err.println("WARN: loadTransactionsForAccount - 跳过交易，列数不足: " + line);
+    /**
+     * 搜索框样式
+     **/
+    private void styleSearchField(JTextComponent tf, String placeholder) {
+        tf.setMaximumSize(new Dimension(Integer.MAX_VALUE, 34));
+        tf.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        tf.setBackground(new Color(240, 240, 240));
+        tf.setBorder(BorderFactory.createCompoundBorder(
+                new RoundBorder(17, new Color(200, 200, 200)),
+                BorderFactory.createEmptyBorder(4, 10, 4, 10)
+        ));
+        tf.setText(placeholder);
+        tf.setForeground(Color.GRAY);
+        tf.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusGained(FocusEvent e) {
+                if (tf.getText().equals(placeholder)) {
+                    tf.setText("");
+                    tf.setForeground(Color.DARK_GRAY);
                 }
             }
-             System.out.println("DEBUG: loadTransactionsForAccount - 为用户 " + username + " 加载了 " + loadedCount + " 条交易记录。");
-        } catch (IOException e) {
-            System.err.println("ERROR: loadTransactionsForAccount - 读取交易文件 '" + transactionFilePath + "' 时发生错误: " + e.getMessage());
-             // 可以在这里向用户显示错误消息
-             JOptionPane.showMessageDialog(this, "Failed to load transaction history.", "Error", JOptionPane.ERROR_MESSAGE);
+
+            @Override
+            public void focusLost(FocusEvent e) {
+                if (tf.getText().isEmpty()) {
+                    tf.setText(placeholder);
+                    tf.setForeground(Color.GRAY);
+                }
+            }
+        });
+    }
+
+    /**
+     * 左侧每一项的面板，点击选中时画渐变背景
+     */
+    class NavItemPanel extends JPanel {
+        private String name;
+        private JLabel iconLabel;
+        private JLabel textLabel;
+        private boolean selected = false;
+
+        public NavItemPanel(String name) {
+            this.name = name;
+            setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
+            setOpaque(false);
+            setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));
+            setBorder(new EmptyBorder(0, 12, 0, 12));
+            setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+
+            // TODO: 这里可以换成真正的图标
+            iconLabel = new JLabel("\u25CF"); // 占位圆点
+            iconLabel.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+            iconLabel.setForeground(new Color(150, 150, 150));
+
+            textLabel = new JLabel(name);
+            textLabel.setFont(new Font("Segoe UI", Font.PLAIN, 16));
+            textLabel.setBorder(new EmptyBorder(0, 8, 0, 0));
+            textLabel.setForeground(new Color(100, 100, 100));
+
+            add(iconLabel);
+            add(textLabel);
+            add(Box.createHorizontalGlue());
+
+            addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                    // 切卡
+                    cardLayout.show(contentPanel, name);
+
+                    // 更新选中状态
+                    for (NavItemPanel it : navItems) {
+                        it.setSelected(it == NavItemPanel.this);
+                    }
+                }
+
+                @Override
+                public void mouseEntered(MouseEvent e) {
+                    if (!selected) setBackground(new Color(245, 245, 245));
+                    repaint();
+                }
+
+                @Override
+                public void mouseExited(MouseEvent e) {
+                    if (!selected) {
+                        setBackground(null);
+                        repaint();
+                    }
+                }
+            });
+        }
+
+        public void setSelected(boolean sel) {
+            this.selected = sel;
+            if (sel) {
+                // 文字变白
+                textLabel.setForeground(Color.WHITE);
+                iconLabel.setForeground(Color.WHITE);
+            } else {
+                textLabel.setForeground(new Color(100, 100, 100));
+                iconLabel.setForeground(new Color(150, 150, 150));
+                setBackground(null);
+            }
+            repaint();
+        }
+
+        @Override
+        protected void paintComponent(Graphics g) {
+            if (selected) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                int w = getWidth(), h = getHeight();
+                GradientPaint gp = new GradientPaint(
+                        0, 0, new Color(156, 39, 176),
+                        w, 0, new Color(0, 47, 167)
+                );
+                g2.setPaint(gp);
+                g2.fillRoundRect(0, 0, w, h, 12, 12);
+                g2.dispose();
+            }
+            super.paintComponent(g);
         }
     }
 
-} // End of AccountManagementUI class
+    private void initializeContentPanels() {
+        contentPanel.add(wrapInScroll(createWelcomePanel()),       "Welcome");
+        contentPanel.add(wrapInScroll(createLoginPanel()),         "Login");
+        contentPanel.add(wrapInScroll(createRegisterPanel()),      "Register");
+        contentPanel.add(wrapInScroll(createPersonalMain()),       "Personal Main");
+        contentPanel.add(wrapInScroll(createPersonalCenter()),     "Account Management");
+        cardLayout.show(contentPanel, "Welcome");
+    }
+
+    // --- 面板工厂方法 ---
+    private JPanel createWelcomePanel() {
+        JPanel p = new GradientPanel();
+        p.setLayout(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.insets = new Insets(20, 60, 20, 60);  // 增大垂直间距
+
+        // 1. 标题 User Account
+        JLabel title = new JLabel("User Account", SwingConstants.CENTER);
+        title.setFont(new Font("Segoe UI", Font.BOLD, 32)); // 字体更大
+        title.setForeground(Color.WHITE);
+        gbc.gridy = 0;
+        gbc.ipady = 10;
+        p.add(title, gbc);
+
+
+        // 2. Log in 按钮
+        GradientTextButton bLogin = new GradientTextButton("Log in");
+        bLogin.setPreferredSize(new Dimension(0, 40));
+
+        bLogin.setBackground(Color.WHITE);
+
+// ✅ 去掉边框绘制 + 不透明背景绘制
+        bLogin.setBorderPainted(false);                // 不画边框
+        bLogin.setFocusPainted(false);                 // 去掉焦点虚线
+        bLogin.setContentAreaFilled(true);             // 使用 background
+        bLogin.setOpaque(true);                        // 启用 background 不透明
+        bLogin.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        bLogin.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                bLogin.setBackground(new Color(245, 245, 255));
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                bLogin.setBackground(Color.WHITE);
+            }
+        });
+
+        bLogin.addActionListener(e -> cardLayout.show(contentPanel, "Login"));
+        gbc.gridy = 1;
+        p.add(bLogin, gbc);
+
+        // 3. Sign in 按钮
+        GradientTextButton bReg = new GradientTextButton("Sign in");
+        bReg.setPreferredSize(new Dimension(0, 40));
+        bReg.setBorderPainted(false);
+        bReg.setFocusPainted(false);
+        bReg.setContentAreaFilled(true);
+        bReg.setOpaque(true);
+        bReg.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        bReg.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                bReg.setBackground(new Color(245, 245, 255));
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                bReg.setBackground(Color.WHITE);
+            }
+        });
+
+        bReg.addActionListener(e -> cardLayout.show(contentPanel, "Register"));
+        gbc.gridy = 2;
+        p.add(bReg, gbc);
+
+        return p;
+    }
+
+
+    private JPanel createLoginPanel() {
+        JPanel p = new GradientPanel();
+        p.setLayout(new GridBagLayout());
+
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.fill = GridBagConstraints.NONE; // ✅ 不拉伸
+        gbc.anchor = GridBagConstraints.CENTER;
+        gbc.insets = new Insets(12, 0, 12, 0); // 垂直间距
+
+        // 1. 标题
+        JLabel title = new JLabel("Finance Management System", SwingConstants.CENTER);
+        title.setFont(new Font("Segoe UI", Font.BOLD, 24));
+        title.setForeground(Color.WHITE);
+        gbc.gridy = 0;
+        p.add(title, gbc);
+
+        // 2. Username
+        RoundedTextField userField = new RoundedTextField("Username");
+        gbc.gridy = 1;
+        p.add(userField, gbc);
+
+        // 3. Password
+        RoundedPasswordField passField = new RoundedPasswordField("Password");
+        gbc.gridy = 2;
+        p.add(passField, gbc);
+
+        // 4. 登录按钮
+        JButton btn = new JButton("Log in");
+        btn.setFont(new Font("Segoe UI", Font.BOLD, 18));
+        btn.setForeground(Color.WHITE);
+        btn.setBackground(new Color(0, 47, 167));
+        btn.setFocusPainted(false);
+        btn.setBorder(new RoundBorder(30, new Color(0, 47, 167)));
+        btn.setPreferredSize(new Dimension(240, 50)); // ✅ 与输入框宽度一致
+        btn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        btn.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                btn.setBackground(new Color(30, 70, 200));
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                btn.setBackground(new Color(0, 47, 167));
+            }
+        });
+        btn.addActionListener(e ->
+                controller.handleLogin(
+                        userField.getText(),
+                        new String(passField.getPassword()),
+                        AccountManagementUI.this
+                )
+        );
+        gbc.gridy = 3;
+        p.add(btn, gbc);
+
+        return p;
+    }
+
+
+
+    private JPanel createRegisterPanel() {
+        JPanel p = new GradientPanel();
+        p.setLayout(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.fill = GridBagConstraints.NONE;
+        gbc.anchor = GridBagConstraints.CENTER;
+        gbc.insets = new Insets(12, 0, 12, 0);
+
+        // 标题
+        JLabel title = new JLabel("Register New Account", SwingConstants.CENTER);
+        title.setFont(new Font("Segoe UI", Font.BOLD, 24));
+        title.setForeground(Color.WHITE);
+        gbc.gridy = 0;
+        p.add(title, gbc);
+
+        // Username
+        RoundedTextField usernameField = new RoundedTextField("Username");
+        gbc.gridy = 1;
+        p.add(usernameField, gbc);
+
+        // Password
+        RoundedPasswordField passwordField = new RoundedPasswordField("Password");
+        gbc.gridy = 2;
+        p.add(passwordField, gbc);
+
+        // Phone
+        RoundedTextField phoneField = new RoundedTextField("Phone");
+        gbc.gridy = 3;
+        p.add(phoneField, gbc);
+
+        // Email
+        RoundedTextField emailField = new RoundedTextField("Email");
+        gbc.gridy = 4;
+        p.add(emailField, gbc);
+
+        // Gender 下拉
+        RoundedComboBox<String> genderBox = new RoundedComboBox<>(new String[]{"Male", "Female"});
+        gbc.gridy = 5;
+        p.add(genderBox, gbc);
+
+        // Address
+        RoundedTextField addressField = new RoundedTextField("Address");
+        gbc.gridy = 6;
+        p.add(addressField, gbc);
+
+        // Account Type 下拉
+        RoundedComboBox<String> acctTypeBox = new RoundedComboBox<>(new String[]{"Personal", "Admin"});
+        gbc.gridy = 7;
+        p.add(acctTypeBox, gbc);
+
+        // 注册按钮
+        JButton registerBtn = new JButton("Register");
+        registerBtn.setFont(new Font("Segoe UI", Font.BOLD, 18));
+        registerBtn.setForeground(Color.WHITE);
+        registerBtn.setBackground(new Color(0, 47, 167));
+        registerBtn.setFocusPainted(false);
+        registerBtn.setBorder(new RoundBorder(30, new Color(0, 47, 167)));
+        registerBtn.setPreferredSize(new Dimension(240, 50));
+        registerBtn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        registerBtn.addMouseListener(new MouseAdapter() {
+            @Override public void mouseEntered(MouseEvent e) { registerBtn.setBackground(new Color(30,70,200)); }
+            @Override public void mouseExited(MouseEvent e) { registerBtn.setBackground(new Color(0,47,167)); }
+        });
+        registerBtn.addActionListener(e -> {
+            String username = usernameField.getActualText();
+            String password = passwordField.getActualPassword();
+            String phone    = phoneField.getActualText();
+            String email    = emailField.getActualText();
+            String gender   = genderBox.getSelectedItem().toString();
+            String address  = addressField.getActualText();
+            String acctType = acctTypeBox.getSelectedItem().toString();
+
+            controller.handleRegister(
+                    username, password, phone,
+                    email, gender, address,
+                    acctType, AccountManagementUI.this
+            );
+        });
+        gbc.gridy = 8;
+        p.add(registerBtn, gbc);
+
+        return p;
+    }
+
+
+
+    private JScrollPane wrapInScroll(JPanel panel) {
+        JScrollPane scroll = new JScrollPane(panel);
+        scroll.setBorder(null);
+        scroll.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        scroll.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
+        // 保持背景一致
+        scroll.getViewport().setBackground(panel.getBackground());
+        return scroll;
+    }
+
+
+    private JPanel createPersonalMain() {
+        JPanel p = new JPanel();
+        p.setBackground(new Color(230, 240, 250));
+        p.add(new JLabel("Welcome to Personal Main"));
+        return p;
+    }
+
+    private JPanel createPersonalCenter() {
+        JPanel p = new JPanel();
+        p.setBackground(new Color(230, 240, 250));
+        p.add(new JLabel("Account Management - Personal Center"));
+        return p;
+    }
+
+    // -------- 样式方法 --------
+
+    /**
+     * 给按钮设渐变边框
+     **/
+    private void styleButton(JButton btn) {
+        btn.setBackground(Color.WHITE);
+        btn.setOpaque(true);
+        btn.setFont(new Font("Segoe UI", Font.PLAIN, 16));
+        btn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        btn.setBorder(new GradientBorder(2, 12));
+        btn.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                btn.setBackground(new Color(245, 245, 255));
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                btn.setBackground(Color.WHITE);
+            }
+        });
+    }
+
+    /**
+     * 渐变文本 Label
+     **/
+
+    /**
+     * 渐变圆角边框
+     **/
+    static class GradientBorder extends AbstractBorder {
+        private int thickness, radius;
+
+        public GradientBorder(int thickness, int radius) {
+            this.thickness = thickness;
+            this.radius = radius;
+        }
+
+        @Override
+        public void paintBorder(Component c, Graphics g, int x, int y, int w, int h) {
+            Graphics2D g2 = (Graphics2D) g;
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+                    RenderingHints.VALUE_ANTIALIAS_ON);
+            Shape outer = new RoundRectangle2D.Float(
+                    x + thickness / 2f, y + thickness / 2f,
+                    w - thickness, h - thickness,
+                    radius, radius
+            );
+            GradientPaint gp = new GradientPaint(
+                    x, y, new Color(0x9C27B0),
+                    x + w, y + h, new Color(0x002FA7)
+            );
+            g2.setPaint(gp);
+            g2.setStroke(new BasicStroke(thickness));
+            g2.draw(outer);
+        }
+
+        @Override
+        public Insets getBorderInsets(Component c) {
+            return new Insets(thickness, thickness, thickness, thickness);
+        }
+
+        @Override
+        public Insets getBorderInsets(Component c, Insets insets) {
+            insets.set(thickness, thickness, thickness, thickness);
+            return insets;
+        }
+    }
+
+
+
+    private void styleTextField(JTextComponent tf, String placeholder) {
+        tf.setOpaque(false); // ❗不填背景，让我们自己画圆角
+        tf.setFont(new Font("Segoe UI", Font.PLAIN, 18));
+        tf.setBorder(BorderFactory.createEmptyBorder(10, 14, 10, 14));
+        tf.setPreferredSize(new Dimension(240, 40));
+
+        tf.setText(placeholder);
+        tf.setForeground(Color.GRAY);
+
+        // 👇 可选：标记 placeholder 状态（避免误清空）
+        tf.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusGained(FocusEvent e) {
+                if (tf.getText().equals(placeholder)) {
+                    tf.setText("");
+                    tf.setForeground(Color.DARK_GRAY);
+                }
+            }
+
+            @Override
+            public void focusLost(FocusEvent e) {
+                if (tf.getText().trim().isEmpty()) {
+                    tf.setText(placeholder);
+                    tf.setForeground(Color.GRAY);
+                }
+            }
+        });
+    }
+
+
+    /**
+     * 通用圆角边框
+     **/
+    static class RoundBorder implements Border {
+        private int radius;
+        private Color color;
+
+        public RoundBorder(int radius, Color color) {
+            this.radius = radius;
+            this.color = color;
+        }
+
+        @Override
+        public Insets getBorderInsets(Component c) {
+            return new Insets(radius / 2, radius / 2, radius / 2, radius / 2);
+        }
+
+        @Override
+        public boolean isBorderOpaque() {
+            return false;
+        }
+
+        @Override
+        public void paintBorder(Component c, Graphics g, int x, int y, int w, int h) {
+            Graphics2D g2 = (Graphics2D) g.create();
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+                    RenderingHints.VALUE_ANTIALIAS_ON);
+            RoundRectangle2D round = new RoundRectangle2D.Float(
+                    x + 1, y + 1, w - 2, h - 2, radius, radius
+            );
+            g2.setColor(color);
+            g2.setStroke(new BasicStroke(2));
+            g2.draw(round);
+            g2.dispose();
+        }
+    }
+
+
+    /**
+     * 在 UI 中弹出自定义对话框
+     * @param message 弹窗内容
+     * @param title    弹窗标题
+     * @param messageType JOptionPane 类型（JOptionPane.ERROR_MESSAGE / INFORMATION_MESSAGE / WARNING_MESSAGE）
+     */
+    public void showCustomMessage(String message, String title, int messageType) {
+        // 使用 modal JDialog 而非 JOptionPane.showMessageDialog，样式更统一
+        JDialog dialog = new JDialog(this, title, true);
+        dialog.setSize(400, 200);
+        dialog.setLocationRelativeTo(this);
+        dialog.setLayout(new BorderLayout());
+        dialog.getContentPane().setBackground(new Color(230, 230, 250)); // 背景色
+
+        JLabel msgLabel = new JLabel("<html><center>" + message + "</center></html>", SwingConstants.CENTER);
+        msgLabel.setFont(new Font("Segoe UI", Font.PLAIN, 16));
+        // 根据类型设置颜色
+        if (messageType == JOptionPane.ERROR_MESSAGE) {
+            msgLabel.setForeground(Color.RED);
+        } else if (messageType == JOptionPane.WARNING_MESSAGE) {
+            msgLabel.setForeground(Color.ORANGE);
+        } else {
+            msgLabel.setForeground(new Color(50, 50, 50));
+        }
+        dialog.add(msgLabel, BorderLayout.CENTER);
+
+        JButton ok = new JButton("OK");
+        ok.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        ok.setBackground(new Color(147,112,219));
+        ok.setForeground(Color.WHITE);
+        ok.setFocusPainted(false);
+        ok.addActionListener(e -> dialog.dispose());
+        JPanel btnP = new JPanel();
+        btnP.setBackground(new Color(230, 230, 250));
+        btnP.add(ok);
+        dialog.add(btnP, BorderLayout.SOUTH);
+
+        dialog.setVisible(true);
+    }
+    public void switchToLoginPanel() {
+        // 确保 cardLayout、contentPanel 已经初始化
+        if (this.cardLayout != null && this.contentPanel != null) {
+            cardLayout.show(contentPanel, "Login");
+        }
+    }
+    /**
+     * 由 Controller 登录/注册成功后，关闭当前窗口
+     */
+    public void closeWindow() {
+        SwingUtilities.invokeLater(this::dispose);
+    }
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() ->
+                new AccountManagementUI(new AccountManagementController())
+        );
+    }
+}
