@@ -1,16 +1,14 @@
-## Implemented Features and Updates
-
-* **Periodic Reporting Feature:** Developed a new feature for generating periodic reports. This functionality includes:
-    * Allowing users to set custom reporting periods (defined in days).
-    * Displaying income and expense amounts over the selected period using a line graph for clear visualization.
-
-* **Prototype Alignment Modifications:** Updated several key components to align with the provided prototype design. These modifications include:
-    * Improvements and adjustments to the Person User Interface (PersonUI).
-    * Refinements to the Login interface.
-    * Modifications to the Withdrawal functionality.
-    These changes ensure the application's appearance and core interactions conform to the prototype specifications.
-
-* **Admin Module Enhancement:** Updated the method for reading the transactions.csv file to ensure it correctly parses data from the file's modified format within the Admin module.
-* **Main Branch Maintenance:** Performed regular code integration and maintenance tasks within the `main` branch. This ongoing effort is crucial for maintaining a healthy and stable codebase, ensuring smooth and normal development progress.
-
+# Folder Structure
+## AI模型文件
+通过网盘分享的文件：dist.zip
+链接: https://pan.baidu.com/s/1M3x8FVq7p5cE0sdAx2x9UA 提取码: pgpp
+下载解压后放入coursework目录下，与src同级。
 ---
+
+## 任务分配
+* **陈静怡**：
+    * `user_budget.csv`
+    * `BudgetGoalDialog.java`
+    * `BudgetAdvisor.java`
+    * 部分`PersonalUI.java`功能建立及更改
+    * `transactions.csv`部分数据提供
