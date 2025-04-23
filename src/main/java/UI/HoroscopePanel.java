@@ -1,12 +1,13 @@
 package UI;
 
-// Import necessary classes
-import PersonModel.HoroscopeReport;
-import PersonModel.SpendingHoroscopeService; // Ensure this returns FILENAMES for imagePath
-import AccountModel.UserSession;
+import PersonController.HoroscopeReportModel;
+import PersonController.SpendingHoroscopeService;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+
+import AccountModel.UserSession;
+
 import java.awt.*;
 import java.io.File; // Needed for file system access
 // No longer need java.net.URL directly if only using file path loading
@@ -473,13 +474,13 @@ public class HoroscopePanel extends JPanel {
     private void loadHoroscopeData() {
         if (horoscopeService == null) { /* ... error handling ... */ return; }
         showLoadingState(true);
-        SwingWorker<HoroscopeReport, Void> worker = new SwingWorker<HoroscopeReport, Void>() {
-            @Override protected HoroscopeReport doInBackground() throws Exception {
+        SwingWorker<HoroscopeReportModel, Void> worker = new SwingWorker<HoroscopeReportModel, Void>() {
+            @Override protected HoroscopeReportModel doInBackground() throws Exception {
                 System.out.println("DEBUG: HoroscopePanel (Worker) - Calling generateWeeklyReport for " + username);
                 return horoscopeService.generateWeeklyReport(username);
             }
             @Override protected void done() {
-                HoroscopeReport report = null;
+                HoroscopeReportModel report = null;
                 try {
                     report = get();
                     if (report == null) report = horoscopeService.getDefaultErrorReport();
@@ -502,10 +503,10 @@ public class HoroscopePanel extends JPanel {
      * Updates the REPORT card UI. Calls image loading targeting reportImageLabel.
      * Ensures runs on EDT.
      */
-    private void updateUI(HoroscopeReport report) {
-        final HoroscopeReport finalReport = (report != null) ? report :
+    private void updateUI(HoroscopeReportModel report) {
+        final HoroscopeReportModel finalReport = (report != null) ? report :
              ((horoscopeService != null) ? horoscopeService.getDefaultErrorReport() :
-              new HoroscopeReport("Error", "Failed to load report.", ERROR_IMAGE_FILENAME));
+              new HoroscopeReportModel("Error", "Failed to load report.", ERROR_IMAGE_FILENAME));
 
         if (!SwingUtilities.isEventDispatchThread()) {
              SwingUtilities.invokeLater(() -> updateUI(finalReport));

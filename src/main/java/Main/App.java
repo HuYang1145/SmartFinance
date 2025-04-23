@@ -2,7 +2,7 @@ package Main;
 
 import javax.swing.SwingUtilities;
 
-import AccountModel.AccountManagementController;
+import AccountController.AccountManagementController;
 import UI.AccountManagementUI;
 
 public class App {

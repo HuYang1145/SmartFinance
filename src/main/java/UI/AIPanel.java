@@ -1,9 +1,9 @@
 package UI;
 
-// --- Keep existing UI/Util imports ---
-
-import AccountModel.*;
 import com.google.gson.Gson;
+
+import AIController.DeepSeekFileProcessor;
+import AccountModel.*;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;

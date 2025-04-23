@@ -42,12 +42,12 @@ import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
 
+import AccountController.TransactionCSVImporter;
+import AccountController.UserRegistrationCSVExporter;
 import AccountModel.AccountModel;
-import AccountModel.TransactionCSVImporter;
-import AccountModel.UserRegistrationCSVExporter;
-import AdminModel.AdminAccountQuery;
-import AdminModel.AdminSelfInfo;
-import AdminModel.ModifyCustomerInfoDialog;
+import AdminController.AdminAccountQuery;
+import AdminController.AdminSelfInfo;
+import AdminController.PersonModifyService;
 
 public class AdminPlane extends JDialog {
     private CardLayout cardLayout;
@@ -666,7 +666,7 @@ public class AdminPlane extends JDialog {
                     AccountModel targetAccount = findAccountByUsername(customerUsername.trim()); // Find without password check
                     if (targetAccount != null) {
                         // Found customer, open modify dialog
-                        ModifyCustomerInfoDialog modifyDialog = new ModifyCustomerInfoDialog(); // Assuming constructor is parameterless
+                        PersonModifyService modifyDialog = new PersonModifyService(); // Assuming constructor is parameterless
                         modifyDialog.setAccountInfo(targetAccount); // Pass account data to the dialog
                         modifyDialog.setVisible(true); // Show the dialog (likely modal)
 

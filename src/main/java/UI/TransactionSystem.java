@@ -38,12 +38,29 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.swing.*;
+import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
+import javax.swing.DefaultListCellRenderer;
+import javax.swing.DefaultListModel;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JPasswordField;
+import javax.swing.JScrollBar;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.JTextField;
+import javax.swing.ScrollPaneConstants;
+import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
+import javax.swing.Timer;
 import javax.swing.plaf.basic.BasicScrollBarUI;
 import javax.swing.table.DefaultTableCellRenderer;
 
-
-import AccountModel.AccountModel;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -54,13 +71,14 @@ import org.json.JSONObject;
 
 import com.google.gson.Gson;
 
-import AccountModel.TransactionService;
-import AccountModel.TransactionService.TransactionData;
-import static PersonModel.IncomeExpenseChart.filterByYearMonth;
-
-import UI.AccountManagementUI.RoundBorder;
-import UI.RoundedInputField.*;
+import AccountController.TransactionService;
+import AccountController.TransactionService.TransactionData;
+import AccountModel.AccountModel;
 import AccountModel.UserSession;
+import static PersonController.IncomeExpenseChart.filterByYearMonth;
+import UI.AccountManagementUI.RoundBorder;
+import UI.RoundedInputField.BrandGradientPanel;
+import UI.RoundedInputField.GradientButton;
 
 public class TransactionSystem extends JPanel {
     private final String username;

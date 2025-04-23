@@ -1,25 +1,46 @@
 package UI;
 
-import AccountModel.TransactionService;
-// import AccountModel.TransactionService.TransactionData; // Not used directly in this snippet of Code 1
-import AccountModel.UserSession;
-// import PersonModel.ExpenseDialog; // Not used directly in this snippet of Code 1
-// import PersonModel.IncomeDialog; // Not used directly in this snippet of Code 1
-import PersonModel.IncomeExpenseChart;
-import UI.AccountManagementUI.RoundBorder;
-// --- Added Import for the new panel ---
-import UI.HoroscopePanel; // <<< MODIFICATION: Added import for the new panel (assuming package UI)
+import java.awt.BorderLayout;
+import java.awt.CardLayout;
+import java.awt.Color; // <<< MODIFICATION: Added import for the new panel (assuming package UI)
+import java.awt.Component;
+import java.awt.Cursor;
+import java.awt.Dimension;
+import java.awt.FlowLayout; // Not used directly in this snippet of Code 1
+import java.awt.Font;
+import java.awt.GradientPaint;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
+import java.awt.event.ActionListener; // Explicit import for List
+import java.awt.event.FocusAdapter; // Assuming GradientLabel is here as per Code 1 reference in createSidebar
+import java.awt.event.FocusEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.util.Calendar;
 
-import javax.swing.*;
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.DefaultListCellRenderer;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JComponent;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 import javax.swing.plaf.basic.BasicComboBoxUI;
-import javax.swing.table.DefaultTableCellRenderer; // Not used directly in this snippet of Code 1
-import java.awt.*;
-import java.awt.event.*;
-import java.util.Calendar;
-import java.util.List; // Explicit import for List
 
-import UI.RoundedInputField.*; // Assuming GradientLabel is here as per Code 1 reference in createSidebar
+import AccountModel.UserSession;
+import PersonController.IncomeExpenseChart;
+import UI.AccountManagementUI.RoundBorder;
 
 // import static PersonModel.IncomeExpenseChart.filterByYearMonth; // Not used directly in this snippet of Code 1
 
