@@ -28,7 +28,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.JTableHeader;
 
 import AccountModel.TransactionServiceModel.TransactionData;
-import PersonModel.TransactionAnalyzer;
+import PersonModel.TransactionAnalyzerModel;
 
 /**
  * View class for rendering income and expense charts, tables, and analysis panels.
@@ -73,10 +73,10 @@ public class IncomeExpenseChartView {
                 g2d.setColor(Color.WHITE);
                 g2d.fillRect(0, 0, getWidth(), getHeight());
 
-                List<TransactionData> transactions = TransactionAnalyzer.getFilteredTransactions(username, yearMonth);
+                List<TransactionData> transactions = TransactionAnalyzerModel.getFilteredTransactions(username, yearMonth);
                 Map<String, Double> categoryTotals = isExpense
-                        ? TransactionAnalyzer.calculateExpenseCategoryTotals(transactions)
-                        : TransactionAnalyzer.calculateIncomeCategoryTotals(transactions);
+                        ? TransactionAnalyzerModel.calculateExpenseCategoryTotals(transactions)
+                        : TransactionAnalyzerModel.calculateIncomeCategoryTotals(transactions);
 
                 double totalAmount = categoryTotals.values().stream().mapToDouble(Double::doubleValue).sum();
                 if (totalAmount <= 0) {
@@ -183,7 +183,7 @@ public class IncomeExpenseChartView {
         title.setBorder(BorderFactory.createEmptyBorder(5, 0, 5, 0));
         panel.add(title, BorderLayout.NORTH);
 
-        List<TransactionData> transactions = TransactionAnalyzer.getFilteredTransactions(username, yearMonth);
+        List<TransactionData> transactions = TransactionAnalyzerModel.getFilteredTransactions(username, yearMonth);
         String[] columnNames = {"User", "Operation", "Amount", "Time", "Merchant", "Type", "Remark", "Category",
                 "Payment Method", "Location"};
         Object[][] data = new Object[transactions.size()][columnNames.length];
@@ -249,7 +249,7 @@ public class IncomeExpenseChartView {
         panel.setBackground(Color.WHITE);
         panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        List<TransactionData> transactions = TransactionAnalyzer.getFilteredTransactions(username, yearMonth);
+        List<TransactionData> transactions = TransactionAnalyzerModel.getFilteredTransactions(username, yearMonth);
         Map<String, Integer> typeCounts = new HashMap<>();
         Map<String, Double> typeTotals = new HashMap<>();
         double totalExpense = 0.0;
@@ -321,7 +321,7 @@ public class IncomeExpenseChartView {
                 Graphics2D g2d = (Graphics2D) g.create();
                 g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-                List<TransactionData> transactions = TransactionAnalyzer.getFilteredTransactions(username, yearMonth);
+                List<TransactionData> transactions = TransactionAnalyzerModel.getFilteredTransactions(username, yearMonth);
 
                 double[] dailyExpenses = new double[31];
                 double[] dailyIncomes = new double[31];

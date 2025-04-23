@@ -27,7 +27,7 @@ public abstract class AccountModel implements Serializable {
     private List<TransactionModel> transactions;
 
     // --- 构造函数 ---
-    public AccountModel(String username, String password, String phone, String email, String gender, String address, 
+    public AccountModel(String username, String password, String phone, String email, String gender, String address,
                        String creationTime, AccountStatus accountStatus, String accountType, double balance) {
         this.username = username;
         this.password = password;
@@ -85,7 +85,7 @@ public abstract class AccountModel implements Serializable {
         if (transaction != null && this.username.equals(transaction.getAccountUsername())) {
             this.transactions.add(transaction);
         } else {
-            System.err.println("警告：尝试向账户 " + this.username + " 添加无效或不匹配的交易。");
+            throw new IllegalArgumentException("Invalid or mismatched transaction for account: " + this.username);
         }
     }
 
@@ -108,41 +108,44 @@ public abstract class AccountModel implements Serializable {
         return sb.toString();
     }
 
-    public static AccountModel fromCSV(String csvLine) {
+    public static AccountModel fromCSV(String csvLine) throws IllegalArgumentException {
         String[] parts = csvLine.split(",", -1);
         if (parts.length >= 10) {
             try {
-                String username = parts[0].trim();
-                String password = parts[1].trim();
-                String phone = parts[2].trim();
-                String email = parts[3].trim();
-                String gender = parts[4].trim();
-                String address = parts[5].trim();
-                String creationTime = parts[6].trim();
-                AccountStatus accountStatus = AccountStatus.valueOf(parts[7].trim().toUpperCase());
-                String accountType = parts[8].trim();
-                double balance = Double.parseDouble(parts[9].trim());
+                String username = parts[0].trim().isEmpty() ? null : parts[0].trim();
+                String password = parts[1].trim().isEmpty() ? null : parts[1].trim();
+                String phone = parts[2].trim().isEmpty() ? null : parts[2].trim();
+                String email = parts[3].trim().isEmpty() ? null : parts[3].trim();
+                String gender = parts[4].trim().isEmpty() ? null : parts[4].trim();
+                String address = parts[5].trim().isEmpty() ? null : parts[5].trim();
+                String creationTime = parts[6].trim().isEmpty() ? null : parts[6].trim();
+                String statusStr = parts[7].trim().toUpperCase();
+                String accountType = parts[8].trim().isEmpty() ? null : parts[8].trim();
+                String balanceStr = parts[9].trim();
+
+                if (username == null || password == null || accountType == null) {
+                    throw new IllegalArgumentException("Required fields (username, password, accountType) cannot be empty in CSV line: " + csvLine);
+                }
+
+                AccountStatus accountStatus = AccountStatus.valueOf(statusStr);
+                double balance = balanceStr.isEmpty() ? 0.0 : Double.parseDouble(balanceStr);
 
                 if ("admin".equalsIgnoreCase(accountType)) {
-                    return new AdminAccountModel(username, password, phone, email, gender, address, 
-                                          creationTime, accountStatus, accountType, balance);
+                    return new AdminAccountModel(username, password, phone, email, gender, address,
+                            creationTime, accountStatus, accountType, balance);
                 } else if ("personal".equalsIgnoreCase(accountType)) {
-                    return new PersonalAccountModel(username, password, phone, email, gender, address, 
-                                             creationTime, accountStatus, accountType, balance);
+                    return new PersonalAccountModel(username, password, phone, email, gender, address,
+                            creationTime, accountStatus, accountType, balance);
                 } else {
-                    System.err.println("从 CSV 加载账户失败：未知的账户类型 '" + accountType + "' in line: " + csvLine);
-                    return null;
+                    throw new IllegalArgumentException("Unknown account type: " + accountType + " in CSV line: " + csvLine);
                 }
             } catch (NumberFormatException e) {
-                System.err.println("从 CSV 解析账户时发生错误 in line: " + csvLine + " Error: " + e.getMessage());
-                return null;
+                throw new IllegalArgumentException("Invalid balance format in CSV line: " + csvLine, e);
             } catch (IllegalArgumentException e) {
-                System.err.println("从 CSV 解析账户状态失败：无效的状态值 in line: " + csvLine + " Error: " + e.getMessage());
-                return null;
+                throw new IllegalArgumentException("Invalid account status or other field in CSV line: " + csvLine, e);
             }
         } else {
-            System.err.println("从 CSV 加载账户失败：字段数量不足 (" + parts.length + ") in line: " + csvLine);
-            return null;
+            throw new IllegalArgumentException("Insufficient fields (" + parts.length + ") in CSV line: " + csvLine);
         }
     }
 }

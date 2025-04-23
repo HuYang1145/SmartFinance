@@ -75,7 +75,7 @@ import AccountModel.AccountModel;
 import AccountModel.TransactionServiceModel;
 import AccountModel.TransactionServiceModel.TransactionData;
 import AccountModel.UserSessionModel;
-import PersonModel.TransactionAnalyzer;
+import PersonModel.TransactionAnalyzerModel;
 import View.AccountManagementUI.RoundBorder;
 import View.RoundedInputField.BrandGradientPanel;
 import View.RoundedInputField.GradientButton;
@@ -702,7 +702,7 @@ private JPanel createExpensePanel() {
                 cal.get(java.util.Calendar.YEAR),
                 cal.get(java.util.Calendar.MONTH) + 1
         );
-        List<TransactionData> txs = TransactionAnalyzer.getFilteredTransactions(username, currentYearMonth);
+        List<TransactionData> txs = TransactionAnalyzerModel.getFilteredTransactions(username, currentYearMonth);
 
         // Populate ListModel
         DefaultListModel<TransactionData> model = new DefaultListModel<>();
@@ -994,7 +994,7 @@ private void updateHistoricalTrend() {
                 cal.get(java.util.Calendar.MONTH) + 1
         );
 
-        List<TransactionData> txs = TransactionAnalyzer.getFilteredTransactions(username, currentYearMonth);
+        List<TransactionData> txs = TransactionAnalyzerModel.getFilteredTransactions(username, currentYearMonth);
 
         String[] colNames = {"Operation", "Amount"};
         Object[][] data = new Object[txs.size()][2];

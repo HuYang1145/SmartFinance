@@ -17,7 +17,7 @@ import org.slf4j.LoggerFactory;
 
 import AccountModel.TransactionServiceModel.TransactionData;
 import PersonModel.HoroscopeReportModel;
-import PersonModel.TransactionAnalyzer;
+import PersonModel.TransactionAnalyzerModel;
 
 /**
  * Controller service for generating personalized spending horoscope reports based on user transactions.
@@ -84,7 +84,7 @@ public class SpendingHoroscopeServiceController {
             logger.debug("Analyzing week: {} to {}", startOfWeek, endOfWeek);
 
             // Get all transactions for the user
-            List<TransactionData> allTransactions = TransactionAnalyzer.getFilteredTransactions(username, startOfWeek.toString().substring(0, 7)); // yyyy/MM
+            List<TransactionData> allTransactions = TransactionAnalyzerModel.getFilteredTransactions(username, startOfWeek.toString().substring(0, 7)); // yyyy/MM
             if (allTransactions == null) {
                 logger.error("Failed to read transactions for user {}", username);
                 return getDefaultErrorReport();
@@ -126,7 +126,7 @@ public class SpendingHoroscopeServiceController {
             }
 
             // Calculate category totals for this week's expenses
-            Map<String, Double> categoryTotals = TransactionAnalyzer.calculateExpenseCategoryTotals(weeklyExpenses);
+            Map<String, Double> categoryTotals = TransactionAnalyzerModel.calculateExpenseCategoryTotals(weeklyExpenses);
 
             // Calculate total weekly expense
             double totalWeeklyExpense = categoryTotals.values().stream().mapToDouble(Double::doubleValue).sum();

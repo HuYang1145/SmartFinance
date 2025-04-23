@@ -11,7 +11,7 @@ import AccountModel.TransactionServiceModel.TransactionData;
 /**
  * Model class for analyzing transaction data, providing category totals and filtered transactions.
  */
-public class TransactionAnalyzer {
+public class TransactionAnalyzerModel {
 
     /**
      * Calculates the total amount for each expense category based on transaction data.

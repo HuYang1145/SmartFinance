@@ -45,9 +45,10 @@ import javax.swing.table.DefaultTableModel;
 import AccountModel.AccountModel;
 import AccountModel.TransactionCSVImporterModel;
 import AccountModel.UserRegistrationCSVExporterModel;
-import AdminController.AdminAccountQuery;
+import AdminController.AdminController;
 import AdminController.AdminSelfInfo;
 import AdminController.PersonModifyService;
+import AdminModel.AccountRepositoryModel;
 
 public class AdminPlane extends JDialog {
     private CardLayout cardLayout;
@@ -98,8 +99,11 @@ public class AdminPlane extends JDialog {
         sidebarPanel.add(Box.createVerticalStrut(10));
         sidebarPanel.add(createSidebarButton("Modify Customer Information", btnSize, this::displayAdminVerificationForm));
         sidebarPanel.add(Box.createVerticalStrut(10));
-        sidebarPanel.add(createSidebarButton("Customer Information Inquiry", btnSize, () -> new AdminAccountQuery().setVisible(true))); // 确保显示
-        sidebarPanel.add(Box.createVerticalStrut(10));
+       sidebarPanel.add(createSidebarButton("Customer Information Inquiry", btnSize, () -> {
+    AdminController controller = new AdminController(new AccountRepositoryModel());
+    controller.initialize();
+}));
+sidebarPanel.add(Box.createVerticalStrut(10));
         sidebarPanel.add(createSidebarButton("Delete Customer Information", btnSize, this::showUserList));
         sidebarPanel.add(Box.createVerticalStrut(10));
         // 导入客户账户按钮
