@@ -1,16 +1,17 @@
 package PersonController;
 
-import AccountController.TransactionService;
-import AccountController.UserRegistrationCSVExporter;
-import AccountModel.AccountModel;
-import AccountModel.PersonalAccount;
-import AccountModel.UserSession;
-import UI.ExpenseDialogView;
-
-import javax.swing.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.List;
+
+import javax.swing.SwingUtilities;
+
+import AccountModel.AccountModel;
+import AccountModel.PersonalAccountModel;
+import AccountModel.TransactionServiceModel;
+import AccountModel.UserRegistrationCSVExporterModel;
+import AccountModel.UserSessionModel;
+import View.ExpenseDialogView;
 
 /**
  * Controller for handling expense addition logic, coordinating ExpenseDialogView and Model interactions.
@@ -97,7 +98,7 @@ public class ExpenseController {
         }
 
         // Account verification and update
-        List<AccountModel> accounts = UserRegistrationCSVExporter.readFromCSV();
+        List<AccountModel> accounts = UserRegistrationCSVExporterModel.readFromCSV();
         AccountModel currentUserAccount = null;
         boolean passwordCorrect = false;
 
@@ -122,7 +123,7 @@ public class ExpenseController {
             return;
         }
 
-        if (!(currentUserAccount instanceof PersonalAccount)) {
+        if (!(currentUserAccount instanceof PersonalAccountModel)) {
             view.showError("This account type does not support expense operations.");
             return;
         }
@@ -134,22 +135,22 @@ public class ExpenseController {
         }
 
         // Add transaction and update balance
-        boolean transactionAdded = TransactionService.addTransaction(
+        boolean transactionAdded = TransactionServiceModel.addTransaction(
             currentUsername, "Expense", amount, timeText.trim(), merchantText.trim(), typeToRecord
         );
 
         if (transactionAdded) {
             double originalBalance = currentUserAccount.getBalance();
             currentUserAccount.setBalance(originalBalance - amount);
-            boolean saved = UserRegistrationCSVExporter.saveToCSV(accounts, false);
+            boolean saved = UserRegistrationCSVExporterModel.saveToCSV(accounts, false);
 
             if (saved) {
-                UserSession.setCurrentAccount(currentUserAccount);
+                UserSessionModel.setCurrentAccount(currentUserAccount);
                 view.showSuccess("Successfully added expense of ¥" + String.format("%.2f", amount) + "!");
                 view.dispose();
             } else {
                 // Rollback transaction
-                TransactionService.removeTransaction(currentUsername, timeText.trim());
+                TransactionServiceModel.removeTransaction(currentUsername, timeText.trim());
                 currentUserAccount.setBalance(originalBalance);
                 view.showError("Expense recorded successfully, but failed to update account balance file.");
             }

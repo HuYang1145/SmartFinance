@@ -14,10 +14,11 @@ import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
-import AccountController.UserRegistrationCSVExporter;
 import AccountModel.AccountModel;
-import AccountModel.AdminAccount;
-import AccountModel.UserSession;
+import AccountModel.AdminAccountModel;
+import AccountModel.UserRegistrationCSVExporterModel;
+import AccountModel.UserSessionModel;
+import AdminModel.AdminModifyServiceModel;
 
 public class PersonModifyService extends JDialog {
     private JTextField usernameField;
@@ -100,13 +101,13 @@ public class PersonModifyService extends JDialog {
                 return;
             }
             
-            AccountModel account = AdminModifyService.getAccount(username, password);
+            AccountModel account = AdminModifyServiceModel.getAccount(username, password);
             
             if (account != null) {
-                boolean updatedInfo = AdminModifyService.updateCustomerInfo(username, password, phone, email, gender, address);
+                boolean updatedInfo = AdminModifyServiceModel.updateCustomerInfo(username, password, phone, email, gender, address);
                 try {
                     AccountModel.AccountStatus accountStatus = AccountModel.AccountStatus.valueOf(accountStatusStr.toUpperCase());
-                    AdminModifyService.modifyAccountStatus(username, accountStatus);
+                    AdminModifyServiceModel.modifyAccountStatus(username, accountStatus);
                 } catch (IllegalArgumentException ex) {
                     JOptionPane.showMessageDialog(null, "Invalid account status: " + accountStatusStr, "Error", JOptionPane.ERROR_MESSAGE);
                     return;
@@ -130,17 +131,17 @@ public class PersonModifyService extends JDialog {
     }
 
     private boolean isAdminPasswordValid(String adminPassword) {
-        String currentAdminUsername = UserSession.getCurrentUsername();
+        String currentAdminUsername = UserSessionModel.getCurrentUsername();
 
         if (currentAdminUsername == null) {
             JOptionPane.showMessageDialog(null, "Admin not logged in!", "Error", JOptionPane.ERROR_MESSAGE);
             return false;
         }
 
-        java.util.List<AccountModel> accounts = UserRegistrationCSVExporter.readFromCSV();
+        java.util.List<AccountModel> accounts = UserRegistrationCSVExporterModel.readFromCSV();
 
         for (AccountModel account : accounts) {
-            if (account.getUsername().equals(currentAdminUsername) && account instanceof AdminAccount) {
+            if (account.getUsername().equals(currentAdminUsername) && account instanceof AdminAccountModel) {
                 if (account.getPassword().equals(adminPassword)) {
                     return true;
                 } else {

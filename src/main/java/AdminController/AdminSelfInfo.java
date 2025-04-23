@@ -9,7 +9,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 
-import AccountModel.UserSession;
+import AccountModel.UserSessionModel;
 
 public class AdminSelfInfo extends JFrame {
 
@@ -20,7 +20,7 @@ public class AdminSelfInfo extends JFrame {
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLayout(new GridLayout(0, 2)); // 使用 GridLayout，名称和值各占一列
 
-        String loggedInUsername = UserSession.getCurrentUsername(); // 从 UserSession 获取当前登录用户名
+        String loggedInUsername = UserSessionModel.getCurrentUsername(); // 从 UserSession 获取当前登录用户名
 
         if (loggedInUsername == null || loggedInUsername.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Admin login information not detected, please log in first", "Error", JOptionPane.ERROR_MESSAGE);

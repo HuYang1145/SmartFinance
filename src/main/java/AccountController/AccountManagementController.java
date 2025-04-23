@@ -8,15 +8,18 @@ import java.util.List;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
-import AccountController.TransactionService.TransactionData;
 import AccountModel.AccountModel;
-import AccountModel.AdminAccount;
-import AccountModel.PersonalAccount;
+import AccountModel.AdminAccountModel;
+import AccountModel.PersonalAccountModel;
+import AccountModel.TransactionCheckerModel;
 import AccountModel.TransactionModel;
-import AccountModel.UserSession;
-import UI.AccountManagementUI;
-import UI.AdminPlane;
-import UI.PersonalMainPlane;
+import AccountModel.TransactionServiceModel;
+import AccountModel.TransactionServiceModel.TransactionData;
+import AccountModel.UserRegistrationCSVExporterModel;
+import AccountModel.UserSessionModel;
+import View.AccountManagementUI;
+import View.AdminPlane;
+import View.PersonalMainPlane;
 
 /**
  * Controller handling login and registration logic for AccountManagementUI.
@@ -59,7 +62,7 @@ public class AccountManagementController {
         }
 
         // 2. Read Account Data
-        List<AccountModel> accounts = UserRegistrationCSVExporter.readFromCSV();
+        List<AccountModel> accounts = UserRegistrationCSVExporterModel.readFromCSV();
         AccountModel matchedAccount = null;
 
         // 3. Find Matching Account
@@ -86,11 +89,11 @@ public class AccountManagementController {
             loadTransactionsForAccount(matchedAccount);
 
             // 4c. Set User Session (AFTER loading data potentially needed by checker)
-            UserSession.setCurrentAccount(matchedAccount);
-            System.out.println("DEBUG: handleLogin - User session set for: " + UserSession.getCurrentUsername());
+            UserSessionModel.setCurrentAccount(matchedAccount);
+            System.out.println("DEBUG: handleLogin - User session set for: " + UserSessionModel.getCurrentUsername());
 
             // 4d. Check for Abnormal Transactions (using updated TransactionChecker)
-            boolean abnormalDetected = TransactionChecker.hasAbnormalTransactions(matchedAccount);
+            boolean abnormalDetected = TransactionCheckerModel.hasAbnormalTransactions(matchedAccount);
             if (abnormalDetected) {
                 System.out.println("DEBUG: handleLogin - Abnormal transaction activity detected.");
                 // Show non-blocking warning after successful login
@@ -106,11 +109,11 @@ public class AccountManagementController {
             }
 
             try {
-                if (matchedAccount instanceof AdminAccount) {
+                if (matchedAccount instanceof AdminAccountModel) {
                     System.out.println("DEBUG: handleLogin - Opening AdminUI.");
                     // Use SwingUtilities.invokeLater if AdminUI constructor does heavy work
                     SwingUtilities.invokeLater(AdminPlane::new);
-                } else if (matchedAccount instanceof PersonalAccount) {
+                } else if (matchedAccount instanceof PersonalAccountModel) {
                     System.out.println("DEBUG: handleLogin - Opening PersonalUI.");
                     SwingUtilities.invokeLater(() -> new PersonalMainPlane(username));
                 }
@@ -146,7 +149,7 @@ public class AccountManagementController {
         System.out.println("DEBUG: handleRegister - Attempting registration for user: '" + username + "', type: '" + selectedAccountType + "'");
 
         // 1. Check if username exists
-        List<AccountModel> accounts = UserRegistrationCSVExporter.readFromCSV();
+        List<AccountModel> accounts = UserRegistrationCSVExporterModel.readFromCSV();
         for (AccountModel account : accounts) {
             if (account.getUsername().equals(username)) {
                 ui.showCustomMessage("Username already exists! Please choose another.", "Registration Error", JOptionPane.ERROR_MESSAGE);
@@ -174,10 +177,10 @@ public class AccountManagementController {
         // 4. Create appropriate AccountModel instance
         if ("personal".equalsIgnoreCase(selectedAccountType)) {
             accountTypeString = "personal";
-            newAccount = new PersonalAccount(username, password, phone, email, gender, address, creationTime, accountStatus, accountTypeString, initialBalance);
+            newAccount = new PersonalAccountModel(username, password, phone, email, gender, address, creationTime, accountStatus, accountTypeString, initialBalance);
         } else if ("Admin".equalsIgnoreCase(selectedAccountType)) {
             accountTypeString = "Admin";
-            newAccount = new AdminAccount(username, password, phone, email, gender, address, creationTime, accountStatus, accountTypeString, initialBalance);
+            newAccount = new AdminAccountModel(username, password, phone, email, gender, address, creationTime, accountStatus, accountTypeString, initialBalance);
         } else {
             // This case should ideally not be reachable if JComboBox has fixed values
             ui.showCustomMessage("Invalid account type selected: " + selectedAccountType, "Registration Error", JOptionPane.ERROR_MESSAGE);
@@ -189,7 +192,7 @@ public class AccountManagementController {
             List<AccountModel> accountListToAdd = new ArrayList<>();
             accountListToAdd.add(newAccount);
             // Use append mode (true) for registration
-            boolean saved = UserRegistrationCSVExporter.saveToCSV(accountListToAdd, true);
+            boolean saved = UserRegistrationCSVExporterModel.saveToCSV(accountListToAdd, true);
 
             if (saved) {
                 System.out.println("DEBUG: handleRegister - Account saved successfully for user: " + username);
@@ -235,7 +238,7 @@ public class AccountManagementController {
         System.out.println("DEBUG: loadTransactionsForAccount - Loading transactions via TransactionService for user: " + username);
 
         // 3. Use TransactionService to Read Data
-        List<TransactionData> transactionDataList = TransactionService.readTransactions(username);
+        List<TransactionData> transactionDataList = TransactionServiceModel.readTransactions(username);
 
         // 4. Populate AccountModel's List
         int loadedCount = 0;

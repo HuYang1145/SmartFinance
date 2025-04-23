@@ -124,10 +124,10 @@ public abstract class AccountModel implements Serializable {
                 double balance = Double.parseDouble(parts[9].trim());
 
                 if ("admin".equalsIgnoreCase(accountType)) {
-                    return new AdminAccount(username, password, phone, email, gender, address, 
+                    return new AdminAccountModel(username, password, phone, email, gender, address, 
                                           creationTime, accountStatus, accountType, balance);
                 } else if ("personal".equalsIgnoreCase(accountType)) {
-                    return new PersonalAccount(username, password, phone, email, gender, address, 
+                    return new PersonalAccountModel(username, password, phone, email, gender, address, 
                                              creationTime, accountStatus, accountType, balance);
                 } else {
                     System.err.println("从 CSV 加载账户失败：未知的账户类型 '" + accountType + "' in line: " + csvLine);
