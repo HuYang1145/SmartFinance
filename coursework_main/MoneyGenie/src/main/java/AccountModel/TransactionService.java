@@ -53,77 +53,77 @@ public class TransactionService {
         }
     }
 
-    
+
     /**
  * Appends a new transaction record to the transactions.csv file.
  */
-public static boolean addTransaction(String username, String operation, double amount, String time, String merchant, String type,
-String remark, String category, String paymentMethod, String location, String tag,
-String attachment, String recurrence) {
-ensureFileExists();
+    public static boolean addTransaction(String username, String operation, double amount, String time, String merchant, String type,
+                                         String remark, String category, String paymentMethod, String location, String tag,
+                                         String attachment, String recurrence) {
+        ensureFileExists();
 
-if (username == null || username.trim().isEmpty() ||
-operation == null || (!operation.equals("Income") && !operation.equals("Expense")) ||
-amount < 0 || time == null || time.trim().isEmpty()) {
-System.err.println("Invalid transaction data provided to addTransaction.");
-return false;
-}
+        if (username == null || username.trim().isEmpty() ||
+                operation == null || (!operation.equals("Income") && !operation.equals("Expense")) ||
+                amount < 0 || time == null || time.trim().isEmpty()) {
+            System.err.println("Invalid transaction data provided to addTransaction.");
+            return false;
+        }
 
-// 验证日期格式是否为 yyyy/MM/dd
-SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
-dateFormat.setLenient(false); // 严格验证格式
-try {
-dateFormat.parse(time.trim());
-} catch (ParseException e) {
-System.err.println("Invalid date format provided for transaction: " + time);
-JOptionPane.showMessageDialog(null,
-"Invalid date format provided: " + time + ". Expected yyyy/MM/dd",
-"Date Format Error", JOptionPane.ERROR_MESSAGE);
-return false;
-}
+        // 验证日期时间格式是否为 yyyy/MM/dd HH:mm
+        SimpleDateFormat dateTimeFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm");
+        dateTimeFormat.setLenient(false); // 严格验证格式
+        try {
+            dateTimeFormat.parse(time.trim());
+        } catch (ParseException e) {
+            System.err.println("Invalid date/time format provided for transaction: " + time);
+            JOptionPane.showMessageDialog(null,
+                    "Invalid date/time format provided: " + time + ". Expected: yyyy/MM/dd HH:mm",
+                    "Date/Time Format Error", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
 
-try (FileOutputStream fos = new FileOutputStream(CSV_FILE_PATH, true);
-OutputStreamWriter osw = new OutputStreamWriter(fos, StandardCharsets.UTF_8);
-BufferedWriter bw = new BufferedWriter(osw)) {
-String formattedAmount = String.format("%.2f", amount);
-String safeMerchant = Objects.toString(merchant, "");
-String safeType = Objects.toString(type, "u");
-String safeRemark = Objects.toString(remark, "");
-String safeCategory = Objects.toString(category, "u");
-String safePaymentMethod = Objects.toString(paymentMethod, "");
-String safeLocation = Objects.toString(location, "");
-String safeTag = Objects.toString(tag, "");
-String safeAttachment = Objects.toString(attachment, "");
-String safeRecurrence = Objects.toString(recurrence, "");
+        try (FileOutputStream fos = new FileOutputStream(CSV_FILE_PATH, true);
+             OutputStreamWriter osw = new OutputStreamWriter(fos, StandardCharsets.UTF_8);
+             BufferedWriter bw = new BufferedWriter(osw)) {
+            String formattedAmount = String.format("%.2f", amount);
+            String safeMerchant = Objects.toString(merchant, "");
+            String safeType = Objects.toString(type, "u");
+            String safeRemark = Objects.toString(remark, "");
+            String safeCategory = Objects.toString(category, "u");
+            String safePaymentMethod = Objects.toString(paymentMethod, "");
+            String safeLocation = Objects.toString(location, "");
+            String safeTag = Objects.toString(tag, "");
+            String safeAttachment = Objects.toString(attachment, "");
+            String safeRecurrence = Objects.toString(recurrence, "");
 
-String csvLine = String.join(",",
-escapeCsvField(username),
-escapeCsvField(operation),
-formattedAmount,
-escapeCsvField(time.trim()),
-escapeCsvField(safeMerchant),
-escapeCsvField(safeType),
-escapeCsvField(safeRemark),
-escapeCsvField(safeCategory),
-escapeCsvField(safePaymentMethod),
-escapeCsvField(safeLocation),
-escapeCsvField(safeTag),
-escapeCsvField(safeAttachment),
-escapeCsvField(safeRecurrence)
-);
+            String csvLine = String.join(",",
+                    escapeCsvField(username),
+                    escapeCsvField(operation),
+                    formattedAmount,
+                    escapeCsvField(time.trim()),
+                    escapeCsvField(safeMerchant),
+                    escapeCsvField(safeType),
+                    escapeCsvField(safeRemark),
+                    escapeCsvField(safeCategory),
+                    escapeCsvField(safePaymentMethod),
+                    escapeCsvField(safeLocation),
+                    escapeCsvField(safeTag),
+                    escapeCsvField(safeAttachment),
+                    escapeCsvField(safeRecurrence)
+            );
 
-bw.write(csvLine);
-bw.newLine();
-return true;
+            bw.write(csvLine);
+            bw.newLine();
+            return true;
 
-} catch (IOException e) {
-System.err.println("Error writing transaction to CSV: " + e.getMessage());
-JOptionPane.showMessageDialog(null,
-"Failed to record transaction: " + e.getMessage(),
-"Transaction Error", JOptionPane.ERROR_MESSAGE);
-return false;
-}
-}
+        } catch (IOException e) {
+            System.err.println("Error writing transaction to CSV: " + e.getMessage());
+            JOptionPane.showMessageDialog(null,
+                    "Failed to record transaction: " + e.getMessage(),
+                    "Transaction Error", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+    }
 
     /**
      * Reads all transaction records for a specific user from transactions.csv.
