@@ -219,8 +219,7 @@ user,operation,amount,time,merchant,type,remark,category,payment_method,location
 2,Expense,65.00,2025/04/19,Restaurant,Food,"Lunch with colleagues","Food-Dining","WeChat Pay","In-store","Essential","[Attachment: Receipt]","Non-recurring"
 2,Expense,45.00,2025/04/21,Transport Authority,Transport,"Train fare","Transport-Public","Credit Card","Offline","Essential","[Attachment: Ticket]","Non-recurring"
 2,Expense,50.00,2025/04/24,Spotify,Entertainment,"Music subscription","Entertainment-Subscription","Credit Card","Online","Essential","[Attachment: Receipt]","Recurring"
-2,Expense,88.00,2025/04/29,Restaurant,Food,"Impulse takeout","Food-Takeout","WeChat Pay","Online","Treat","[Attachment: Receipt]","Non-recurring"
-2,Expense,20.00,2025/04/21 18:12,bupt,Education,Education,Education,Education,Education,Education,Education,Education
+2,Expense,88.00,2025/04/29,Restaurant,Food,"Impulse takeout","Food-Takeout","WeChat Pay","Online","Treat","[Attachment: Receipt]","Non-recurring"2,Expense,20.00,2025/04/21 18:12,bupt,Education,Education,Education,Education,Education,Education,Education,Education
 yaqi,Income,1000.00,2025/04/21 18:19,I,I,1,1,1,1,1,1,1
 yaqi,Expense,20.00,2025/04/21 18:19,bupt,Food,Food,Food,Food,Food,Food,Food,Food
 yaqi,Expense,30.00,2025/04/21 18:19,ali,Shopping,Shopping,Shopping,Shopping,Shopping,Shopping,Shopping,Shopping
@@ -242,6 +241,5 @@ RapidFireRita,Expense,1100.00,2025/05/10 10:00,Apple Store,Electronics,"New Lapt
 RapidFireRita,Expense,1200.00,2025/05/10 11:30,IKEA,Furniture,"Desk and Chair","Shopping-Household","Credit Card","In-store","Essential","Receipt.jpg","Non-recurring"
 RapidFireRita,Expense,1050.00,2025/05/10 14:15,Fashion Boutique,Shopping,"Designer Dress","Shopping-Apparel","Credit Card","In-store","Treat","Receipt.jpg","Non-recurring"
 RapidFireRita,Expense,1300.00,2025/05/10 16:45,Expedia,Travel,"Vacation Package Deposit","Travel-Package","Credit Card","Online","Non-essential","BookingConf.pdf","Non-recurring"
-RapidFireRita,Expense,50.00,2025/05/11 12:00,Grocery Store,Food,"Snacks","Food-Groceries","Debit Card","In-store","Essential","Receipt.jpg","Non-recurring"
-2,Income,1000.00,2025/04/23 01:08,I,I,,u,,,,,
+RapidFireRita,Expense,50.00,2025/05/11 12:00,Grocery Store,Food,"Snacks","Food-Groceries","Debit Card","In-store","Essential","Receipt.jpg","Non-recurring"2,Income,1000.00,2025/04/23 01:08,I,I,,u,,,,,
 2,Expense,100.00,2025/04/23 01:08,Luckin,Food,,u,,,,,
