@@ -94,17 +94,7 @@ Markdown
 * **Apache Commons CSV:** 用于更健壮地解析 CSV 文件
 * **Java Time API (`java.time`):** 用于现代化的日期和时间处理
 
-## 如何构建与运行 (可选)
 
-* 克隆仓库: `git clone [您的仓库地址]`
-* 进入项目目录: `cd [您的项目文件夹名]`
-* 使用 Maven 构建项目: `mvn clean install`
-* 运行主类: `mvn exec:java -Dexec.mainClass="Main.[您的主类名]"`
-
----
-
-```markdown
-# [Project Name]
 
 ## Author
 
@@ -196,9 +186,4 @@ By providing historical transaction details, multi-dimensional statistical overv
 * **Apache Commons CSV:** Used for more robust CSV file parsing.
 * **Java Time API (`java.time`):** Used for modern date and time handling.
 
-## How to Build and Run (Optional)
 
-* Clone the repository: `git clone [Your Repository URL]`
-* Navigate to the project directory: `cd [Your Project Folder Name]`
-* Build the project using Maven: `mvn clean install`
-* Run the main class: `mvn exec:java -Dexec.mainClass="Main.[Your Main Class Name]"`
