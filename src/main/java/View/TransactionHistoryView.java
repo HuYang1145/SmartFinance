@@ -18,7 +18,7 @@ import javax.swing.table.DefaultTableModel;
 
 import AccountModel.TransactionServiceModel;
 import AccountModel.TransactionServiceModel.TransactionData;
-import AccountModel.UserSessionModel;
+import PersonModel.UserSessionModel;
 
 public class TransactionHistoryView extends JDialog {
 

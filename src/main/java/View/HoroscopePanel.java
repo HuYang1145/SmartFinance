@@ -1,11 +1,11 @@
 package View;
 
 import PersonModel.HoroscopeReportModel;
+import PersonModel.UserSessionModel;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 
-import AccountModel.UserSessionModel;
 import PersonController.SpendingHoroscopeServiceController;
 
 import java.awt.*;

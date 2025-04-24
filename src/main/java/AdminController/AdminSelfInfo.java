@@ -9,7 +9,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 
-import AccountModel.UserSessionModel;
+import PersonModel.UserSessionModel;
 
 public class AdminSelfInfo extends JFrame {
 

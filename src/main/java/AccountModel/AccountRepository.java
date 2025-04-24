@@ -16,7 +16,10 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 
-public class UserRegistrationCSVExporterModel {
+import AdminModel.AdminAccountModel;
+import PersonModel.PersonalAccountModel;
+
+public class AccountRepository {
     private static final String CSV_FILE_PATH = "accounts.csv";
     private static final String CSV_HEADER = "Username,Password,Phone,Email,Gender,Address,CreationTime,AccountStatus,AccountType,Balance\n";
 

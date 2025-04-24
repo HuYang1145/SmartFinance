@@ -1,4 +1,7 @@
-package AccountModel;
+package PersonModel;
+
+import AccountModel.AccountModel;
+import AccountModel.AccountModel.AccountStatus;
 
 public class PersonalAccountModel extends AccountModel {
     public PersonalAccountModel(String username, String password, String phone, String email, String gender, String address, 

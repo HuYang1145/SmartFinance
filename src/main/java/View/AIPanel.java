@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 
 import AIController.DeepSeekFileProcessor;
 import AccountModel.*;
+import PersonModel.UserSessionModel;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;

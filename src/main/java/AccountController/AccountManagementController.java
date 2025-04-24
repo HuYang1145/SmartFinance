@@ -9,14 +9,16 @@ import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
 import AccountModel.AccountModel;
-import AccountModel.AdminAccountModel;
-import AccountModel.PersonalAccountModel;
+import AccountModel.AccountRepository;
 import AccountModel.TransactionCheckerModel;
 import AccountModel.TransactionModel;
 import AccountModel.TransactionServiceModel;
 import AccountModel.TransactionServiceModel.TransactionData;
-import AccountModel.UserRegistrationCSVExporterModel;
-import AccountModel.UserSessionModel;
+import AdminModel.AccountRepositoryModel;
+import AdminModel.AccountService;
+import AdminModel.AdminAccountModel;
+import PersonModel.PersonalAccountModel;
+import PersonModel.UserSessionModel;
 import View.AccountManagementUI;
 import View.AdminPlane;
 import View.PersonalMainPlane;
@@ -62,7 +64,7 @@ public class AccountManagementController {
         }
 
         // 2. Read Account Data
-        List<AccountModel> accounts = UserRegistrationCSVExporterModel.readFromCSV();
+        List<AccountModel> accounts = AccountRepository.readFromCSV();
         AccountModel matchedAccount = null;
 
         // 3. Find Matching Account
@@ -81,23 +83,22 @@ public class AccountManagementController {
             if (matchedAccount.getAccountStatus() == AccountModel.AccountStatus.FROZEN) {
                 System.out.println("DEBUG: handleLogin - Account is FROZEN.");
                 ui.showCustomMessage("This account is currently frozen. Please contact the administrator.", "Account Frozen", JOptionPane.WARNING_MESSAGE);
-                return; // Stop login if frozen
+                return;
             }
             System.out.println("DEBUG: handleLogin - Account status is ACTIVE.");
 
-            // 4b. Load Transactions into AccountModel (using the updated method)
+            // 4b. Load Transactions into AccountModel
             loadTransactionsForAccount(matchedAccount);
 
-            // 4c. Set User Session (AFTER loading data potentially needed by checker)
+            // 4c. Set User Session
             UserSessionModel.setCurrentAccount(matchedAccount);
             System.out.println("DEBUG: handleLogin - User session set for: " + UserSessionModel.getCurrentUsername());
 
-            // 4d. Check for Abnormal Transactions (using updated TransactionChecker)
+            // 4d. Check for Abnormal Transactions
             boolean abnormalDetected = TransactionCheckerModel.hasAbnormalTransactions(matchedAccount);
             if (abnormalDetected) {
                 System.out.println("DEBUG: handleLogin - Abnormal transaction activity detected.");
-                // Show non-blocking warning after successful login
-                SwingUtilities.invokeLater(() -> // Show warning later to not block UI transition
+                SwingUtilities.invokeLater(() ->
                     ui.showCustomMessage(
                         "Warning: Abnormal transaction activity detected recently.\nPlease review your transaction history.",
                         "Activity Alert",
@@ -111,20 +112,19 @@ public class AccountManagementController {
             try {
                 if (matchedAccount instanceof AdminAccountModel) {
                     System.out.println("DEBUG: handleLogin - Opening AdminUI.");
-                    // Use SwingUtilities.invokeLater if AdminUI constructor does heavy work
-                    SwingUtilities.invokeLater(AdminPlane::new);
+                    AccountRepositoryModel repository = new AccountRepositoryModel();
+                    AccountService accountService = new AccountService(repository);
+                    SwingUtilities.invokeLater(() -> new AdminPlane(accountService));
                 } else if (matchedAccount instanceof PersonalAccountModel) {
                     System.out.println("DEBUG: handleLogin - Opening PersonalUI.");
                     SwingUtilities.invokeLater(() -> new PersonalMainPlane(username));
                 }
-                // Close the login window AFTER initiating the opening of the new window
                 ui.closeWindow();
             } catch (Exception ex) {
                 System.err.println("ERROR: handleLogin - Error opening main UI or closing login window!");
                 ui.showCustomMessage("An error occurred while opening the main application window.", "Error", JOptionPane.ERROR_MESSAGE);
             }
         } else {
-            // Login failed
             System.out.println("DEBUG: handleLogin - Login failed: Incorrect username or password.");
             ui.showCustomMessage("Incorrect username or password!", "Login Failed", JOptionPane.ERROR_MESSAGE);
         }
@@ -149,7 +149,7 @@ public class AccountManagementController {
         System.out.println("DEBUG: handleRegister - Attempting registration for user: '" + username + "', type: '" + selectedAccountType + "'");
 
         // 1. Check if username exists
-        List<AccountModel> accounts = UserRegistrationCSVExporterModel.readFromCSV();
+        List<AccountModel> accounts = AccountRepository.readFromCSV();
         for (AccountModel account : accounts) {
             if (account.getUsername().equals(username)) {
                 ui.showCustomMessage("Username already exists! Please choose another.", "Registration Error", JOptionPane.ERROR_MESSAGE);
@@ -192,7 +192,7 @@ public class AccountManagementController {
             List<AccountModel> accountListToAdd = new ArrayList<>();
             accountListToAdd.add(newAccount);
             // Use append mode (true) for registration
-            boolean saved = UserRegistrationCSVExporterModel.saveToCSV(accountListToAdd, true);
+            boolean saved = AccountRepository.saveToCSV(accountListToAdd, true);
 
             if (saved) {
                 System.out.println("DEBUG: handleRegister - Account saved successfully for user: " + username);

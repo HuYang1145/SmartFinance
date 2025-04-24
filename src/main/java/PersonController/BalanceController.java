@@ -8,7 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import AccountModel.AccountModel;
-import AccountModel.UserRegistrationCSVExporterModel;
+import AccountModel.AccountRepository;
 import View.BalanceDialogView;
 
 /**
@@ -70,7 +70,7 @@ public class BalanceController {
      */
     private AccountModel findAccount(String username) {
         try {
-            List<AccountModel> accounts = UserRegistrationCSVExporterModel.readFromCSV();
+            List<AccountModel> accounts = AccountRepository.readFromCSV();
             for (AccountModel account : accounts) {
                 if (account.getUsername().equals(username)) {
                     return account;

@@ -10,7 +10,6 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.HeadlessException;
 import java.awt.Insets;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -40,33 +39,35 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
+import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 
 import AccountModel.AccountModel;
+import AccountModel.AccountRepository;
 import AccountModel.TransactionCSVImporterModel;
-import AccountModel.UserRegistrationCSVExporterModel;
 import AdminController.AdminController;
+import AdminController.AdminModifyPersonalInfoController;
 import AdminController.AdminSelfInfo;
-import AdminController.PersonModifyService;
 import AdminModel.AccountRepositoryModel;
+import AdminModel.AccountService;
+import PersonModel.UserSessionModel;
 
 public class AdminPlane extends JDialog {
     private CardLayout cardLayout;
     private JPanel contentPanel;
-    private final JPanel userListPanel; // 声明为 final 如果它在构造函数中初始化后不再改变
+    private final JPanel userListPanel;
     private JTable table;
     private DefaultTableModel model;
-    private JPanel sidebarPanel; // 添加 sidebarPanel 实例变量
+    private JPanel sidebarPanel;
+    private final AccountService accountService;
 
-    // --- 修改常量以匹配 10 列格式 ---
-    // 期望的账户文件头部 (更新为 10 列)
     private static final String EXPECTED_ACCOUNT_HEADER = "Username,Password,Phone,Email,Gender,Address,CreationTime,AccountStatus,AccountType,Balance";
-    // 期望的字段数量 (更新为 10 个)
     private static final int EXPECTED_ACCOUNT_FIELD_COUNT = 10;
 
+    public AdminPlane(AccountService accountService) {
+        this.accountService = accountService;
 
-    public AdminPlane() {
-        setTitle("Administrator Account Center");
+        setTitle("管理员账户中心");
         setSize(1280, 720);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
@@ -75,53 +76,48 @@ public class AdminPlane extends JDialog {
         contentPanel = new JPanel();
         cardLayout = new CardLayout();
         contentPanel.setLayout(cardLayout);
-        contentPanel.setBackground(new Color(30, 60, 120)); // 背景色
+        contentPanel.setBackground(new Color(30, 60, 120));
 
         JPanel dashboardPanel = createDashboardPanel();
-        userListPanel = new JPanel(new BorderLayout()); // 初始化 userListPanel
-        userListPanel.setBackground(new Color(245, 245, 245)); // 设置内容面板的背景色
+        userListPanel = new JPanel(new BorderLayout());
+        userListPanel.setBackground(new Color(245, 245, 245));
 
         contentPanel.add(dashboardPanel, "dashboard");
         contentPanel.add(userListPanel, "userList");
 
-        sidebarPanel = new JPanel(); // 初始化 sidebarPanel
+        sidebarPanel = new JPanel();
         sidebarPanel.setPreferredSize(new Dimension(260, 0));
         sidebarPanel.setLayout(new BoxLayout(sidebarPanel, BoxLayout.Y_AXIS));
-        sidebarPanel.setBackground(new Color(30, 60, 120)); // 侧边栏背景色
+        sidebarPanel.setBackground(new Color(30, 60, 120));
 
         Dimension btnSize = new Dimension(240, 36);
-        sidebarPanel.add(Box.createVerticalStrut(120)); // 顶部留空
+        sidebarPanel.add(Box.createVerticalStrut(120));
 
-        // 添加侧边栏按钮
-        sidebarPanel.add(createSidebarButton("Administrator's Home Page", btnSize, () -> cardLayout.show(contentPanel, "dashboard")));
+        sidebarPanel.add(createSidebarButton("管理员主页", btnSize, () -> cardLayout.show(contentPanel, "dashboard")));
         sidebarPanel.add(Box.createVerticalStrut(10));
-        sidebarPanel.add(createSidebarButton("Administrator Information", btnSize, () -> new AdminSelfInfo().setVisible(true))); // 确保显示
+        sidebarPanel.add(createSidebarButton("管理员信息", btnSize, () -> new AdminSelfInfo().setVisible(true)));
         sidebarPanel.add(Box.createVerticalStrut(10));
-        sidebarPanel.add(createSidebarButton("Modify Customer Information", btnSize, this::displayAdminVerificationForm));
+        sidebarPanel.add(createSidebarButton("修改客户信息", btnSize, this::displayAdminVerificationForm));
         sidebarPanel.add(Box.createVerticalStrut(10));
-       sidebarPanel.add(createSidebarButton("Customer Information Inquiry", btnSize, () -> {
-    AdminController controller = new AdminController(new AccountRepositoryModel());
-    controller.initialize();
-}));
-sidebarPanel.add(Box.createVerticalStrut(10));
-        sidebarPanel.add(createSidebarButton("Delete Customer Information", btnSize, this::showUserList));
+        sidebarPanel.add(createSidebarButton("客户信息查询", btnSize, () -> {
+            AdminController controller = new AdminController(new AccountRepositoryModel());
+            controller.initialize();
+        }));
         sidebarPanel.add(Box.createVerticalStrut(10));
-        // 导入客户账户按钮
-        sidebarPanel.add(createSidebarButton("Import Customer Accounts", btnSize, this::importCustomerAccounts));
+        sidebarPanel.add(createSidebarButton("删除客户信息", btnSize, this::showUserList));
         sidebarPanel.add(Box.createVerticalStrut(10));
-        // 导入交易记录按钮
-        sidebarPanel.add(createSidebarButton("Import Transaction Records", btnSize, this::importTransactionRecords));
+        sidebarPanel.add(createSidebarButton("导入客户账户", btnSize, this::importCustomerAccounts));
+        sidebarPanel.add(Box.createVerticalStrut(10));
+        sidebarPanel.add(createSidebarButton("导入交易记录", btnSize, this::importTransactionRecords));
 
-
-        sidebarPanel.add(Box.createVerticalGlue()); // 把按钮推到顶部和底部之间
+        sidebarPanel.add(Box.createVerticalGlue());
         sidebarPanel.add(Box.createVerticalStrut(10));
-        sidebarPanel.add(createSidebarButton("Log out", btnSize, this::dispose)); // 关闭当前窗口
-        sidebarPanel.add(Box.createVerticalStrut(20)); // 底部留空
+        sidebarPanel.add(createSidebarButton("登出", btnSize, this::dispose));
+        sidebarPanel.add(Box.createVerticalStrut(20));
 
         add(sidebarPanel, BorderLayout.WEST);
         add(contentPanel, BorderLayout.CENTER);
 
-        // 默认显示 dashboard
         cardLayout.show(contentPanel, "dashboard");
 
         setVisible(true);
@@ -618,42 +614,37 @@ sidebarPanel.add(Box.createVerticalStrut(10));
             JOptionPane.showMessageDialog(this, "导入失败: 文件格式错误 - " + e.getMessage(), "导入错误", JOptionPane.ERROR_MESSAGE);
         } catch (IOException e) {
             JOptionPane.showMessageDialog(this, "导入失败: 文件读写错误 - " + e.getMessage(), "导入错误", JOptionPane.ERROR_MESSAGE);
-        } catch (HeadlessException e) {
-            JOptionPane.showMessageDialog(this, "导入过程中发生未知错误: " + e.getMessage(), "导入错误", JOptionPane.ERROR_MESSAGE);
         }
     }
 
     // --- 管理员验证和修改客户信息功能 (保持不变) ---
     public void displayAdminVerificationForm() {
-        JDialog dialog = new JDialog(this, "Administrator Validation", true);
-        dialog.setSize(350, 180); // 稍微调大一点高度
+        JDialog dialog = new JDialog(this, "管理员验证", true);
+        dialog.setSize(350, 180);
         dialog.setLocationRelativeTo(this);
-        JPanel panel = new JPanel(new GridBagLayout()); // 使用 GridBagLayout 更好控制
-        panel.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
+        JPanel panel = new JPanel(new GridBagLayout());
+        panel.setBorder(new EmptyBorder(15, 15, 15, 15));
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(5, 5, 5, 5);
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
-        // Username
         gbc.gridx = 0; gbc.gridy = 0; gbc.weightx = 0.3;
-        panel.add(new JLabel("Admin Username:"), gbc);
+        panel.add(new JLabel("管理员用户名:"), gbc);
         gbc.gridx = 1; gbc.weightx = 0.7;
         JTextField tfUser = new JTextField();
         panel.add(tfUser, gbc);
 
-        // Password
         gbc.gridx = 0; gbc.gridy = 1; gbc.weightx = 0.3;
-        panel.add(new JLabel("Admin Password:"), gbc);
+        panel.add(new JLabel("管理员密码:"), gbc);
         gbc.gridx = 1; gbc.weightx = 0.7;
         JPasswordField pfPass = new JPasswordField();
         panel.add(pfPass, gbc);
 
-        // Validate Button
         gbc.gridx = 0; gbc.gridy = 2;
-        gbc.gridwidth = 2; // Span button across both columns
-        gbc.fill = GridBagConstraints.NONE; // Don't stretch button
-        gbc.anchor = GridBagConstraints.CENTER; // Center button
-        JButton btn = new JButton("Validate");
+        gbc.gridwidth = 2;
+        gbc.fill = GridBagConstraints.NONE;
+        gbc.anchor = GridBagConstraints.CENTER;
+        JButton btn = new JButton("验证");
         panel.add(btn, gbc);
 
         dialog.add(panel);
@@ -661,51 +652,50 @@ sidebarPanel.add(Box.createVerticalStrut(10));
         btn.addActionListener(e -> {
             String username = tfUser.getText();
             String password = new String(pfPass.getPassword());
-            AccountModel adminAccount = getAccount(username, password); // Uses UserRegistrationCSVExporter internally
 
-            if (adminAccount != null && adminAccount.isAdmin()) { // Check if it's an admin account
+            boolean isValidAdmin = accountService.isAdminPasswordValid(password, username);
+            AccountModel adminAccount = accountService.getAccount(username, password);
+
+            if (isValidAdmin && adminAccount != null && adminAccount.isAdmin()) {
                 dialog.dispose();
-                String customerUsername = JOptionPane.showInputDialog(this, "Please enter the customer's username to modify:");
+                String customerUsername = JOptionPane.showInputDialog(this, "请输入要修改的客户用户名:");
                 if (customerUsername != null && !customerUsername.trim().isEmpty()) {
-                    AccountModel targetAccount = findAccountByUsername(customerUsername.trim()); // Find without password check
+                    AccountModel targetAccount = accountService.getAccountByUsername(customerUsername.trim());
                     if (targetAccount != null) {
-                        // Found customer, open modify dialog
-                        PersonModifyService modifyDialog = new PersonModifyService(); // Assuming constructor is parameterless
-                        modifyDialog.setAccountInfo(targetAccount); // Pass account data to the dialog
-                        modifyDialog.setVisible(true); // Show the dialog (likely modal)
-
-                        // After modification dialog closes, refresh user list if visible
+                        // 使用 UserSessionModel 的静态方法
+                        AdminModifyPersonalInfoController controller = new AdminModifyPersonalInfoController(accountService, UserSessionModel.getCurrentAccount());
+                        controller.initialize(targetAccount);
                         refreshUserListIfVisible();
-
                     } else {
-                        JOptionPane.showMessageDialog(this, "Customer username '" + customerUsername + "' not found!", "Error", JOptionPane.ERROR_MESSAGE);
+                        JOptionPane.showMessageDialog(this, "客户用户名 '" + customerUsername + "' 未找到!", "错误", JOptionPane.ERROR_MESSAGE);
                     }
-                } else if (customerUsername != null) { // User clicked OK but input was empty
-                    JOptionPane.showMessageDialog(this, "Customer username cannot be empty.", "Input Error", JOptionPane.WARNING_MESSAGE);
+                } else if (customerUsername != null) {
+                    JOptionPane.showMessageDialog(this, "客户用户名不能为空。", "输入错误", JOptionPane.WARNING_MESSAGE);
                 }
-                // If user clicked Cancel (customerUsername == null), do nothing
             } else {
-                JOptionPane.showMessageDialog(dialog, "Invalid administrator username or password, or not an admin account!", "Validation Failed", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(dialog, "无效的管理员用户名或密码，或者不是管理员账户!", "验证失败", JOptionPane.ERROR_MESSAGE);
             }
         });
         dialog.setVisible(true);
     }
 
-    // --- 使用 UserRegistrationCSVExporter 读取数据 (保持不变) ---
-    public static AccountModel getAccount(String username, String password) {
-        // UserRegistrationCSVExporter handles reading the 10-column CSV
-        for (AccountModel a : UserRegistrationCSVExporterModel.readFromCSV()) {
-            if (a.getUsername().equals(username) && a.getPassword().equals(password)) {
-                return a;
-            }
+    private AccountModel getAccountByUsername(String username) {
+        try {
+            return accountService.getAccountByUsername(username);
+        } catch (RuntimeException e) {
+            JOptionPane.showMessageDialog(this, "查找账户错误: " + e.getMessage(), "错误", JOptionPane.ERROR_MESSAGE);
+            return null;
         }
-        return null;
+    }
+
+    private AccountModel getAccount(String username, String password) {
+        return accountService.getAccount(username, password);
     }
 
     // --- 使用 UserRegistrationCSVExporter 读取数据 (保持不变) ---
     public static AccountModel findAccountByUsername(String username) {
         // UserRegistrationCSVExporter handles reading the 10-column CSV
-        for (AccountModel a : UserRegistrationCSVExporterModel.readFromCSV()) {
+        for (AccountModel a : AccountRepository.readFromCSV()) {
             if (a.getUsername().equals(username)) {
                 return a;
             }
@@ -714,17 +704,7 @@ sidebarPanel.add(Box.createVerticalStrut(10));
     }
 
 
-    // ============================================================
-    // 修改：main 方法 (确保创建文件时使用 10 列头部)
-    // ============================================================
-    public static void main(String[] args) {
-        // 确保 accounts.csv 使用 10 列头部创建
-        ensureFileExists("accounts.csv", EXPECTED_ACCOUNT_HEADER); // EXPECTED_ACCOUNT_HEADER 已改为 10 列
-        // transactions.csv 使用 TransactionCSVImporter 的 5 列头部
-        ensureFileExists("transactions.csv", TransactionCSVImporterModel.EXPECTED_HEADER);
-
-        SwingUtilities.invokeLater(AdminPlane::new);
-    }
+    
 
     // --- 辅助方法：确保文件存在 (保持不变) ---
     private static void ensureFileExists(String filename, String header) {
@@ -732,28 +712,26 @@ sidebarPanel.add(Box.createVerticalStrut(10));
         if (!file.exists()) {
             try {
                 if (file.createNewFile()) {
-                    System.out.println("Created new file: " + filename);
-                    // 写入指定的头部
+                    System.out.println("创建新文件: " + filename);
                     try (BufferedWriter bw = new BufferedWriter(new FileWriter(file))) {
                         bw.write(header);
                         bw.newLine();
-                        System.out.println("Written header to " + filename + ": " + header);
+                        System.out.println("写入头部到 " + filename + ": " + header);
                     }
                 }
             } catch (IOException e) {
-                System.err.println("Error creating file " + filename + ": " + e.getMessage());
+                System.err.println("创建文件 " + filename + " 出错: " + e.getMessage());
             }
         } else {
-            // 文件已存在，可选：检查头部是否匹配
             try (BufferedReader br = new BufferedReader(new FileReader(file))) {
                 String firstLine = br.readLine();
                 if (firstLine == null || !firstLine.trim().equalsIgnoreCase(header.trim())) {
-                    System.err.println("WARNING: File " + filename + " exists but header does not match expected value.");
-                    System.err.println("  Expected: " + header.trim());
-                    System.err.println("  Actual: " + (firstLine != null ? firstLine.trim() : "<empty>"));
+                    System.err.println("警告: 文件 " + filename + " 存在，但头部与预期值不匹配。");
+                    System.err.println("  预期: " + header);
+                    System.err.println("  实际: " + (firstLine != null ? firstLine : "<空>"));
                 }
             } catch (IOException e) {
-                System.err.println("Error checking header for file " + filename + ": " + e.getMessage());
+                System.err.println("检查文件 " + filename + " 的头部出错: " + e.getMessage());
             }
         }
     }

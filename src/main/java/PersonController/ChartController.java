@@ -16,7 +16,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
-import AccountModel.UserSessionModel;
+import PersonModel.UserSessionModel;
 import View.IncomeExpenseChartView;
 
 /**

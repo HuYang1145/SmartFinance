@@ -7,10 +7,10 @@ import java.util.List;
 import javax.swing.SwingUtilities;
 
 import AccountModel.AccountModel;
-import AccountModel.PersonalAccountModel;
+import AccountModel.AccountRepository;
 import AccountModel.TransactionServiceModel;
-import AccountModel.UserRegistrationCSVExporterModel;
-import AccountModel.UserSessionModel;
+import PersonModel.PersonalAccountModel;
+import PersonModel.UserSessionModel;
 import View.ExpenseDialogView;
 
 /**
@@ -98,7 +98,7 @@ public class ExpenseController {
         }
 
         // Account verification and update
-        List<AccountModel> accounts = UserRegistrationCSVExporterModel.readFromCSV();
+        List<AccountModel> accounts = AccountRepository.readFromCSV();
         AccountModel currentUserAccount = null;
         boolean passwordCorrect = false;
 
@@ -142,7 +142,7 @@ public class ExpenseController {
         if (transactionAdded) {
             double originalBalance = currentUserAccount.getBalance();
             currentUserAccount.setBalance(originalBalance - amount);
-            boolean saved = UserRegistrationCSVExporterModel.saveToCSV(accounts, false);
+            boolean saved = AccountRepository.saveToCSV(accounts, false);
 
             if (saved) {
                 UserSessionModel.setCurrentAccount(currentUserAccount);

@@ -1,4 +1,7 @@
-package AccountModel;
+package AdminModel;
+
+import AccountModel.AccountModel;
+import AccountModel.AccountModel.AccountStatus;
 
 public class AdminAccountModel extends AccountModel {
     public AdminAccountModel(String username, String password, String phone, String email, String gender, String address, 

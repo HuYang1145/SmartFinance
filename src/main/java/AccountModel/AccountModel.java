@@ -4,6 +4,9 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import AdminModel.AdminAccountModel;
+import PersonModel.PersonalAccountModel;
+
 public abstract class AccountModel implements Serializable {
     private static final long serialVersionUID = 1L;
 

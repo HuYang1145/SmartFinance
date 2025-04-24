@@ -1,4 +1,6 @@
-package AccountModel;
+package PersonModel;
+
+import AccountModel.AccountModel;
 
 public class UserSessionModel {
     private static String currentUsername;

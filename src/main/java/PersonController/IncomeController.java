@@ -7,9 +7,9 @@ import java.util.List;
 import javax.swing.SwingUtilities;
 
 import AccountModel.AccountModel;
+import AccountModel.AccountRepository;
 import AccountModel.TransactionServiceModel;
-import AccountModel.UserRegistrationCSVExporterModel;
-import AccountModel.UserSessionModel;
+import PersonModel.UserSessionModel;
 import View.IncomeDialogView;
 
 public class IncomeController {
@@ -66,7 +66,7 @@ public class IncomeController {
             return;
         }
 
-        List<AccountModel> accounts = UserRegistrationCSVExporterModel.readFromCSV();
+        List<AccountModel> accounts = AccountRepository.readFromCSV();
         AccountModel currentUserAccount = null;
         boolean passwordCorrect = false;
 
@@ -97,7 +97,7 @@ public class IncomeController {
 
         if (transactionAdded) {
             currentUserAccount.setBalance(currentUserAccount.getBalance() + amount);
-            boolean saved = UserRegistrationCSVExporterModel.saveToCSV(accounts, false);
+            boolean saved = AccountRepository.saveToCSV(accounts, false);
 
             if (saved) {
                 UserSessionModel.setCurrentAccount(currentUserAccount);

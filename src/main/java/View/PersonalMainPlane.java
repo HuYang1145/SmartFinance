@@ -38,8 +38,8 @@ import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 import javax.swing.plaf.basic.BasicComboBoxUI;
 
-import AccountModel.UserSessionModel;
 import PersonController.ChartController;
+import PersonModel.UserSessionModel;
 import View.AccountManagementUI.RoundBorder;
 
 // import static PersonModel.IncomeExpenseChart.filterByYearMonth; // Not used directly in this snippet of Code 1
