@@ -16,18 +16,15 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 
-import AdminModel.AdminAccountModel;
-import PersonModel.PersonalAccountModel;
-
 public class AccountRepository {
     private static final String CSV_FILE_PATH = "accounts.csv";
     private static final String CSV_HEADER = "Username,Password,Phone,Email,Gender,Address,CreationTime,AccountStatus,AccountType,Balance\n";
 
     /**
-     * Saves the account list to a CSV file.
+     * 将账户列表保存到 CSV 文件。
      *
-     * @param accountList The list of accounts to save.
-     * @param append      If true, appends to the file; if false, overwrites the file.
+     * @param accountList 要保存的账户列表。
+     * @param append      如果为 true，追加到文件；如果为 false，覆盖文件。
      */
     public static boolean saveToCSV(List<AccountModel> accountList, boolean append) {
         try (FileOutputStream fos = new FileOutputStream(CSV_FILE_PATH, append);
@@ -38,10 +35,8 @@ public class AccountRepository {
             if (!append || (append && file.length() == 0)) {
                 if (!append && file.exists()) {
                     writer.write(CSV_HEADER);
-                    writer.newLine();
                 } else if (file.length() == 0) {
                     writer.write(CSV_HEADER);
-                    writer.newLine();
                 }
             }
 
@@ -52,7 +47,7 @@ public class AccountRepository {
             return true;
 
         } catch (IOException e) {
-            System.err.println("Error saving accounts to CSV: " + e.getMessage());
+            System.err.println("保存账户到 CSV 时出错: " + e.getMessage());
             e.printStackTrace();
             return false;
         }
@@ -75,21 +70,29 @@ public class AccountRepository {
                 String accountType = record.get("AccountType").trim();
                 double balance = Double.parseDouble(record.get("Balance").trim());
 
-                if ("Admin".equalsIgnoreCase(accountType)) {
-                    accounts.add(new AdminAccountModel(username, password, phone, email, gender, address, creationTime, accountStatus, accountType, balance));
-                } else {
-                    accounts.add(new PersonalAccountModel(username, password, phone, email, gender, address, creationTime, accountStatus, accountType, balance));
-                }
+                AccountModel account = new AccountModel();
+                account.setUsername(username);
+                account.setPassword(password);
+                account.setPhone(phone);
+                account.setEmail(email);
+                account.setGender(gender);
+                account.setAddress(address);
+                account.setCreationTime(creationTime);
+                account.setAccountStatus(accountStatus);
+                account.setAccountType(accountType);
+                account.setBalance(balance);
+
+                accounts.add(account);
             }
 
         } catch (IOException e) {
-            System.err.println("Error reading CSV file: " + e.getMessage());
+            System.err.println("读取 CSV 文件时出错: " + e.getMessage());
             e.printStackTrace();
         } catch (NumberFormatException e) {
-            System.err.println("Error parsing balance in CSV: " + e.getMessage());
+            System.err.println("解析 CSV 中的余额时出错: " + e.getMessage());
             e.printStackTrace();
         } catch (IllegalArgumentException e) {
-            System.err.println("Error parsing AccountStatus in CSV: " + e.getMessage());
+            System.err.println("解析 CSV 中的账户状态时出错: " + e.getMessage());
             e.printStackTrace();
         }
         return accounts;

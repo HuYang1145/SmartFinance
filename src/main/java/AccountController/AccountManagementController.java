@@ -14,60 +14,54 @@ import AccountModel.TransactionCheckerModel;
 import AccountModel.TransactionModel;
 import AccountModel.TransactionServiceModel;
 import AccountModel.TransactionServiceModel.TransactionData;
-import AdminModel.AccountRepositoryModel;
-import AdminModel.AccountService;
-import AdminModel.AdminAccountModel;
-import PersonModel.PersonalAccountModel;
+import AdminController.AdminController;
 import PersonModel.UserSessionModel;
 import View.AccountManagementUI;
-import View.AdminPlane;
 import View.PersonalMainPlane;
 
 /**
- * Controller handling login and registration logic for AccountManagementUI.
- * It interacts with model classes to validate credentials, manage sessions,
- * load user data (including transactions), and create new accounts.
+ * 控制器，处理 AccountManagementUI 的登录和注册逻辑。
+ * 与模型类交互以验证凭据、管理会话、加载用户数据（包括交易记录）并创建新账户。
  */
 public class AccountManagementController {
 
     /**
-     * Checks if a string is null or empty after trimming whitespace.
+     * 检查字符串是否为空或去除空格后为空。
      *
-     * @param value The string to check.
-     * @return true if the string is null or empty after trimming, false otherwise.
+     * @param value 要检查的字符串。
+     * @return 如果字符串为空或去除空格后为空，返回 true；否则返回 false。
      */
     private static boolean isEmpty(String value) {
         return value == null || value.trim().isEmpty();
     }
 
     /**
-     * Handles the user login attempt.
-     * Validates input, checks credentials against accounts.csv, checks account status,
-     * loads transactions, checks for abnormal activity, sets the session,
-     * and opens the appropriate AdminUI or PersonalUI.
+     * 处理用户登录尝试。
+     * 验证输入、检查凭据、检查账户状态、加载交易记录、检测异常活动、设置会话，
+     * 并打开相应的 AdminView 或 PersonalMainPlane。
      *
-     * @param username The entered username.
-     * @param password The entered password.
-     * @param ui The AccountManagementUI instance to display messages and close.
+     * @param username 输入的用户名。
+     * @param password 输入的密码。
+     * @param ui AccountManagementUI 实例，用于显示消息和关闭界面。
      */
     public void handleLogin(String username, String password, AccountManagementUI ui) {
         System.out.println("DEBUG: handleLogin - Attempting login for user: '" + username + "'");
 
-        // 1. Validate Inputs
+        // 1. 验证输入
         if (isEmpty(username)) {
-            ui.showCustomMessage("Username cannot be empty!", "Login Error", JOptionPane.ERROR_MESSAGE);
+            ui.showCustomMessage("用户名不能为空！", "登录错误", JOptionPane.ERROR_MESSAGE);
             return;
         }
         if (isEmpty(password)) {
-            ui.showCustomMessage("Password cannot be empty!", "Login Error", JOptionPane.ERROR_MESSAGE);
+            ui.showCustomMessage("密码不能为空！", "登录错误", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
-        // 2. Read Account Data
+        // 2. 读取账户数据
         List<AccountModel> accounts = AccountRepository.readFromCSV();
         AccountModel matchedAccount = null;
 
-        // 3. Find Matching Account
+        // 3. 查找匹配的账户
         for (AccountModel account : accounts) {
             if (account.getUsername().equals(username) && account.getPassword().equals(password)) {
                 matchedAccount = account;
@@ -75,33 +69,33 @@ public class AccountManagementController {
             }
         }
 
-        // 4. Process Login Result
+        // 4. 处理登录结果
         if (matchedAccount != null) {
             System.out.println("DEBUG: handleLogin - Account found: " + username);
 
-            // 4a. Check Account Status
+            // 4a. 检查账户状态
             if (matchedAccount.getAccountStatus() == AccountModel.AccountStatus.FROZEN) {
                 System.out.println("DEBUG: handleLogin - Account is FROZEN.");
-                ui.showCustomMessage("This account is currently frozen. Please contact the administrator.", "Account Frozen", JOptionPane.WARNING_MESSAGE);
+                ui.showCustomMessage("此账户当前被冻结。请联系管理员。", "账户冻结", JOptionPane.WARNING_MESSAGE);
                 return;
             }
             System.out.println("DEBUG: handleLogin - Account status is ACTIVE.");
 
-            // 4b. Load Transactions into AccountModel
+            // 4b. 加载交易记录
             loadTransactionsForAccount(matchedAccount);
 
-            // 4c. Set User Session
+            // 4c. 设置用户会话
             UserSessionModel.setCurrentAccount(matchedAccount);
             System.out.println("DEBUG: handleLogin - User session set for: " + UserSessionModel.getCurrentUsername());
 
-            // 4d. Check for Abnormal Transactions
+            // 4d. 检查异常交易
             boolean abnormalDetected = TransactionCheckerModel.hasAbnormalTransactions(matchedAccount);
             if (abnormalDetected) {
                 System.out.println("DEBUG: handleLogin - Abnormal transaction activity detected.");
                 SwingUtilities.invokeLater(() ->
                     ui.showCustomMessage(
-                        "Warning: Abnormal transaction activity detected recently.\nPlease review your transaction history.",
-                        "Activity Alert",
+                        "警告：近期检测到异常交易活动。\n请检查您的交易历史。",
+                        "活动警告",
                         JOptionPane.WARNING_MESSAGE
                     )
                 );
@@ -110,112 +104,94 @@ public class AccountManagementController {
             }
 
             try {
-                if (matchedAccount instanceof AdminAccountModel) {
+                if (matchedAccount.isAdmin()) {
                     System.out.println("DEBUG: handleLogin - Opening AdminUI.");
-                    AccountRepositoryModel repository = new AccountRepositoryModel();
-                    AccountService accountService = new AccountService(repository);
-                    SwingUtilities.invokeLater(() -> new AdminPlane(accountService));
-                } else if (matchedAccount instanceof PersonalAccountModel) {
+                    SwingUtilities.invokeLater(() -> new AdminController());
+                } else {
                     System.out.println("DEBUG: handleLogin - Opening PersonalUI.");
                     SwingUtilities.invokeLater(() -> new PersonalMainPlane(username));
                 }
                 ui.closeWindow();
             } catch (Exception ex) {
                 System.err.println("ERROR: handleLogin - Error opening main UI or closing login window!");
-                ui.showCustomMessage("An error occurred while opening the main application window.", "Error", JOptionPane.ERROR_MESSAGE);
+                ui.showCustomMessage("打开主应用窗口时发生错误。", "错误", JOptionPane.ERROR_MESSAGE);
             }
         } else {
             System.out.println("DEBUG: handleLogin - Login failed: Incorrect username or password.");
-            ui.showCustomMessage("Incorrect username or password!", "Login Failed", JOptionPane.ERROR_MESSAGE);
+            ui.showCustomMessage("用户名或密码错误！", "登录失败", JOptionPane.ERROR_MESSAGE);
         }
         System.out.println("DEBUG: handleLogin - Method end.");
     }
 
     /**
-     * Handles the user registration attempt.
-     * Checks for existing username, validates input, creates the appropriate
-     * AccountModel subclass, and saves it to accounts.csv using append mode.
+     * 处理用户注册尝试。
+     * 检查用户名是否存在、验证输入、创建 AccountModel 实例，
+     * 并以追加模式保存到 accounts.csv。
      *
-     * @param username            Entered username.
-     * @param password            Entered password.
-     * @param phone               Entered phone number.
-     * @param email               Entered email address.
-     * @param gender              Selected gender.
-     * @param address             Entered address.
-     * @param selectedAccountType String representing the selected account type ("personal" or "Admin").
-     * @param ui                  The AccountManagementUI instance.
+     * @param username            输入的用户名。
+     * @param password            输入的密码。
+     * @param phone               输入的电话号码。
+     * @param email               输入的邮箱地址。
+     * @param gender              选择的性别。
+     * @param address             输入的地址。
+     * @param selectedAccountType 选择的账户类型（"personal" 或 "Admin"）。
+     * @param ui                  AccountManagementUI 实例。
      */
     public void handleRegister(String username, String password, String phone, String email, String gender, String address, String selectedAccountType, AccountManagementUI ui) {
         System.out.println("DEBUG: handleRegister - Attempting registration for user: '" + username + "', type: '" + selectedAccountType + "'");
 
-        // 1. Check if username exists
+        // 1. 检查用户名是否已存在
         List<AccountModel> accounts = AccountRepository.readFromCSV();
         for (AccountModel account : accounts) {
             if (account.getUsername().equals(username)) {
-                ui.showCustomMessage("Username already exists! Please choose another.", "Registration Error", JOptionPane.ERROR_MESSAGE);
+                ui.showCustomMessage("用户名已存在！请选择其他用户名。", "注册错误", JOptionPane.ERROR_MESSAGE);
                 return;
             }
         }
 
-        // 2. Validate all required fields are non-empty
+        // 2. 验证所有必填字段非空
         if (isEmpty(username) || isEmpty(password) ||
             isEmpty(phone) || isEmpty(email) ||
             isEmpty(gender) || isEmpty(address) ||
             isEmpty(selectedAccountType)) {
-            ui.showCustomMessage("All fields must be filled out!", "Registration Error", JOptionPane.ERROR_MESSAGE);
+            ui.showCustomMessage("所有字段均需填写！", "注册错误", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
-        // 3. Prepare account details
-        String creationTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
-        AccountModel.AccountStatus accountStatus = AccountModel.AccountStatus.ACTIVE; // Default to active upon registration
+        // 3. 准备账户详情
+        String creationTime = new SimpleDateFormat("yyyy/MM/dd HH:mm").format(new Date());
+        AccountModel.AccountStatus accountStatus = AccountModel.AccountStatus.ACTIVE;
         double initialBalance = 0.0;
 
-        AccountModel newAccount = null;
-        String accountTypeString = "";
+        // 4. 创建 AccountModel 实例
+        AccountModel newAccount = new AccountModel(
+            username, password, phone, email, gender, address,
+            creationTime, accountStatus, selectedAccountType, initialBalance
+        );
 
-        // 4. Create appropriate AccountModel instance
-        if ("personal".equalsIgnoreCase(selectedAccountType)) {
-            accountTypeString = "personal";
-            newAccount = new PersonalAccountModel(username, password, phone, email, gender, address, creationTime, accountStatus, accountTypeString, initialBalance);
-        } else if ("Admin".equalsIgnoreCase(selectedAccountType)) {
-            accountTypeString = "Admin";
-            newAccount = new AdminAccountModel(username, password, phone, email, gender, address, creationTime, accountStatus, accountTypeString, initialBalance);
+        // 5. 保存新账户
+        List<AccountModel> accountListToAdd = new ArrayList<>();
+        accountListToAdd.add(newAccount);
+        boolean saved = AccountRepository.saveToCSV(accountListToAdd, true);
+
+        if (saved) {
+            System.out.println("DEBUG: handleRegister - Account saved successfully for user: " + username);
+            ui.showCustomMessage("账户创建成功！您现在可以登录。", "注册成功", JOptionPane.INFORMATION_MESSAGE);
+            ui.switchToLoginPanel();
         } else {
-            // This case should ideally not be reachable if JComboBox has fixed values
-            ui.showCustomMessage("Invalid account type selected: " + selectedAccountType, "Registration Error", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-
-        // 5. Save the new account
-        if (newAccount != null) {
-            List<AccountModel> accountListToAdd = new ArrayList<>();
-            accountListToAdd.add(newAccount);
-            // Use append mode (true) for registration
-            boolean saved = AccountRepository.saveToCSV(accountListToAdd, true);
-
-            if (saved) {
-                System.out.println("DEBUG: handleRegister - Account saved successfully for user: " + username);
-                ui.showCustomMessage("Account created successfully! You can now log in.", "Registration Successful", JOptionPane.INFORMATION_MESSAGE);
-                ui.switchToLoginPanel(); // Go back to login panel
-            } else {
-                // saveToCSV should handle its own errors/logging
-                ui.showCustomMessage("Failed to save account information. Please try again or contact support.", "Registration Error", JOptionPane.ERROR_MESSAGE);
-            }
+            ui.showCustomMessage("无法保存账户信息。请重试或联系支持。", "注册错误", JOptionPane.ERROR_MESSAGE);
         }
         System.out.println("DEBUG: handleRegister - Method end for user: " + username);
     }
 
     /**
-     * Loads transactions for the given account from transactions.csv using TransactionService
-     * and populates the account's internal transaction list.
-     * Assumes account.getTransactions() returns a non-null, clearable, modifiable List,
-     * and that TransactionModel has a constructor matching the new 6-field structure.
+     * 为给定账户从 transactions.csv 加载交易记录，并填充账户的内部交易列表。
+     * 假设 account.getTransactions() 返回一个非空的、可清除的、可修改的 List，
+     * 并且 TransactionModel 有一个匹配新 6 字段结构的构造函数。
      *
-     * @param account The AccountModel object to load transactions into.
+     * @param account 要加载交易记录的 AccountModel 对象。
      */
     private void loadTransactionsForAccount(AccountModel account) {
-        // 1. Validate Account and Username
         if (account == null) {
             System.err.println("ERROR: loadTransactionsForAccount - Account object is null.");
             return;
@@ -226,45 +202,37 @@ public class AccountManagementController {
             return;
         }
 
-        // 2. Get and Clear Existing Transaction List
         List<TransactionModel> transactionList = account.getTransactions();
         if (transactionList == null) {
-            // Log error, maybe initialize if possible, but loading cannot proceed.
             System.err.println("ERROR: loadTransactionsForAccount - Account's transaction list is null for user: " + username + ". Cannot load transactions.");
             return;
         }
-        transactionList.clear(); // Clear any stale data
+        transactionList.clear();
 
         System.out.println("DEBUG: loadTransactionsForAccount - Loading transactions via TransactionService for user: " + username);
 
-        // 3. Use TransactionService to Read Data
         List<TransactionData> transactionDataList = TransactionServiceModel.readTransactions(username);
 
-        // 4. Populate AccountModel's List
         int loadedCount = 0;
         if (transactionDataList != null && !transactionDataList.isEmpty()) {
             System.out.println("DEBUG: loadTransactionsForAccount - Found " + transactionDataList.size() + " records from service.");
             for (TransactionData data : transactionDataList) {
-                // Double-check data consistency (username should match)
                 if (!username.equals(data.getUsername())) {
                     System.err.println("WARNING: loadTransactionsForAccount - Transaction data username mismatch. Expected '" + username + "', got '" + data.getUsername() + "'. Skipping.");
                     continue;
                 }
                 try {
-                    // Create TransactionModel (ensure constructor exists and matches)
                     TransactionModel txModel = new TransactionModel(
-                            data.getUsername(),    // user
-                            data.getOperation(),   // operation
-                            data.getAmount(),      // amount
-                            data.getTime(),        // time
-                            data.getMerchant(),    // merchant
-                            data.getType()         // type
+                            data.getUsername(),
+                            data.getOperation(),
+                            data.getAmount(),
+                            data.getTime(),
+                            data.getMerchant(),
+                            data.getType()
                     );
-                    // Add to the account's list
                     transactionList.add(txModel);
                     loadedCount++;
                 } catch (Exception e) {
-                    // Catch errors during TransactionModel creation or adding
                     System.err.println("ERROR: loadTransactionsForAccount - Failed to process transaction data: " + data + " | Error: " + e.getMessage());
                 }
             }

@@ -37,8 +37,8 @@ import javax.swing.border.Border;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 
-import AccountModel.BudgetAdvisorModel;
-import AccountModel.BudgetAdvisorModel.BudgetRecommendation;
+import AccountModel.BudgetServiceModel;
+import AccountModel.BudgetServiceModel.BudgetRecommendation;
 import AccountModel.TransactionServiceModel;
 import AccountModel.TransactionServiceModel.TransactionData;
 
@@ -57,7 +57,7 @@ public class BudgetManagementPanel extends JPanel {
     private JLabel budgetStatusLabel;
     private String username;
 
-    private static final DateTimeFormatter TRANSACTION_TIME_FORMATTER = BudgetAdvisorModel.DATE_FORMATTER;
+    private static final DateTimeFormatter TRANSACTION_TIME_FORMATTER = BudgetServiceModel.DATE_FORMATTER;
     private static final Color SECTION_BACKGROUND_COLOR = new Color(245, 245, 245); // Light gray
     private static final Border SECTION_BORDER = BorderFactory.createLineBorder(new Color(220, 220, 220)); // Light gray border
     private static final Color BUTTON_BACKGROUND_COLOR = Color.LIGHT_GRAY;
@@ -315,7 +315,7 @@ public class BudgetManagementPanel extends JPanel {
                     throw new IllegalStateException("Username is not set for BudgetManagementPanel.");
                 }
                 LocalDate today = LocalDate.now();
-                BudgetRecommendation recommendation = BudgetAdvisorModel.calculateRecommendation(username, today);
+                BudgetRecommendation recommendation = BudgetServiceModel.calculateRecommendation(username, today);
                 List<TransactionData> transactions = TransactionServiceModel.readTransactions(username);
                 double currentMonthIncome = calculateCurrentMonthIncome(transactions); // 重新计算当月收入
                 double currentMonthExpense = calculateCurrentMonthExpense(transactions);
@@ -342,7 +342,7 @@ public class BudgetManagementPanel extends JPanel {
         for (TransactionData tx : transactions) {
             if ("Expense".equalsIgnoreCase(tx.getOperation())) {
                 try {
-                    LocalDate transactionDate = LocalDate.parse(tx.getTime(), BudgetAdvisorModel.DATE_FORMATTER);
+                    LocalDate transactionDate = LocalDate.parse(tx.getTime(), BudgetServiceModel.DATE_FORMATTER);
                     if (transactionDate.getYear() == 2025 && transactionDate.getMonthValue() == 4) {
                         System.out.println("  时间: " + transactionDate.format(debugFormatter) + ", 金额: " + tx.getAmount() + ", 类型: " + tx.getType());
                     }
@@ -363,7 +363,7 @@ public class BudgetManagementPanel extends JPanel {
         List<String> largeConsumptions = data.largeConsumptions;
 
         // Update Monthly Saving Goal & Budget
-        Double customBudget = BudgetAdvisorModel.getCustomBudget(this.username);
+        Double customBudget = BudgetServiceModel.getCustomBudget(this.username);
         double budgetToUse = (customBudget != null) ? customBudget : recommendation.suggestedBudget;
         budgetValueLabel.setText(String.format("¥%.2f", budgetToUse));
         savingGoalValueLabel.setText(String.format("¥%.2f", currentMonthIncome - budgetToUse)); // 使用实际收入减去使用的预算作为储蓄目标
@@ -424,7 +424,7 @@ public class BudgetManagementPanel extends JPanel {
             try {
                 double newBudget = Double.parseDouble(newBudgetStr);
                 if (newBudget >= 0) {
-                    BudgetAdvisorModel.saveCustomBudget(this.username, newBudget);
+                    BudgetServiceModel.saveCustomBudget(this.username, newBudget);
                     JOptionPane.showMessageDialog(this, "Custom budget set to ¥" + String.format("%.2f", newBudget));
                     loadBudgetData(); // Refresh data to reflect the change
                 } else {
@@ -436,7 +436,7 @@ public class BudgetManagementPanel extends JPanel {
         } else {
             int choice = JOptionPane.showConfirmDialog(this, "Do you want to clear your custom budget?", "Clear Budget", JOptionPane.YES_NO_OPTION);
             if (choice == JOptionPane.YES_OPTION) {
-                BudgetAdvisorModel.clearCustomBudget(this.username);
+                BudgetServiceModel.clearCustomBudget(this.username);
                 JOptionPane.showMessageDialog(this, "Custom budget cleared. Using system recommendation.");
                 loadBudgetData(); // Refresh data
             }
@@ -444,7 +444,7 @@ public class BudgetManagementPanel extends JPanel {
     }
 
     private void handleRestoreIntelligent() {
-        BudgetAdvisorModel.clearCustomBudget(this.username);
+        BudgetServiceModel.clearCustomBudget(this.username);
         JOptionPane.showMessageDialog(this, "Intelligent budget recommendation restored.");
         loadBudgetData(); // Refresh data
     }

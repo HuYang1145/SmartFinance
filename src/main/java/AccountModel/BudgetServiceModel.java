@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Map;
 
 
-public class BudgetAdvisorModel {
+public class BudgetServiceModel {
     private static final String BUDGET_FILE = "user_budget.csv";
     private static final String TRANSACTIONS_FILE = "transactions.csv";
     // 使用 DateTimeFormatterBuilder 创建可以解析两种格式的 formatter

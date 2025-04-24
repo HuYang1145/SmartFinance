@@ -4,10 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import AdminModel.AdminAccountModel;
-import PersonModel.PersonalAccountModel;
-
-public abstract class AccountModel implements Serializable {
+public class AccountModel implements Serializable {
     private static final long serialVersionUID = 1L;
 
     // 账户状态枚举
@@ -30,6 +27,10 @@ public abstract class AccountModel implements Serializable {
     private List<TransactionModel> transactions;
 
     // --- 构造函数 ---
+    public AccountModel() {
+        this.transactions = new ArrayList<>();
+    }
+
     public AccountModel(String username, String password, String phone, String email, String gender, String address,
                        String creationTime, AccountStatus accountStatus, String accountType, double balance) {
         this.username = username;
@@ -92,8 +93,10 @@ public abstract class AccountModel implements Serializable {
         }
     }
 
-    // --- 抽象方法 ---
-    public abstract boolean isAdmin();
+    // --- 判断是否为管理员 ---
+    public boolean isAdmin() {
+        return "Admin".equalsIgnoreCase(accountType);
+    }
 
     // --- CSV 处理方法 ---
     public String toCSV() {
@@ -133,15 +136,19 @@ public abstract class AccountModel implements Serializable {
                 AccountStatus accountStatus = AccountStatus.valueOf(statusStr);
                 double balance = balanceStr.isEmpty() ? 0.0 : Double.parseDouble(balanceStr);
 
-                if ("admin".equalsIgnoreCase(accountType)) {
-                    return new AdminAccountModel(username, password, phone, email, gender, address,
-                            creationTime, accountStatus, accountType, balance);
-                } else if ("personal".equalsIgnoreCase(accountType)) {
-                    return new PersonalAccountModel(username, password, phone, email, gender, address,
-                            creationTime, accountStatus, accountType, balance);
-                } else {
-                    throw new IllegalArgumentException("Unknown account type: " + accountType + " in CSV line: " + csvLine);
-                }
+                AccountModel account = new AccountModel();
+                account.setUsername(username);
+                account.setPassword(password);
+                account.setPhone(phone);
+                account.setEmail(email);
+                account.setGender(gender);
+                account.setAddress(address);
+                account.setCreationTime(creationTime);
+                account.setAccountStatus(accountStatus);
+                account.setAccountType(accountType);
+                account.setBalance(balance);
+
+                return account;
             } catch (NumberFormatException e) {
                 throw new IllegalArgumentException("Invalid balance format in CSV line: " + csvLine, e);
             } catch (IllegalArgumentException e) {
