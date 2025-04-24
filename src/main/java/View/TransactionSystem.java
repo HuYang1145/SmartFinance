@@ -32,6 +32,7 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -72,10 +73,9 @@ import org.json.JSONObject;
 import com.google.gson.Gson;
 
 import AccountModel.AccountModel;
-import AccountModel.TransactionServiceModel;
-import AccountModel.TransactionServiceModel.TransactionData;
-import PersonModel.TransactionAnalyzerModel;
-import PersonModel.UserSessionModel;
+import PersonModel.UserSessionModel; // Import TransactionController
+import TransactionController.TransactionController; // Import TransactionModel
+import TransactionModel.TransactionModel; // Import BudgetServiceModel for DATE_FORMATTER
 import View.AccountManagementUI.RoundBorder;
 import View.RoundedInputField.BrandGradientPanel;
 import View.RoundedInputField.GradientButton;
@@ -109,7 +109,51 @@ public class TransactionSystem extends JPanel {
     private static final Color LIGHT_GRADIENT_END = new Color(80, 140, 255); // Fixed Blue from 290 to 255
     private static final Color TEXT_COLOR = Color.BLACK;
     private static final Color HIGHLIGHT_COLOR = Color.WHITE;
+    private static Map<String, List<TransactionModel>> transactionCache = new HashMap<>();
+    private static Map<String, Long> cacheTimestamps = new HashMap<>();
+    private static final long CACHE_EXPIRY_MS = 5 * 60 * 1000;
+    /**
+ * Checks if the transaction cache for the user is valid.
+ */
+private static boolean isCacheValid(String username) {
+    Long timestamp = cacheTimestamps.get(username);
+    if (timestamp == null) return false;
+    return (System.currentTimeMillis() - timestamp) < CACHE_EXPIRY_MS;
+}
 
+/**
+ * Retrieves transactions for the user, using cache if valid.
+ */
+private static List<TransactionModel> getCachedTransactions(String username) {
+    if (isCacheValid(username)) {
+        return transactionCache.getOrDefault(username, new ArrayList<>());
+    }
+    List<TransactionModel> transactions = TransactionController.readTransactions(username);
+    transactionCache.put(username, transactions != null ? transactions : new ArrayList<>());
+    cacheTimestamps.put(username, System.currentTimeMillis());
+    return transactionCache.get(username);
+}
+
+/**
+ * Filters transactions by year and month (yyyy/MM).
+ */
+private static List<TransactionModel> getFilteredTransactions(String username, String yearMonth) {
+    List<TransactionModel> transactions = getCachedTransactions(username);
+    List<TransactionModel> filtered = new ArrayList<>();
+    String yearMonthPrefix = yearMonth + "/";
+
+    for (TransactionModel tx : transactions) {
+        try {
+            String timestamp = tx.getTimestamp();
+            if (timestamp.startsWith(yearMonthPrefix)) {
+                filtered.add(tx);
+            }
+        } catch (Exception e) {
+            System.err.println("Error processing transaction timestamp: " + tx.getTimestamp());
+        }
+    }
+    return filtered;
+}
     public TransactionSystem(String username) {
         this.username = username;
         loadCache();
@@ -337,135 +381,133 @@ public class TransactionSystem extends JPanel {
     return panel;
 }
     // Module 5: Income Interface
-private JPanel createIncomePanel() {
-    LightGradientPanel panel = new LightGradientPanel();
-    panel.setLayout(new BorderLayout(10, 10));
-    panel.setBorder(BorderFactory.createCompoundBorder(
-            new RoundBorder(10, HIGHLIGHT_COLOR),
-            BorderFactory.createEmptyBorder(20, 10, 10, 10)));
-
-    JLabel titleLabel = new JLabel("Add Income Record", SwingConstants.CENTER);
-    titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 20));
-    titleLabel.setForeground(Color.WHITE);
-    panel.add(titleLabel, BorderLayout.NORTH);
-
-    JPanel formPanel = new JPanel(new GridBagLayout());
-    formPanel.setOpaque(false);
-    GridBagConstraints gbc = new GridBagConstraints();
-    gbc.insets = new Insets(12, 12, 12, 12);
-    gbc.fill = GridBagConstraints.HORIZONTAL;
-
-    JLabel amountLabel = new JLabel("Amount (¥):");
-    amountLabel.setForeground(Color.WHITE);
-    gbc.gridx = 0; gbc.gridy = 0;
-    formPanel.add(amountLabel, gbc);
-
-    JTextField amountField = new JTextField(15);
-    amountField.setFont(new Font("Segoe UI", Font.PLAIN, 16));
-    gbc.gridx = 1; gbc.weightx = 1.0;
-    formPanel.add(amountField, gbc);
-
-    JLabel timeLabel = new JLabel("Time (yyyy/MM/dd HH:mm):");
-    timeLabel.setForeground(Color.WHITE);
-    gbc.gridx = 0; gbc.gridy = 1; gbc.weightx = 0.0;
-    formPanel.add(timeLabel, gbc);
-
-    JTextField timeField = new JTextField(new SimpleDateFormat("yyyy/MM/dd HH:mm").format(new Date()), 15);
-    timeField.setFont(new Font("Segoe UI", Font.PLAIN, 16));
-    gbc.gridx = 1; gbc.weightx = 1.0;
-    formPanel.add(timeField, gbc);
-
-    JLabel passwordLabel = new JLabel("Password:");
-    passwordLabel.setForeground(Color.WHITE);
-    gbc.gridx = 0; gbc.gridy = 2;
-    formPanel.add(passwordLabel, gbc);
-
-    JPasswordField passwordField = new JPasswordField(15);
-    passwordField.setFont(new Font("Segoe UI", Font.PLAIN, 16));
-    gbc.gridx = 1;
-    formPanel.add(passwordField, gbc);
-
-    panel.add(formPanel, BorderLayout.CENTER);
-
-    JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 15, 10));
-    buttonPanel.setOpaque(false);
-    JButton confirmButton = new JButton("Confirm Income");
-    confirmButton.setBackground(new Color(30, 60, 120));
-    confirmButton.setForeground(Color.WHITE);
-    confirmButton.setBorder(new RoundBorder(10, confirmButton.getBackground()));
-    confirmButton.addMouseListener(new MouseAdapter() {
-        @Override public void mouseEntered(MouseEvent e) { confirmButton.setBackground(new Color(50, 80, 140)); }
-        @Override public void mouseExited(MouseEvent e) { confirmButton.setBackground(new Color(30, 60, 120)); }
-    });
-    confirmButton.addActionListener(e -> {
-        String amountText = amountField.getText();
-        String timeText = timeField.getText();
-        String password = new String(passwordField.getPassword());
-
-        if (amountText.isEmpty() || timeText.isEmpty() || password.isEmpty()) {
-            JOptionPane.showMessageDialog(TransactionSystem.this, "All fields must be filled.", "Input Error", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-
-        double amount;
-        try {
-            amount = Double.parseDouble(amountText);
-            if (amount <= 0) {
-                JOptionPane.showMessageDialog(TransactionSystem.this, "Amount must be positive.", "Input Error", JOptionPane.ERROR_MESSAGE);
+    private JPanel createIncomePanel() {
+        LightGradientPanel panel = new LightGradientPanel();
+        panel.setLayout(new BorderLayout(10, 10));
+        panel.setBorder(BorderFactory.createCompoundBorder(
+                new RoundBorder(10, HIGHLIGHT_COLOR),
+                BorderFactory.createEmptyBorder(20, 10, 10, 10)));
+    
+        JLabel titleLabel = new JLabel("Add Income Record", SwingConstants.CENTER);
+        titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 20));
+        titleLabel.setForeground(Color.WHITE);
+        panel.add(titleLabel, BorderLayout.NORTH);
+    
+        JPanel formPanel = new JPanel(new GridBagLayout());
+        formPanel.setOpaque(false);
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(12, 12, 12, 12);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+    
+        JLabel amountLabel = new JLabel("Amount (¥):");
+        amountLabel.setForeground(Color.WHITE);
+        gbc.gridx = 0; gbc.gridy = 0;
+        formPanel.add(amountLabel, gbc);
+    
+        JTextField amountField = new JTextField(15);
+        amountField.setFont(new Font("Segoe UI", Font.PLAIN, 16));
+        gbc.gridx = 1; gbc.weightx = 1.0;
+        formPanel.add(amountField, gbc);
+    
+        JLabel timeLabel = new JLabel("Time (yyyy/MM/dd [HH:mm]):");
+        timeLabel.setForeground(Color.WHITE);
+        gbc.gridx = 0; gbc.gridy = 1; gbc.weightx = 0.0;
+        formPanel.add(timeLabel, gbc);
+    
+        JTextField timeField = new JTextField(new SimpleDateFormat("yyyy/MM/dd HH:mm").format(new Date()), 15);
+        timeField.setFont(new Font("Segoe UI", Font.PLAIN, 16));
+        gbc.gridx = 1; gbc.weightx = 1.0;
+        formPanel.add(timeField, gbc);
+    
+        JLabel passwordLabel = new JLabel("Password:");
+        passwordLabel.setForeground(Color.WHITE);
+        gbc.gridx = 0; gbc.gridy = 2;
+        formPanel.add(passwordLabel, gbc);
+    
+        JPasswordField passwordField = new JPasswordField(15);
+        passwordField.setFont(new Font("Segoe UI", Font.PLAIN, 16));
+        gbc.gridx = 1;
+        formPanel.add(passwordField, gbc);
+    
+        panel.add(formPanel, BorderLayout.CENTER);
+    
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 15, 10));
+        buttonPanel.setOpaque(false);
+        JButton confirmButton = new JButton("Confirm Income");
+        confirmButton.setBackground(new Color(30, 60, 120));
+        confirmButton.setForeground(Color.WHITE);
+        confirmButton.setBorder(new RoundBorder(10, confirmButton.getBackground()));
+        confirmButton.addMouseListener(new MouseAdapter() {
+            @Override public void mouseEntered(MouseEvent e) { confirmButton.setBackground(new Color(50, 80, 140)); }
+            @Override public void mouseExited(MouseEvent e) { confirmButton.setBackground(new Color(30, 60, 120)); }
+        });
+        confirmButton.addActionListener(e -> {
+            String amountText = amountField.getText();
+            String timeText = timeField.getText();
+            String password = new String(passwordField.getPassword());
+    
+            if (amountText.isEmpty() || timeText.isEmpty() || password.isEmpty()) {
+                JOptionPane.showMessageDialog(TransactionSystem.this, "All fields must be filled.", "Input Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
-        } catch (NumberFormatException ex) {
-            JOptionPane.showMessageDialog(TransactionSystem.this, "Invalid amount format.", "Input Error", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-
-        try {
-            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm");
-            dateFormat.setLenient(false);
-            dateFormat.parse(timeText.trim());
-        } catch (java.text.ParseException ex) {
-            JOptionPane.showMessageDialog(TransactionSystem.this, "Invalid time format. Use yyyy/MM/dd HH:mm", "Input Error", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-
-        boolean transactionAdded = TransactionServiceModel.addTransaction(
-                username, "Income", amount, timeText.trim(), "I", "I", "", "u", "", "", "", "", ""
-        );
-
-        if (transactionAdded) {
-            JOptionPane.showMessageDialog(TransactionSystem.this, "Income of ¥" + String.format("%.2f", amount) + " added successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
-            refreshTransactionTable();
+    
+            double amount;
+            try {
+                amount = Double.parseDouble(amountText);
+                if (amount <= 0) {
+                    JOptionPane.showMessageDialog(TransactionSystem.this, "Amount must be positive.", "Input Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(TransactionSystem.this, "Invalid amount format.", "Input Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+    
+            // Verify password
+            AccountModel account = UserSessionModel.getCurrentAccount();
+            if (account == null || !account.getPassword().equals(password)) {
+                JOptionPane.showMessageDialog(TransactionSystem.this, "Incorrect password.", "Authentication Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+    
+            boolean transactionAdded = TransactionController.addTransaction(
+                    account, "Income", amount, timeText.trim(), "I", "I", "", "u", "", "", "", "", ""
+            );
+    
+            if (transactionAdded) {
+                JOptionPane.showMessageDialog(TransactionSystem.this, "Income of ¥" + String.format("%.2f", amount) + " added successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
+                refreshTransactionTable();
+                amountField.setText("");
+                timeField.setText(new SimpleDateFormat("yyyy/MM/dd HH:mm").format(new Date()));
+                passwordField.setText("");
+            } else {
+                JOptionPane.showMessageDialog(TransactionSystem.this, "Failed to add income.", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        });
+    
+        JButton cancelButton = new JButton("Cancel");
+        cancelButton.setBackground(new Color(150, 150, 150));
+        cancelButton.setForeground(Color.WHITE);
+        cancelButton.setBorder(new RoundBorder(10, cancelButton.getBackground()));
+        cancelButton.addMouseListener(new MouseAdapter() {
+            @Override public void mouseEntered(MouseEvent e) { cancelButton.setBackground(new Color(170, 170, 170)); }
+            @Override public void mouseExited(MouseEvent e) { cancelButton.setBackground(new Color(150, 150, 150)); }
+        });
+        cancelButton.addActionListener(e -> {
             amountField.setText("");
             timeField.setText(new SimpleDateFormat("yyyy/MM/dd HH:mm").format(new Date()));
             passwordField.setText("");
-        } else {
-            JOptionPane.showMessageDialog(TransactionSystem.this, "Failed to add income.", "Error", JOptionPane.ERROR_MESSAGE);
-        }
-    });
-
-    JButton cancelButton = new JButton("Cancel");
-    cancelButton.setBackground(new Color(150, 150, 150));
-    cancelButton.setForeground(Color.WHITE);
-    cancelButton.setBorder(new RoundBorder(10, cancelButton.getBackground()));
-    cancelButton.addMouseListener(new MouseAdapter() {
-        @Override public void mouseEntered(MouseEvent e) { cancelButton.setBackground(new Color(170, 170, 170)); }
-        @Override public void mouseExited(MouseEvent e) { cancelButton.setBackground(new Color(150, 150, 150)); }
-    });
-    cancelButton.addActionListener(e -> {
-        amountField.setText("");
-        timeField.setText(new SimpleDateFormat("yyyy/MM/dd HH:mm").format(new Date()));
-        passwordField.setText("");
-    });
-
-    buttonPanel.add(confirmButton);
-    buttonPanel.add(cancelButton);
-    panel.add(buttonPanel, BorderLayout.SOUTH);
-
-    return panel;
-}
+        });
+    
+        buttonPanel.add(confirmButton);
+        buttonPanel.add(cancelButton);
+        panel.add(buttonPanel, BorderLayout.SOUTH);
+    
+        return panel;
+    }
 
    // Module 7: Expense Interface
-private JPanel createExpensePanel() {
+   private JPanel createExpensePanel() {
     LightGradientPanel panel = new LightGradientPanel();
     panel.setLayout(new BorderLayout(10, 10));
     panel.setBorder(BorderFactory.createCompoundBorder(
@@ -494,7 +536,7 @@ private JPanel createExpensePanel() {
     gbc.gridx = 1; gbc.weightx = 1.0;
     formPanel.add(amountField, gbc);
 
-    JLabel timeLabel = new JLabel("Time (yyyy/MM/dd HH:mm):");
+    JLabel timeLabel = new JLabel("Time (yyyy/MM/dd [HH:mm]):");
     timeLabel.setForeground(Color.WHITE);
     gbc.gridx = 0; gbc.gridy = 1; gbc.weightx = 0.0;
     formPanel.add(timeLabel, gbc);
@@ -526,7 +568,7 @@ private JPanel createExpensePanel() {
     formPanel.add(typeComboBox, gbc);
 
     JLabel passwordLabel = new JLabel("Password:");
-    passwordLabel.setForeground(TEXT_COLOR);
+    passwordLabel.setForeground(Color.WHITE);
     gbc.gridx = 0; gbc.gridy = 4;
     formPanel.add(passwordLabel, gbc);
 
@@ -575,12 +617,10 @@ private JPanel createExpensePanel() {
             return;
         }
 
-        try {
-            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm");
-            dateFormat.setLenient(false);
-            dateFormat.parse(timeText.trim());
-        } catch (java.text.ParseException ex) {
-            JOptionPane.showMessageDialog(TransactionSystem.this, "Invalid time format. Use yyyy/MM/dd HH:mm", "Input Error", JOptionPane.ERROR_MESSAGE);
+        // Verify password
+        AccountModel account = UserSessionModel.getCurrentAccount();
+        if (account == null || !account.getPassword().equals(password)) {
+            JOptionPane.showMessageDialog(TransactionSystem.this, "Incorrect password.", "Authentication Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
@@ -593,8 +633,8 @@ private JPanel createExpensePanel() {
             return;
         }
 
-        boolean transactionAdded = TransactionServiceModel.addTransaction(
-                username, "Expense", amount, timeText.trim(), merchantText.trim(), typeToRecord, "", "u", "", "", "", "", ""
+        boolean transactionAdded = TransactionController.addTransaction(
+                account, "Expense", amount, timeText.trim(), merchantText.trim(), typeToRecord, "", "u", "", "", "", "", ""
         );
 
         if (transactionAdded) {
@@ -673,65 +713,57 @@ private JPanel createExpensePanel() {
 
     // Module 6: Historical Transaction Records
     JPanel createTransactionHistoryPanel() {
-        // Main container
         JPanel container = new JPanel(new BorderLayout());
         container.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createEmptyBorder(0, 30, 0, 10),
                 BorderFactory.createEmptyBorder()
         ));
         container.setBackground(Color.WHITE);
-
-        // Header: Gradient balance panel
-        DarkGradientPanel header = new DarkGradientPanel(); // Assumes DarkGradientPanel is defined
+    
+        DarkGradientPanel header = new DarkGradientPanel();
         header.setPreferredSize(new Dimension(0, 120));
         header.setLayout(null);
-
+    
         AccountModel acct = UserSessionModel.getCurrentAccount();
         JLabel lblBalance = new JLabel("Your Balance: " + String.format("%.2f", acct.getBalance()) + " CNY");
         lblBalance.setFont(new Font("Segoe UI", Font.BOLD, 28));
         lblBalance.setForeground(Color.WHITE);
         lblBalance.setBounds(20, 20, 400, 40);
         header.add(lblBalance);
-
+    
         container.add(header, BorderLayout.NORTH);
-
-        // Middle: Transaction list
-        // Filter records for current month
+    
         java.util.Calendar cal = java.util.Calendar.getInstance();
         String currentYearMonth = String.format("%d/%02d",
                 cal.get(java.util.Calendar.YEAR),
                 cal.get(java.util.Calendar.MONTH) + 1
         );
-        List<TransactionData> txs = TransactionAnalyzerModel.getFilteredTransactions(username, currentYearMonth);
-
-        // Populate ListModel
-        DefaultListModel<TransactionData> model = new DefaultListModel<>();
-        for (TransactionData t : txs) {
+        List<TransactionModel> txs = getFilteredTransactions(username, currentYearMonth);
+    
+        DefaultListModel<TransactionModel> model = new DefaultListModel<>();
+        for (TransactionModel t : txs) {
             model.addElement(t);
         }
-
-        // Display in JList
-        JList<TransactionData> list = new JList<>(model);
-        list.setCellRenderer((JList<? extends TransactionData> l, TransactionData t, int idx, boolean sel, boolean focus) -> {
+    
+        JList<TransactionModel> list = new JList<>(model);
+        list.setCellRenderer((JList<? extends TransactionModel> l, TransactionModel t, int idx, boolean sel, boolean focus) -> {
             JPanel row = new JPanel(new BorderLayout());
             row.setBackground(Color.WHITE);
             row.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, new Color(230, 230, 230)));
             row.setPreferredSize(new Dimension(0, 80));
-
-            // Left: Operation and Time
+    
             JPanel left = new JPanel();
             left.setLayout(new BoxLayout(left, BoxLayout.Y_AXIS));
             left.setOpaque(false);
             JLabel opLbl = new JLabel("  " + t.getOperation());
             opLbl.setFont(new Font("Segoe UI", Font.BOLD, 14));
-            JLabel timeLbl = new JLabel(" " + t.getTime());
+            JLabel timeLbl = new JLabel(" " + t.getTimestamp());
             timeLbl.setFont(new Font("Segoe UI", Font.PLAIN, 12));
             timeLbl.setForeground(Color.GRAY);
             left.add(opLbl);
             left.add(timeLbl);
             row.add(left, BorderLayout.WEST);
-
-            // Right: Amount
+    
             JLabel amtLbl = new JLabel(String.format("%+.2f", t.getAmount()), SwingConstants.RIGHT);
             amtLbl.setFont(new Font("Segoe UI", Font.BOLD, 14));
             String opText = t.getOperation().toLowerCase();
@@ -741,14 +773,14 @@ private JPanel createExpensePanel() {
                 amtLbl.setForeground(new Color(200, 0, 0));
             }
             row.add(amtLbl, BorderLayout.EAST);
-
+    
             if (sel) {
                 row.setBackground(new Color(230, 240, 255));
             }
-
+    
             return row;
         });
-
+    
         JScrollPane scroll = new JScrollPane(list);
         scroll.setBorder(BorderFactory.createEmptyBorder());
         scroll.getViewport().setBackground(Color.WHITE);
@@ -759,17 +791,17 @@ private JPanel createExpensePanel() {
                 this.thumbColor = Color.WHITE;
                 this.trackColor = new Color(245, 245, 245);
             }
-
+    
             @Override
             protected JButton createDecreaseButton(int orientation) {
                 return createZeroButton();
             }
-
+    
             @Override
             protected JButton createIncreaseButton(int orientation) {
                 return createZeroButton();
             }
-
+    
             private JButton createZeroButton() {
                 JButton btn = new JButton();
                 btn.setPreferredSize(new Dimension(0, 0));
@@ -781,9 +813,9 @@ private JPanel createExpensePanel() {
                 return btn;
             }
         });
-
+    
         container.add(scroll, BorderLayout.CENTER);
-
+    
         return container;
     }
 
@@ -993,17 +1025,17 @@ private void updateHistoricalTrend() {
                 cal.get(java.util.Calendar.YEAR),
                 cal.get(java.util.Calendar.MONTH) + 1
         );
-
-        List<TransactionData> txs = TransactionAnalyzerModel.getFilteredTransactions(username, currentYearMonth);
-
+    
+        List<TransactionModel> txs = getFilteredTransactions(username, currentYearMonth);
+    
         String[] colNames = {"Operation", "Amount"};
         Object[][] data = new Object[txs.size()][2];
         for (int i = 0; i < txs.size(); i++) {
-            TransactionData t = txs.get(i);
+            TransactionModel t = txs.get(i);
             data[i][0] = t.getOperation();
             data[i][1] = String.format("%+.2f", t.getAmount());
         }
-
+    
         transactionTable.setModel(new javax.swing.table.DefaultTableModel(data, colNames) {
             @Override
             public boolean isCellEditable(int r, int c) {
@@ -1020,7 +1052,7 @@ private void updateHistoricalTrend() {
                 super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
                 String op = table.getValueAt(row, 0).toString().toLowerCase();
                 double amt = Double.parseDouble(value.toString());
-                if ("expense".equals(op)) { // Adjusted to match TransactionData operation
+                if ("expense".equals(op)) {
                     setForeground(Color.RED);
                     setText(String.format("-%.2f", Math.abs(amt)));
                 } else {

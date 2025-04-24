@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import TransactionModel.TransactionModel;
+
 public class AccountModel implements Serializable {
     private static final long serialVersionUID = 1L;
 

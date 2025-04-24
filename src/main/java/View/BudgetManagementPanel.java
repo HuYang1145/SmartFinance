@@ -39,8 +39,8 @@ import javax.swing.border.EmptyBorder;
 
 import AccountModel.BudgetServiceModel;
 import AccountModel.BudgetServiceModel.BudgetRecommendation;
-import AccountModel.TransactionServiceModel;
-import AccountModel.TransactionServiceModel.TransactionData;
+import TransactionController.TransactionController; // 替换 TransactionServiceModel
+import TransactionModel.TransactionModel;
 
 public class BudgetManagementPanel extends JPanel {
 
@@ -316,14 +316,14 @@ public class BudgetManagementPanel extends JPanel {
                 }
                 LocalDate today = LocalDate.now();
                 BudgetRecommendation recommendation = BudgetServiceModel.calculateRecommendation(username, today);
-                List<TransactionData> transactions = TransactionServiceModel.readTransactions(username);
-                double currentMonthIncome = calculateCurrentMonthIncome(transactions); // 重新计算当月收入
+                List<TransactionModel> transactions = TransactionController.readTransactions(username);
+                double currentMonthIncome = calculateCurrentMonthIncome(transactions);
                 double currentMonthExpense = calculateCurrentMonthExpense(transactions);
                 String topCategory = findTopExpenseCategory(transactions);
-                List<String> largeConsumptions = findLargeConsumptions(transactions, currentMonthIncome); // 使用实际收入作为参考
+                List<String> largeConsumptions = findLargeConsumptions(transactions, currentMonthIncome);
                 return new BudgetDataContainer(recommendation, currentMonthExpense, currentMonthIncome, topCategory, largeConsumptions);
             }
-
+        
             @Override
             protected void done() {
                 try {
@@ -336,18 +336,18 @@ public class BudgetManagementPanel extends JPanel {
                 }
             }
         };
-        List<TransactionData> transactions = TransactionServiceModel.readTransactions(username);
+        List<TransactionModel> transactions = TransactionController.readTransactions(username);
         System.out.println("---- Expenses for April 2025: ----");
         DateTimeFormatter debugFormatter = DateTimeFormatter.ofPattern("yyyy/MM/dd");
-        for (TransactionData tx : transactions) {
+        for (TransactionModel tx : transactions) {
             if ("Expense".equalsIgnoreCase(tx.getOperation())) {
                 try {
-                    LocalDate transactionDate = LocalDate.parse(tx.getTime(), BudgetServiceModel.DATE_FORMATTER);
+                    LocalDate transactionDate = LocalDate.parse(tx.getTimestamp(), BudgetServiceModel.DATE_FORMATTER);
                     if (transactionDate.getYear() == 2025 && transactionDate.getMonthValue() == 4) {
                         System.out.println("  时间: " + transactionDate.format(debugFormatter) + ", 金额: " + tx.getAmount() + ", 类型: " + tx.getType());
                     }
                 } catch (DateTimeParseException e) {
-                    System.err.println("Error parsing date for debug: " + tx.getTime());
+                    System.err.println("Error parsing date for debug: " + tx.getTimestamp());
                 }
             }
         }
@@ -459,14 +459,14 @@ public class BudgetManagementPanel extends JPanel {
         }
     }
 
-    private String findTopExpenseCategory(List<TransactionData> transactions) {
+    private String findTopExpenseCategory(List<TransactionModel> transactions) {
         if (transactions == null) return null;
         Map<String, Double> categoryTotals = new HashMap<>();
         LocalDate now = LocalDate.now();
-        for (TransactionData tx : transactions) {
+        for (TransactionModel tx : transactions) {
             if ("Expense".equalsIgnoreCase(tx.getOperation())) {
                 try {
-                    LocalDate transactionDate = LocalDate.parse(tx.getTime(), TRANSACTION_TIME_FORMATTER);
+                    LocalDate transactionDate = LocalDate.parse(tx.getTimestamp(), TRANSACTION_TIME_FORMATTER);
                     if (transactionDate.getYear() == now.getYear() && transactionDate.getMonthValue() == now.getMonthValue()) {
                         String category = tx.getType();
                         if (category == null || category.trim().isEmpty() || "u".equalsIgnoreCase(category.trim())) {
@@ -477,7 +477,7 @@ public class BudgetManagementPanel extends JPanel {
                         categoryTotals.put(category, categoryTotals.getOrDefault(category, 0.0) + tx.getAmount());
                     }
                 } catch (DateTimeParseException e) {
-                    System.err.println("ERROR: Failed to parse date in findTopExpenseCategory: " + tx.getTime() + " - " + e.getMessage());
+                    System.err.println("ERROR: Failed to parse date in findTopExpenseCategory: " + tx.getTimestamp() + " - " + e.getMessage());
                     e.printStackTrace();
                 }
             }
@@ -488,22 +488,22 @@ public class BudgetManagementPanel extends JPanel {
                 .orElse(null);
     }
 
-    private List<String> findLargeConsumptions(List<TransactionData> transactions, double currentMonthIncome) {
+    private List<String> findLargeConsumptions(List<TransactionModel> transactions, double currentMonthIncome) {
         if (transactions == null || currentMonthIncome <= 0) return List.of();
         List<String> largeConsumptions = new ArrayList<>();
         LocalDate now = LocalDate.now();
         double largeThreshold = currentMonthIncome * 0.07;
         DateTimeFormatter displayFormatter = DateTimeFormatter.ofPattern("yyyy/MM/dd");
-
-        for (TransactionData tx : transactions) {
+    
+        for (TransactionModel tx : transactions) {
             if ("Expense".equalsIgnoreCase(tx.getOperation())) {
                 try {
-                    LocalDate transactionDate = LocalDate.parse(tx.getTime(), TRANSACTION_TIME_FORMATTER);
+                    LocalDate transactionDate = LocalDate.parse(tx.getTimestamp(), TRANSACTION_TIME_FORMATTER);
                     if (transactionDate.getYear() == now.getYear() && transactionDate.getMonthValue() == now.getMonthValue() && tx.getAmount() > largeThreshold) {
                         largeConsumptions.add(String.format("%s - ¥%.2f - %s", transactionDate.format(displayFormatter), tx.getAmount(), tx.getType()));
                     }
                 } catch (DateTimeParseException e) {
-                    System.err.println("ERROR: Failed to parse date in findLargeConsumptions: " + tx.getTime() + " - " + e.getMessage());
+                    System.err.println("ERROR: Failed to parse date in findLargeConsumptions: " + tx.getTimestamp() + " - " + e.getMessage());
                     e.printStackTrace();
                 }
             }
@@ -511,19 +511,19 @@ public class BudgetManagementPanel extends JPanel {
         return largeConsumptions;
     }
 
-    private double calculateCurrentMonthIncome(List<TransactionData> transactions) {
+    private double calculateCurrentMonthIncome(List<TransactionModel> transactions) {
         if (transactions == null) return 0.0;
         double totalIncome = 0.0;
         LocalDate now = LocalDate.now();
-        for (TransactionData tx : transactions) {
+        for (TransactionModel tx : transactions) {
             if ("Income".equalsIgnoreCase(tx.getOperation())) {
                 try {
-                    LocalDate transactionDate = LocalDate.parse(tx.getTime(), TRANSACTION_TIME_FORMATTER);
+                    LocalDate transactionDate = LocalDate.parse(tx.getTimestamp(), TRANSACTION_TIME_FORMATTER);
                     if (transactionDate.getYear() == now.getYear() && transactionDate.getMonthValue() == now.getMonthValue()) {
                         totalIncome += tx.getAmount();
                     }
                 } catch (DateTimeParseException e) {
-                    System.err.println("ERROR: Failed to parse date in calculateCurrentMonthIncome: " + tx.getTime() + " - " + e.getMessage());
+                    System.err.println("ERROR: Failed to parse date in calculateCurrentMonthIncome: " + tx.getTimestamp() + " - " + e.getMessage());
                     e.printStackTrace();
                 }
             }
@@ -531,7 +531,7 @@ public class BudgetManagementPanel extends JPanel {
         return totalIncome;
     }
 
-    private double calculateCurrentMonthExpense(List<TransactionData> transactions) {
+    private double calculateCurrentMonthExpense(List<TransactionModel> transactions) {
         if (transactions == null) {
             System.out.println("calculateCurrentMonthExpense: transactions is null");
             return 0.0;
@@ -543,12 +543,12 @@ public class BudgetManagementPanel extends JPanel {
         LocalDate lastDayOfMonth = now.withDayOfMonth(now.lengthOfMonth());
         System.out.println("calculateCurrentMonthExpense: First day of month is " + firstDayOfMonth.toString());
         System.out.println("calculateCurrentMonthExpense: Last day of month is " + lastDayOfMonth.toString());
-
-        for (TransactionData tx : transactions) {
-            System.out.println("calculateCurrentMonthExpense: Processing transaction - Operation: " + tx.getOperation() + ", Time: " + tx.getTime() + ", Amount: " + tx.getAmount());
+    
+        for (TransactionModel tx : transactions) {
+            System.out.println("calculateCurrentMonthExpense: Processing transaction - Operation: " + tx.getOperation() + ", Time: " + tx.getTimestamp() + ", Amount: " + tx.getAmount());
             if ("Expense".equalsIgnoreCase(tx.getOperation())) {
                 try {
-                    LocalDate transactionDate = LocalDate.parse(tx.getTime(), TRANSACTION_TIME_FORMATTER);
+                    LocalDate transactionDate = LocalDate.parse(tx.getTimestamp(), TRANSACTION_TIME_FORMATTER);
                     System.out.println("calculateCurrentMonthExpense: Parsed transaction date is " + transactionDate.toString());
                     if (!transactionDate.isBefore(firstDayOfMonth) && !transactionDate.isAfter(lastDayOfMonth)) {
                         totalExpense += tx.getAmount();
@@ -557,7 +557,7 @@ public class BudgetManagementPanel extends JPanel {
                         System.out.println("calculateCurrentMonthExpense: Transaction date " + transactionDate.toString() + " is not within the current month.");
                     }
                 } catch (DateTimeParseException e) {
-                    System.err.println("ERROR: Failed to parse date in calculateCurrentMonthExpense: " + tx.getTime() + " - " + e.getMessage());
+                    System.err.println("ERROR: Failed to parse date in calculateCurrentMonthExpense: " + tx.getTimestamp() + " - " + e.getMessage());
                     e.printStackTrace();
                 }
             }

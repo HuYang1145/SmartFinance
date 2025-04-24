@@ -7,6 +7,7 @@ import java.time.format.DateTimeParseException;
 import java.time.temporal.TemporalAdjusters;
 import java.time.temporal.WeekFields;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -15,9 +16,9 @@ import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import AccountModel.TransactionServiceModel.TransactionData;
 import PersonModel.HoroscopeReportModel;
-import PersonModel.TransactionAnalyzerModel;
+import TransactionController.TransactionController;
+import TransactionModel.TransactionModel;
 
 /**
  * Controller service for generating personalized spending horoscope reports based on user transactions.
@@ -74,7 +75,7 @@ public class SpendingHoroscopeServiceController {
             logger.error("Username is null or empty.");
             return getDefaultErrorReport();
         }
-
+    
         try {
             // Get date range for the current week (Monday to Sunday)
             LocalDate today = LocalDate.now();
@@ -82,20 +83,20 @@ public class SpendingHoroscopeServiceController {
             LocalDate startOfWeek = today.with(TemporalAdjusters.previousOrSame(java.time.DayOfWeek.MONDAY));
             LocalDate endOfWeek = today.with(TemporalAdjusters.nextOrSame(java.time.DayOfWeek.SUNDAY));
             logger.debug("Analyzing week: {} to {}", startOfWeek, endOfWeek);
-
+    
             // Get all transactions for the user
-            List<TransactionData> allTransactions = TransactionAnalyzerModel.getFilteredTransactions(username, startOfWeek.toString().substring(0, 7)); // yyyy/MM
-            if (allTransactions == null) {
+            List<TransactionModel> allTransactions = TransactionController.readTransactions(username); // 替换 TransactionAnalyzerModel
+            if (allTransactions == null || allTransactions.isEmpty()) {
                 logger.error("Failed to read transactions for user {}", username);
                 return getDefaultErrorReport();
             }
-
+    
             // Filter transactions for the current week's expenses
-            List<TransactionData> weeklyExpenses = new ArrayList<>();
-            for (TransactionData tx : allTransactions) {
+            List<TransactionModel> weeklyExpenses = new ArrayList<>();
+            for (TransactionModel tx : allTransactions) {
                 if ("Expense".equalsIgnoreCase(tx.getOperation())) {
                     try {
-                        String time = tx.getTime();
+                        String time = tx.getTimestamp();
                         LocalDateTime transactionDateTime;
                         if (time.matches("\\d{4}/\\d{2}/\\d{2} \\d{2}:\\d{2}")) {
                             transactionDateTime = LocalDateTime.parse(time, TRANSACTION_TIME_FORMATTER);
@@ -107,14 +108,14 @@ public class SpendingHoroscopeServiceController {
                             weeklyExpenses.add(tx);
                         }
                     } catch (DateTimeParseException e) {
-                        logger.error("Skipping transaction due to date parse error: {}", tx.getTime(), e);
+                        logger.error("Skipping transaction due to date parse error: {}", tx.getTimestamp(), e);
                     } catch (Exception e) {
                         logger.error("Error processing transaction: {} - {}", tx, e.getMessage());
                     }
                 }
             }
             logger.debug("Found {} expenses this week.", weeklyExpenses.size());
-
+    
             // Check if there were any expenses this week
             if (weeklyExpenses.isEmpty()) {
                 ReportDetails details = reportTemplates.get(TYPE_NO_SPENDING);
@@ -124,40 +125,40 @@ public class SpendingHoroscopeServiceController {
                 }
                 return new HoroscopeReportModel(details.title, details.descriptionTemplate, details.imagePath);
             }
-
+    
             // Calculate category totals for this week's expenses
-            Map<String, Double> categoryTotals = TransactionAnalyzerModel.calculateExpenseCategoryTotals(weeklyExpenses);
-
+            Map<String, Double> categoryTotals = calculateExpenseCategoryTotals(weeklyExpenses); // 替换 TransactionAnalyzerModel 调用
+    
             // Calculate total weekly expense
             double totalWeeklyExpense = categoryTotals.values().stream().mapToDouble(Double::doubleValue).sum();
             logger.debug("Weekly expense total: {}", totalWeeklyExpense);
             logger.debug("Category Totals: {}", categoryTotals);
-
+    
             // Find dominant category
             Optional<Map.Entry<String, Double>> dominantEntry = categoryTotals.entrySet().stream()
                     .filter(entry -> entry.getValue() > 0)
                     .max(Map.Entry.comparingByValue());
-
+    
             if (dominantEntry.isPresent()) {
                 Map.Entry<String, Double> dominantCategory = dominantEntry.get();
                 String categoryName = dominantCategory.getKey();
                 double categoryAmount = dominantCategory.getValue();
                 double percentage = (totalWeeklyExpense > 0) ? (categoryAmount / totalWeeklyExpense) * 100.0 : 0.0;
-
+    
                 logger.debug("Dominant Category: {} ({}%)", categoryName, String.format("%.1f", percentage));
-
+    
                 // Determine Horoscope Type
                 String horoscopeType = mapCategoryToHoroscopeType(categoryName);
                 ReportDetails details = reportTemplates.getOrDefault(horoscopeType, reportTemplates.get(TYPE_BALANCED));
                 String description = String.format(details.descriptionTemplate, percentage);
-
+    
                 // Check image resource
                 String imagePath = details.imagePath;
                 if (!new java.io.File("src/main/resources/images/" + imagePath).exists()) {
                     logger.warn("Image file not found: {}", imagePath);
                     imagePath = reportTemplates.get("ERROR_TYPE").imagePath;
                 }
-
+    
                 return new HoroscopeReportModel(details.title, description, imagePath);
             } else {
                 logger.debug("No dominant category found, defaulting to Balanced.");
@@ -222,7 +223,14 @@ public class SpendingHoroscopeServiceController {
                 return TYPE_BALANCED;
         }
     }
-
+    private Map<String, Double> calculateExpenseCategoryTotals(List<TransactionModel> transactions) {
+    Map<String, Double> categoryTotals = new HashMap<>();
+    for (TransactionModel tx : transactions) {
+        String category = tx.getCategory() != null && !tx.getCategory().trim().isEmpty() ? tx.getCategory().trim() : "Unclassified";
+        categoryTotals.put(category, categoryTotals.getOrDefault(category, 0.0) + Math.abs(tx.getAmount()));
+    }
+    return categoryTotals;
+}
     /**
      * Provides a default report in case of errors.
      *

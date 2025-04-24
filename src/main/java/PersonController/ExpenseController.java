@@ -8,9 +8,9 @@ import javax.swing.SwingUtilities;
 
 import AccountModel.AccountModel;
 import AccountModel.AccountRepository;
-import AccountModel.TransactionServiceModel;
 import PersonModel.PersonalAccountModel;
 import PersonModel.UserSessionModel;
+import TransactionController.TransactionController;
 import View.ExpenseDialogView;
 
 /**
@@ -134,29 +134,30 @@ public class ExpenseController {
             return;
         }
 
-        // Add transaction and update balance
-        boolean transactionAdded = TransactionServiceModel.addTransaction(
-            currentUsername, "Expense", amount, timeText.trim(), merchantText.trim(), typeToRecord
-        );
+        
+       // Add transaction and update balance
+boolean transactionAdded = TransactionController.addTransaction(
+    currentUserAccount, "Expense", amount, timeText.trim(), merchantText.trim(), typeToRecord
+);
 
-        if (transactionAdded) {
-            double originalBalance = currentUserAccount.getBalance();
-            currentUserAccount.setBalance(originalBalance - amount);
-            boolean saved = AccountRepository.saveToCSV(accounts, false);
+if (transactionAdded) {
+    double originalBalance = currentUserAccount.getBalance();
+    currentUserAccount.setBalance(originalBalance - amount);
+    boolean saved = AccountRepository.saveToCSV(accounts, false);
 
-            if (saved) {
-                UserSessionModel.setCurrentAccount(currentUserAccount);
-                view.showSuccess("Successfully added expense of ¥" + String.format("%.2f", amount) + "!");
-                view.dispose();
-            } else {
-                // Rollback transaction
-                TransactionServiceModel.removeTransaction(currentUsername, timeText.trim());
-                currentUserAccount.setBalance(originalBalance);
-                view.showError("Expense recorded successfully, but failed to update account balance file.");
-            }
-        } else {
-            view.showError("Failed to add expense.");
-        }
-        view.clearPassword();
+    if (saved) {
+        UserSessionModel.setCurrentAccount(currentUserAccount);
+        view.showSuccess("Successfully added expense of ¥" + String.format("%.2f", amount) + "!");
+        view.dispose();
+    } else {
+        // Rollback transaction
+        TransactionController.removeTransaction(currentUserAccount, timeText.trim());
+        currentUserAccount.setBalance(originalBalance);
+        view.showError("Expense recorded successfully, but failed to update account balance file.");
     }
+} else {
+    view.showError("Failed to add expense.");
+}
+view.clearPassword();
+}
 }

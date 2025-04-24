@@ -8,8 +8,8 @@ import javax.swing.SwingUtilities;
 
 import AccountModel.AccountModel;
 import AccountModel.AccountRepository;
-import AccountModel.TransactionServiceModel;
 import PersonModel.UserSessionModel;
+import TransactionController.TransactionController;
 import View.IncomeDialogView;
 
 public class IncomeController {
@@ -91,24 +91,29 @@ public class IncomeController {
             return;
         }
 
-        boolean transactionAdded = TransactionServiceModel.addTransaction(
-            currentUsername, "Income", amount, timeText.trim(), "I", "I"
-        );
+        // Add transaction and update balance
+boolean transactionAdded = TransactionController.addTransaction(
+    currentUserAccount, "Income", amount, timeText.trim(), "I", "I"
+);
 
-        if (transactionAdded) {
-            currentUserAccount.setBalance(currentUserAccount.getBalance() + amount);
-            boolean saved = AccountRepository.saveToCSV(accounts, false);
+if (transactionAdded) {
+    double originalBalance = currentUserAccount.getBalance();
+    currentUserAccount.setBalance(originalBalance + amount);
+    boolean saved = AccountRepository.saveToCSV(accounts, false);
 
-            if (saved) {
-                UserSessionModel.setCurrentAccount(currentUserAccount);
-                view.showSuccess("Income of ¥" + String.format("%.2f", amount) + " added successfully!");
-                view.dispose();
-            } else {
-                view.showError("Income recorded, but failed to update account balance file.");
-            }
-        } else {
-            view.showError("Failed to add income.");
-        }
-        view.clearPassword();
+    if (saved) {
+        UserSessionModel.setCurrentAccount(currentUserAccount);
+        view.showSuccess("Income of ¥" + String.format("%.2f", amount) + " added successfully!");
+        view.dispose();
+    } else {
+        // Rollback transaction
+        TransactionController.removeTransaction(currentUserAccount, timeText.trim());
+        currentUserAccount.setBalance(originalBalance);
+        view.showError("Income recorded, but failed to update account balance file.");
+    }
+} else {
+    view.showError("Failed to add income.");
+}
+view.clearPassword();
     }
 }

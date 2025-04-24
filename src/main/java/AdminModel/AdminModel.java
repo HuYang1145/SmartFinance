@@ -20,7 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import AccountModel.AccountModel;
-import AccountModel.TransactionCSVImporterModel;
+import TransactionController.TransactionController;
 
 public class AdminModel {
     private static final Logger logger = LoggerFactory.getLogger(AdminModel.class);
@@ -367,7 +367,7 @@ public class AdminModel {
 
     // Imports transaction records
     public void importTransactions(File file, String destinationFilePath) throws IOException {
-        int importedCount = TransactionCSVImporterModel.importTransactions(file, destinationFilePath);
+        int importedCount = TransactionController.importTransactions(file, destinationFilePath);
         if (importedCount == 0) {
             throw new IOException("No transactions imported."); // Translated from "No transactions imported."
         }

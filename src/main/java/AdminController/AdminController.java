@@ -11,9 +11,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import AccountModel.AccountModel;
-import AccountModel.TransactionCSVImporterModel;
 import AdminModel.AdminModel;
 import PersonModel.UserSessionModel;
+import TransactionController.TransactionController;
 import View.AdminView;
 import View.AdminView.ModifyCustomerDialog;
 
@@ -37,10 +37,10 @@ public class AdminController {
 
         try {
             model.ensureFileExists("accounts.csv", AdminModel.EXPECTED_ACCOUNT_HEADER);
-            model.ensureFileExists("transactions.csv", TransactionCSVImporterModel.EXPECTED_HEADER);
+            model.ensureFileExists("transactions.csv", TransactionController.CSV_HEADER);
         } catch (IOException e) {
-            logger.error("Error initializing files", e); // Translated from "初始化文件时出错"
-            view.showMessage("Error initializing files: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE); // Translated from "初始化文件时出错"
+            logger.error("Error initializing files", e);
+            view.showMessage("Error initializing files: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -160,13 +160,11 @@ public class AdminController {
 
     private void handleImportTransactions(File file) {
         try {
-            // Assuming model.importTransactions handles the file path logic internally or uses a better mechanism
-            model.importTransactions(file, "transactions.csv"); // The "transactions.csv" string literal might belong in a constant in the Model layer
-            view.showMessage("Transaction records imported successfully.", "Success", JOptionPane.INFORMATION_MESSAGE); // Translated from "成功导入交易记录。"
-            // No table update needed here as this view doesn't show transaction history directly
-        } catch (IOException e) { // Catching IOException from the model is good
-            logger.error("Error importing transaction records", e); // Translated from "导入交易记录时出错"
-            view.showMessage("Failed to import transaction records: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE); // Translated from "无法导入交易记录"
+            TransactionController.importTransactions(file, "transactions.csv");
+            view.showMessage("Transaction records imported successfully.", "Success", JOptionPane.INFORMATION_MESSAGE);
+        } catch (IOException e) {
+            logger.error("Error importing transaction records", e);
+            view.showMessage("Failed to import transaction records: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
