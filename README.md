@@ -1,13 +1,16 @@
-# Folder Structure
-## 模型文件
-通过网盘分享的文件：dist.zip
-链接: https://pan.baidu.com/s/1M3x8FVq7p5cE0sdAx2x9UA 提取码: pgpp
-下载解压后放入coursework目录下，与src同级。
+胡杨：
 
-## 任务分配
-* **陈静怡**：
-    * `user_budget.csv`
-    * `BudgetGoalDialog.java`
-    * `BudgetAdvisor.java`
-    * 部分`PersonalUI.java`功能建立及更改
-    * `transactions.csv`部分数据提供
+写管理员系统的所有功能，写用户个人信息查询，转入转出转账，查看余额
+
+PersonalCenterPanel.java个人中心资金账户数据的直观显示以及数据的统计整理
+PersonalMainPlane.java，主界面
+IncomeExpenseChart.java提供多个种类的账单查询选择
+所有与Admin的java代码：管理员系统
+Hu Yang:
+
+Describe all the functions of the administrator system, including user personal information query, transfer-in, transfer-out and transfer, and balance viewing.
+
+PersonalCenterPanel.java provides intuitive display of personal center fund account data and data statistics and organization.
+PersonalMainPlane.java, main interface.
+IncomeExpenseChart.java offers multiple types of bill query options.
+All Java codes related to Admin: administrator system.
