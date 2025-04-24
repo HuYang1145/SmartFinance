@@ -184,6 +184,9 @@ public class PersonalMainPlane extends JFrame {
             public void changedUpdate(javax.swing.event.DocumentEvent e) { update(); }
         });
 
+        welcomePanel.setSelected(true);
+
+
         return sb;
     }
 
@@ -219,145 +222,80 @@ public class PersonalMainPlane extends JFrame {
         private JLabel iconLabel, textLabel;
         private boolean selected = false;
         private Color start = new Color(156, 39, 176), end = new Color(0, 47, 167);
-        // Make name accessible within the class as Code 1 needed
-        // It was implicitly accessible, let's make it explicit for clarity if needed
-        final String name; // Changed to final, accessible within package
+        private String name;
 
         public NavItemPanel(String name) {
             this.name = name;
             setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
             setOpaque(false);
-            setPreferredSize(new Dimension(Short.MAX_VALUE, 60)); // Code 1 height
-            setBorder(new EmptyBorder(0, 12, 0, 12)); // Code 1 padding
+            setPreferredSize(new Dimension(Short.MAX_VALUE, 60));  // 高度 = 60，可调整
+            setBorder(new EmptyBorder(0, 12, 0, 12));
             setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 
-            // Code 1 logic for icon creation based on name
-            // Need access to username variable here. Pass it or make username effectively final/accessible.
-            // Making username an instance variable accessible here.
-            if ("Logout".equals(name) || ("Welcome, " + PersonalMainPlane.this.username).equals(name)) {
-                 iconLabel = new CircleIcon("U");
+            if ("Logout".equals(name) || ("Welcome, " + username).equals(name)) {
+                iconLabel = new CircleIcon("U");
             } else {
-                 iconLabel = new JLabel("\u25CF"); // Code 1 icon
-                 iconLabel.setFont(new Font("Segoe UI", Font.BOLD, 12)); // Code 1 style
-                 iconLabel.setForeground(new Color(150, 150, 150)); // Code 1 color
+                iconLabel = new JLabel("\u25CF");
+                iconLabel.setFont(new Font("Segoe UI", Font.BOLD, 12));
+                iconLabel.setForeground(new Color(150, 150, 150));
             }
 
             textLabel = new JLabel(name);
-            textLabel.setFont(new Font("Segoe UI", Font.PLAIN, 16)); // Code 1 font
-            textLabel.setBorder(new EmptyBorder(0, 8, 0, 0)); // Code 1 padding
-            textLabel.setForeground(new Color(100, 100, 100)); // Code 1 color
+            textLabel.setFont(new Font("Segoe UI", Font.PLAIN, 16));
+            textLabel.setBorder(new EmptyBorder(0, 8, 0, 0));
+            textLabel.setForeground(new Color(100, 100, 100));
 
             add(iconLabel);
             add(textLabel);
             add(Box.createHorizontalGlue());
 
-            // Code 1 Mouse Listener Logic
             addMouseListener(new MouseAdapter() {
                 @Override public void mouseClicked(MouseEvent e) {
-                    // Handle click only for items that should switch cards
-                    // Code 1 didn't explicitly prevent Welcome/Logout click from switching here,
-                    // but Welcome had listener removed, Logout had separate listener added.
-                    // Let's assume only options[] items should switch the card layout.
-                    boolean isNavigableOption = false;
-                    // Check if the name matches one of the actual options
-                    // Need access to options array or check against known names
-                    String[] navigableOptions = { // Redefine locally or access from outer class if needed
-                        "Transaction System", "Bill Statistics", "Personal Center",
-                        "Budget Management", "AI Assistant", "Spending Star Whispers"
-                    };
-                    for(String opt : navigableOptions) {
-                        if (opt.equals(name)) {
-                            isNavigableOption = true;
-                            break;
-                        }
-                    }
-
-                    if (isNavigableOption) {
-                         cardLayout.show(contentPanel, name);
-                         // Update selection state for all items in the navItems list (as per Code 1)
-                         navItems.forEach(it -> it.setSelected(it == NavItemPanel.this));
-                    }
-                    // Logout click handled by its specific listener added in createSidebar.
-                    // Welcome click disabled in createSidebar.
+                    cardLayout.show(contentPanel, name);
+                    navItems.forEach(it -> it.setSelected(it == NavItemPanel.this));
                 }
 
                 @Override public void mouseEntered(MouseEvent e) {
-                    if (!selected) setBackground(new Color(245, 245, 245)); // Code 1 hover
-                    // Code 1 NavItemPanel didn't use setOpaque for hover, just setBackground
-                    // Let's keep it that way. Requires panel to be opaque? Code 1 setOpaque(false).
-                    // Maybe background color wasn't visible? Let's add setOpaque here for hover effect.
-                    if (!selected) {
-                        setOpaque(true); // Make opaque to show background
-                        setBackground(new Color(245, 245, 245));
-                    }
-
+                    if (!selected) setBackground(new Color(245, 245, 245));
                 }
 
                 @Override public void mouseExited(MouseEvent e) {
-                     if (!selected) {
-                        setOpaque(false); // Set back to non-opaque
-                        setBackground(null); // Code 1 exit state
-                     }
+                    if (!selected) setBackground(null);
                 }
             });
         }
 
-        // setIconText remains EXACTLY as in Code One
+        /** Set custom round icon and text for Logout **/
         public void setIconText(String s) {
-            // Assumes iconLabel is already a CircleIcon or compatible
-            if (iconLabel instanceof CircleIcon) {
-                 ((CircleIcon) iconLabel).setText(s);
-                 // Apply styling consistent with Code 1's CircleIcon intent
-                 iconLabel.setFont(new Font("Segoe UI", Font.BOLD, 14));
-                 iconLabel.setForeground(Color.WHITE); // White text on gradient circle
-                 iconLabel.setOpaque(false);
-            } else {
-                 // Fallback if somehow it wasn't a CircleIcon? Unlikely given Code 1 logic.
-                 iconLabel.setText(s);
-            }
+            iconLabel.setText(s);
+            iconLabel.setFont(new Font("Segoe UI", Font.BOLD, 14));
+            iconLabel.setForeground(Color.WHITE);
+            iconLabel.setOpaque(false);
         }
 
-        // setSelected remains EXACTLY as in Code One
         public void setSelected(boolean sel) {
             selected = sel;
             if (sel) {
                 textLabel.setForeground(Color.WHITE);
                 iconLabel.setForeground(Color.WHITE);
-                // Need to ensure panel becomes opaque to show paintComponent gradient
-                setOpaque(true);
             } else {
-                textLabel.setForeground(new Color(100, 100, 100)); // Code 1 default text
-                // Reset icon color based on its type (Circle or bullet)
-                if (iconLabel instanceof CircleIcon) {
-                     // CircleIcon text is always white in Code 1's CircleIcon paintComponent.
-                     // The label foreground here might be irrelevant if super.paintComponent draws it.
-                     // Let's set it white anyway.
-                     iconLabel.setForeground(Color.WHITE);
-                } else {
-                    iconLabel.setForeground(new Color(150, 150, 150)); // Code 1 default bullet
-                }
-                setOpaque(false); // Non-selected are not opaque
-                setBackground(null); // Ensure background is cleared
+                textLabel.setForeground(new Color(100, 100, 100));
+                iconLabel.setForeground(new Color(150, 150, 150));
+                setBackground(null);
             }
             repaint();
         }
 
-        // paintComponent remains EXACTLY as in Code One
         @Override protected void paintComponent(Graphics g) {
-            // Draw gradient background IF selected (requires opaque=true)
             if (selected) {
                 Graphics2D g2 = (Graphics2D) g.create();
-                // Enable Anti-aliasing for rounded corners
-                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
                 g2.setPaint(new GradientPaint(0, 0, start, getWidth(), 0, end));
-                g2.fillRoundRect(0, 0, getWidth(), getHeight(), 12, 12); // Code 1 rounding
+                g2.fillRoundRect(0, 0, getWidth(), getHeight(), 12, 12);
                 g2.dispose();
             }
-            // Call super AFTER potential custom background painting
             super.paintComponent(g);
         }
     }
-
     // CircleIcon inner class remains EXACTLY as in Code One
     public class CircleIcon extends JLabel {
         private Color color1 = new Color(156, 39, 176); // Purple

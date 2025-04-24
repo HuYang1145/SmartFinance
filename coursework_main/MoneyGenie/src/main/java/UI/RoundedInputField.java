@@ -1,6 +1,7 @@
 package UI;
 
 import javax.swing.*;
+import javax.swing.border.AbstractBorder;
 import javax.swing.plaf.basic.BasicComboBoxUI;
 import javax.swing.plaf.basic.BasicScrollBarUI;
 import java.awt.*;
@@ -8,6 +9,7 @@ import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.geom.RoundRectangle2D;
 
 public class RoundedInputField {
 
@@ -25,7 +27,8 @@ public class RoundedInputField {
             setText(placeholder);
 
             addFocusListener(new FocusAdapter() {
-                @Override public void focusGained(FocusEvent e) {
+                @Override
+                public void focusGained(FocusEvent e) {
                     if (showingPlaceholder) {
                         setText("");
                         setForeground(Color.DARK_GRAY);
@@ -33,7 +36,8 @@ public class RoundedInputField {
                     }
                 }
 
-                @Override public void focusLost(FocusEvent e) {
+                @Override
+                public void focusLost(FocusEvent e) {
                     if (getText().trim().isEmpty()) {
                         setText(placeholder);
                         setForeground(Color.GRAY);
@@ -77,7 +81,8 @@ public class RoundedInputField {
             setText(placeholder);
 
             addFocusListener(new FocusAdapter() {
-                @Override public void focusGained(FocusEvent e) {
+                @Override
+                public void focusGained(FocusEvent e) {
                     if (showingPlaceholder) {
                         setText("");
                         setForeground(Color.DARK_GRAY);
@@ -86,7 +91,8 @@ public class RoundedInputField {
                     }
                 }
 
-                @Override public void focusLost(FocusEvent e) {
+                @Override
+                public void focusLost(FocusEvent e) {
                     if (getPassword().length == 0) {
                         setText(placeholder);
                         setForeground(Color.GRAY);
@@ -119,16 +125,17 @@ public class RoundedInputField {
             return showingPlaceholder;
         }
     }
+
     public static class RoundedComboBox<E> extends JComboBox<E> {
         private Color start = new Color(156, 39, 176);
-        private Color end   = new Color(0, 47, 167);
+        private Color end = new Color(0, 47, 167);
 
         public RoundedComboBox(E[] items) {
             super(items);
             setFont(new Font("Segoe UI", Font.PLAIN, 18));
             setOpaque(false);
             setPreferredSize(new Dimension(240, 50));
-            setBorder(BorderFactory.createEmptyBorder(0,0,0,0));
+            setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
             // 在这里不再设置 renderer 背景色，保持默认
         }
 
@@ -137,7 +144,8 @@ public class RoundedInputField {
             super.updateUI();
             // 用自定义 UI 来创建一个透明的箭头按钮
             setUI(new BasicComboBoxUI() {
-                @Override protected JButton createArrowButton() {
+                @Override
+                protected JButton createArrowButton() {
                     JButton btn = new JButton("\u25BE");  // ▼
                     btn.setOpaque(false);
                     btn.setContentAreaFilled(false);
@@ -145,11 +153,13 @@ public class RoundedInputField {
                     btn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
                     return btn;
                 }
-                @Override public void installUI(JComponent c) {
+
+                @Override
+                public void installUI(JComponent c) {
                     super.installUI(c);
                     comboBox.setOpaque(false);
                     arrowButton.setOpaque(false);
-                    arrowButton.setBackground(new Color(0,0,0,0));
+                    arrowButton.setBackground(new Color(0, 0, 0, 0));
                 }
             });
         }
@@ -190,6 +200,7 @@ public class RoundedInputField {
             g2.fillRect(0, 0, w, h);
         }
     }
+
     static class GradientTextButton extends JButton {
         private Color colorStart = new Color(156, 39, 176); // 紫
         private Color colorEnd = new Color(0, 47, 167);   // 蓝
@@ -241,8 +252,8 @@ public class RoundedInputField {
     }
 
     public static class GradientButton extends JButton {
-        private final Color startColor = new Color(156,  39, 176);  // 紫
-        private final Color endColor   = new Color(33,  150, 243);  // 蓝
+        private final Color startColor = new Color(156, 39, 176);  // 紫
+        private final Color endColor = new Color(33, 150, 243);  // 蓝
 
         public GradientButton(String text) {
             super(text);
@@ -256,7 +267,7 @@ public class RoundedInputField {
 
         @Override
         protected void paintComponent(Graphics g) {
-            Graphics2D g2 = (Graphics2D)g.create();
+            Graphics2D g2 = (Graphics2D) g.create();
             // 抗锯齿
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
                     RenderingHints.VALUE_ANTIALIAS_ON);
@@ -284,8 +295,8 @@ public class RoundedInputField {
     }
 
     public static class DeepBlueGradientPanel extends JPanel {
-        private final Color startColor = new Color(156,  39, 176);   // 非常深的海军蓝
-        private final Color endColor   = Color.decode("#4A90E2");  // 稍浅一点的电光蓝
+        private final Color startColor = new Color(156, 39, 176);   // 非常深的海军蓝
+        private final Color endColor = Color.decode("#4A90E2");  // 稍浅一点的电光蓝
 
         @Override
         protected void paintComponent(Graphics g) {
@@ -336,8 +347,65 @@ public class RoundedInputField {
         }
 
 
+    }
+
+    public static class ShadowBorder extends AbstractBorder {
+        private int shadowSize;
+        private Color shadowColor;
+        private int arc;
+
+        public ShadowBorder(int shadowSize, Color shadowColor, int arc) {
+            this.shadowSize = shadowSize;
+            this.shadowColor = shadowColor;
+            this.arc = arc;
+        }
+
+        @Override
+        public void paintBorder(Component c, Graphics g, int x, int y, int w, int h) {
+            Graphics2D g2 = (Graphics2D) g.create();
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+                    RenderingHints.VALUE_ANTIALIAS_ON);
+
+            // 画多层，越来越浅的阴影
+            for (int i = 0; i < shadowSize; i++) {
+                float alpha = (float) (shadowSize - i) / (shadowSize * 1.0f) * 0.5f;
+                g2.setColor(new Color(shadowColor.getRed(),
+                        shadowColor.getGreen(),
+                        shadowColor.getBlue(),
+                        (int) (alpha * 255)));
+                RoundRectangle2D rect = new RoundRectangle2D.Double(
+                        x + i, y + i,
+                        w - 1 - i * 2, h - 1 - i * 2,
+                        arc, arc
+                );
+                g2.draw(rect);
+            }
+
+            g2.dispose();
+        }
+
+        @Override
+        public Insets getBorderInsets(Component c) {
+            return new Insets(shadowSize, shadowSize, shadowSize, shadowSize);
+        }
+
+        @Override
+        public Insets getBorderInsets(Component c, Insets insets) {
+            insets.set(shadowSize, shadowSize, shadowSize, shadowSize);
+            return insets;
+        }
 
     }
 
+
+    static class BrandGradientPanel extends JPanel {
+        @Override protected void paintComponent(Graphics g) {
+            Graphics2D g2 = (Graphics2D)g;
+            int w = getWidth(), h = getHeight();
+            GradientPaint gp = new GradientPaint(0, 0, new Color(106,27,154), w, 0, new Color(3,169,244));
+            g2.setPaint(gp);
+            g2.fillRoundRect(0, 0, w, h, 16, 16);
+        }
+    }
 }
 

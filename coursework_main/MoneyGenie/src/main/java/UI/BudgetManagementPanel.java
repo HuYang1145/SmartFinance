@@ -1,414 +1,570 @@
 package UI;
 
-// Necessary imports from Model and standard libraries
+// Necessary imports
 import AccountModel.BudgetAdvisor;
-import AccountModel.BudgetAdvisor.BudgetRecommendation; // Import the inner class
+import AccountModel.BudgetAdvisor.BudgetRecommendation;
 import AccountModel.TransactionService;
 import AccountModel.TransactionService.TransactionData;
-import AccountModel.UserSession; // Needed to get username implicitly or explicitly if needed
 
 import javax.swing.*;
-import javax.swing.border.Border;
-import javax.swing.border.CompoundBorder;
-import javax.swing.border.EmptyBorder;
-import javax.swing.border.LineBorder;
-import javax.swing.border.TitledBorder;
+import javax.swing.border.*;
 import java.awt.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
-/**
- * JPanel displaying budget advice, spending status, and modification options.
- * Uses BudgetAdvisor and TransactionService.
- */
 public class BudgetManagementPanel extends JPanel {
 
-    // Instance variables for labels to allow easy refreshing
-    private JLabel topCategory1Label;
-    private JLabel topCategory2Label;
-    private JLabel budgetGoalLabel;
-    private JLabel savingGoalLabel;
-    private JLabel modeLabel;
-    private JLabel spentLabel;
-    private JLabel remainingLabel;
-    private String username; // Store the username for this panel instance
+    private JLabel budgetValueLabel;
+    private JLabel savingGoalValueLabel;
+    private JLabel modeValueLabel;
+    private JLabel reasonValueLabel;
+    private JTextField customBudgetInputField;
+    private JButton saveCustomBudgetButton;
+    private JButton restoreIntelligentButton;
+    private JTextArea largeConsumptionTextArea;
+    private JLabel topSpendingCategoryLabel;
+    private JLabel expenditureValueLabel;
+    private JLabel budgetStatusLabel;
+    private String username;
 
-    // Formatter for parsing transaction times
-    private static final DateTimeFormatter TRANSACTION_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm");
+    private static final DateTimeFormatter TRANSACTION_TIME_FORMATTER = BudgetAdvisor.DATE_FORMATTER;
+    private static final Color SECTION_BACKGROUND_COLOR = new Color(245, 245, 245); // Light gray
+    private static final Border SECTION_BORDER = BorderFactory.createLineBorder(new Color(220, 220, 220)); // Light gray border
+    private static final Color BUTTON_BACKGROUND_COLOR = Color.LIGHT_GRAY;
+    private static final Color BUTTON_FOREGROUND_COLOR = Color.BLACK;
+    private static final Color TITLE_FOREGROUND_COLOR = Color.WHITE;
+    private static final Font TITLE_FONT = new Font("Segoe UI", Font.BOLD, 16);
 
     public BudgetManagementPanel(String username) {
-        this.username = username; // Store the username
-
+        this.username = username;
         if (this.username == null || this.username.trim().isEmpty()) {
-            // Handle case where panel is created without a valid user
             setLayout(new BorderLayout());
             add(new JLabel("User not logged in.", SwingConstants.CENTER), BorderLayout.CENTER);
             return;
         }
-
         initComponents();
         layoutComponents();
-        loadBudgetData(); // Load initial data
+        loadBudgetData();
     }
 
-    // Initialize UI components (Labels)
     private void initComponents() {
-        // Initialize labels with placeholder text
-        topCategory1Label = new JLabel("Top Spending 1: N/A");
-        topCategory2Label = new JLabel("Top Spending 2: N/A");
-        budgetGoalLabel = new JLabel("Budget Goal: Loading...");
-        savingGoalLabel = new JLabel("Saving Goal: Loading...");
-        modeLabel = new JLabel("Budget Mode: Loading...");
-        spentLabel = new JLabel("Spent This Month: Loading...");
-        remainingLabel = new JLabel("Remaining Budget: Loading...");
-        remainingLabel.setFont(new Font("Segoe UI", Font.BOLD, 14)); // Make remaining bold
+        budgetValueLabel = new JLabel("Loading...");
+        savingGoalValueLabel = new JLabel("Loading...");
+        modeValueLabel = new JLabel("Loading...");
+        reasonValueLabel = new JLabel("Loading...");
+        customBudgetInputField = new JTextField(10);
+        saveCustomBudgetButton = new JButton("Save");
+        restoreIntelligentButton = new JButton("Restore intelligent recommendation");
+        largeConsumptionTextArea = new JTextArea(8, 20); // Increased rows for better visibility
+        largeConsumptionTextArea.setEditable(false);
+        topSpendingCategoryLabel = new JLabel("N/A");
+        expenditureValueLabel = new JLabel("Loading...");
+        budgetStatusLabel = new JLabel("Loading...");
 
-        // Apply common font
         Font infoFont = new Font("Segoe UI", Font.PLAIN, 14);
-        topCategory1Label.setFont(infoFont);
-        topCategory2Label.setFont(infoFont);
-        budgetGoalLabel.setFont(infoFont);
-        savingGoalLabel.setFont(infoFont);
-        modeLabel.setFont(infoFont);
-        spentLabel.setFont(infoFont);
+        budgetValueLabel.setFont(infoFont);
+        savingGoalValueLabel.setFont(infoFont);
+        modeValueLabel.setFont(infoFont);
+        reasonValueLabel.setFont(infoFont);
+        customBudgetInputField.setFont(infoFont);
+        largeConsumptionTextArea.setFont(infoFont);
+        topSpendingCategoryLabel.setFont(infoFont);
+        expenditureValueLabel.setFont(infoFont);
+        budgetStatusLabel.setFont(new Font("Segoe UI", Font.BOLD, 14));
+
+        styleCustomBudgetButton(saveCustomBudgetButton);
+        saveCustomBudgetButton.addActionListener(e -> handleSaveCustomBudget());
+        styleCustomBudgetButton(restoreIntelligentButton);
+        restoreIntelligentButton.addActionListener(e -> handleRestoreIntelligent());
     }
 
-    // Layout the components on the panel
+    private JPanel createFramedPanel(JComponent content) {
+        JPanel framedPanel = new JPanel();
+        framedPanel.setLayout(new BoxLayout(framedPanel, BoxLayout.Y_AXIS));
+        framedPanel.setBackground(SECTION_BACKGROUND_COLOR);
+        framedPanel.setBorder(SECTION_BORDER);
+        framedPanel.add(content);
+        framedPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        framedPanel.setBorder(new CompoundBorder(framedPanel.getBorder(), new EmptyBorder(10, 10, 10, 10))); // Add padding
+        return framedPanel;
+    }
+
     private void layoutComponents() {
-        setLayout(new BorderLayout(10, 10));
-        setBackground(Color.WHITE);
-        setBorder(BorderFactory.createEmptyBorder(20, 30, 20, 30)); // Padding
+        setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+        setBackground(new Color(204, 229, 255));
 
-        // Title
-        JLabel title = new JLabel("Budget Management & Advice", SwingConstants.CENTER);
-        title.setFont(new Font("Segoe UI", Font.BOLD, 24));
-        title.setForeground(new Color(50, 50, 50));
-        add(title, BorderLayout.NORTH);
+        // Create a panel for the gradient background
+        JPanel backgroundPanel = new JPanel() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2 = (Graphics2D) g;
+                int width = getWidth();
+                int height = getHeight();
+                Color colorStart = new Color(173, 216, 230); // Light Blue
+                Color colorEnd = new Color(138, 43, 226);   // Blue Violet
+                GradientPaint gp = new GradientPaint(0, 0, colorStart, 0, height, colorEnd);
+                g2.setPaint(gp);
+                g2.fillRect(0, 0, width, height);
+            }
+        };
+        backgroundPanel.setLayout(new BoxLayout(backgroundPanel, BoxLayout.Y_AXIS));
+        add(backgroundPanel);
 
-        // Content Area using GridBagLayout
-        JPanel content = new JPanel(new GridBagLayout());
-        content.setBackground(Color.WHITE);
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.gridx = 0;
-        gbc.gridy = GridBagConstraints.RELATIVE; // Stack vertically
-        gbc.gridwidth = 1;
-        gbc.insets = new Insets(10, 5, 10, 5); // Vertical spacing increased
-        gbc.anchor = GridBagConstraints.NORTHWEST; // Align components top-left
-        gbc.fill = GridBagConstraints.HORIZONTAL; // Fill horizontally
-        gbc.weightx = 1.0; // Allow horizontal expansion
+        // Main Title
+        JLabel mainTitle = new JLabel("Budget Management & Advice", SwingConstants.CENTER);
+        mainTitle.setFont(new Font("Segoe UI", Font.BOLD, 24));
+        mainTitle.setForeground(Color.WHITE);
+        mainTitle.setAlignmentX(Component.CENTER_ALIGNMENT);
+        backgroundPanel.add(Box.createVerticalStrut(20));
+        backgroundPanel.add(mainTitle);
+        backgroundPanel.add(Box.createVerticalStrut(20));
 
-        // --- Create and add sections using the initialized labels ---
-        JPanel topSpendingPanel = createSectionPanel("Top Spending This Month");
-        topSpendingPanel.add(topCategory1Label);
-        topSpendingPanel.add(topCategory2Label);
-        content.add(topSpendingPanel, gbc);
+        // 1. Monthly Saving Goal & Budget
+        JLabel goalsSubtitle = new JLabel("Monthly Saving Goal & Budget", SwingConstants.CENTER);
+        goalsSubtitle.setFont(TITLE_FONT);
+        goalsSubtitle.setForeground(TITLE_FOREGROUND_COLOR);
+        goalsSubtitle.setAlignmentX(Component.CENTER_ALIGNMENT);
+        backgroundPanel.add(goalsSubtitle);
+        JPanel goalsPanelWrapper = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        goalsPanelWrapper.setOpaque(false);
+        goalsPanelWrapper.add(createFramedPanel(createGoalsPanelContent()));
+        goalsPanelWrapper.setAlignmentX(Component.CENTER_ALIGNMENT);
+        backgroundPanel.add(goalsPanelWrapper);
+        backgroundPanel.add(Box.createVerticalStrut(15));
 
-        JPanel goalsPanel = createSectionPanel("Monthly Goals & Mode");
-        goalsPanel.add(budgetGoalLabel);
-        goalsPanel.add(savingGoalLabel);
-        goalsPanel.add(modeLabel);
-        content.add(goalsPanel, gbc);
+        // 2. Saving Advice -- reducible consumption
+        JLabel savingAdviceSubtitle = new JLabel("Saving Advice -- reducible consumption", SwingConstants.CENTER);
+        savingAdviceSubtitle.setFont(TITLE_FONT);
+        savingAdviceSubtitle.setForeground(TITLE_FOREGROUND_COLOR);
+        savingAdviceSubtitle.setAlignmentX(Component.CENTER_ALIGNMENT);
+        backgroundPanel.add(savingAdviceSubtitle);
+        JPanel savingAdvicePanelWrapper = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        savingAdvicePanelWrapper.setOpaque(false);
+        savingAdvicePanelWrapper.add(createFramedPanel(createSavingAdvicePanelContent()));
+        savingAdvicePanelWrapper.setAlignmentX(Component.CENTER_ALIGNMENT);
+        backgroundPanel.add(savingAdvicePanelWrapper);
+        backgroundPanel.add(Box.createVerticalStrut(15));
 
-        JPanel statusPanel = createSectionPanel("Spending Status");
-        statusPanel.add(spentLabel);
-        statusPanel.add(remainingLabel);
-        content.add(statusPanel, gbc);
+        // 3. Custom Budget
+        JLabel customBudgetSubtitle = new JLabel("Custom Budget", SwingConstants.CENTER);
+        customBudgetSubtitle.setFont(TITLE_FONT);
+        customBudgetSubtitle.setForeground(TITLE_FOREGROUND_COLOR);
+        customBudgetSubtitle.setAlignmentX(Component.CENTER_ALIGNMENT);
+        backgroundPanel.add(customBudgetSubtitle);
+        JPanel customBudgetPanelWrapper = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        customBudgetPanelWrapper.setOpaque(false);
+        customBudgetPanelWrapper.add(createFramedPanel(createCustomBudgetPanelContent()));
+        customBudgetPanelWrapper.setAlignmentX(Component.CENTER_ALIGNMENT);
+        backgroundPanel.add(customBudgetPanelWrapper);
+        backgroundPanel.add(Box.createVerticalStrut(15));
 
-        // --- Add Modify Button ---
-        JButton modifyBudgetButton = new JButton("Set/Modify Custom Budget Goal");
-        // Use UIUtils if available and preferred, or style directly
-        styleBudgetButton(modifyBudgetButton); // Apply styling
-        modifyBudgetButton.addActionListener(e -> handleModifyBudget());
+        // 4. Spending status
+        JLabel spendingStatusSubtitle = new JLabel("Spending status", SwingConstants.CENTER);
+        spendingStatusSubtitle.setFont(TITLE_FONT);
+        spendingStatusSubtitle.setForeground(TITLE_FOREGROUND_COLOR);
+        spendingStatusSubtitle.setAlignmentX(Component.CENTER_ALIGNMENT);
+        backgroundPanel.add(spendingStatusSubtitle);
+        JPanel spendingStatusPanelWrapper = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        spendingStatusPanelWrapper.setOpaque(false);
+        spendingStatusPanelWrapper.add(createFramedPanel(createSpendingStatusPanelContent()));
+        spendingStatusPanelWrapper.setAlignmentX(Component.CENTER_ALIGNMENT);
+        backgroundPanel.add(spendingStatusPanelWrapper);
+        backgroundPanel.add(Box.createVerticalStrut(20));
 
-        // Add button below status panel with padding
-        gbc.fill = GridBagConstraints.NONE; // Don't stretch button
-        gbc.anchor = GridBagConstraints.CENTER; // Center button
-        gbc.insets = new Insets(25, 5, 10, 5); // Add top margin
-        gbc.weighty = 1.0; // Push previous content up
-        content.add(modifyBudgetButton, gbc);
-
-        // Add content panel to the main panel's center
-        add(content, BorderLayout.CENTER);
+        // Add vertical glue to push everything to the top
+        backgroundPanel.add(Box.createVerticalGlue());
     }
 
-    // --- Data Loading Logic (using SwingWorker) ---
-    private void loadBudgetData() {
-        // Display loading state
-        setLabelsLoading();
+    private JPanel createGoalsPanelContent() {
+        JPanel goalsPanelContent = new JPanel(new GridBagLayout());
+        goalsPanelContent.setBackground(SECTION_BACKGROUND_COLOR);
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.insets = new Insets(5, 5, 5, 5);
+        gbc.weightx = 1.0;
 
-        // Fetch data in background
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        goalsPanelContent.add(new JLabel("Budget:"), gbc);
+        gbc.gridx = 1;
+        goalsPanelContent.add(budgetValueLabel, gbc);
+        gbc.gridx = 0;
+        gbc.gridy++;
+        goalsPanelContent.add(new JLabel("Saving Goal:"), gbc);
+        gbc.gridx = 1;
+        goalsPanelContent.add(savingGoalValueLabel, gbc);
+        gbc.gridx = 0;
+        gbc.gridy++;
+        goalsPanelContent.add(new JLabel("Mode:"), gbc);
+        gbc.gridx = 1;
+        goalsPanelContent.add(modeValueLabel, gbc);
+        gbc.gridx = 0;
+        gbc.gridy++;
+        goalsPanelContent.add(new JLabel("Reason:"), gbc);
+        gbc.gridx = 1;
+        goalsPanelContent.add(reasonValueLabel, gbc);
+
+        return goalsPanelContent;
+    }
+
+    private JPanel createCustomBudgetPanelContent() {
+        JPanel customBudgetPanelContent = new JPanel(new GridBagLayout());
+        customBudgetPanelContent.setBackground(SECTION_BACKGROUND_COLOR);
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.insets = new Insets(5, 5, 5, 5);
+        gbc.weightx = 1.0;
+
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        customBudgetPanelContent.add(new JLabel("Expected budget amount: ¥"), gbc);
+        gbc.gridx = 1;
+        customBudgetPanelContent.add(customBudgetInputField, gbc);
+        gbc.gridx = 2;
+        customBudgetPanelContent.add(saveCustomBudgetButton, gbc);
+        gbc.gridx = 0;
+        gbc.gridy++;
+        gbc.gridwidth = 3; // 让 Restore 按钮占据一行
+        customBudgetPanelContent.add(restoreIntelligentButton, gbc);
+
+        return customBudgetPanelContent;
+    }
+
+    private JPanel createSavingAdvicePanelContent() {
+        JPanel savingAdvicePanelContent = new JPanel(new GridBagLayout());
+        savingAdvicePanelContent.setBackground(SECTION_BACKGROUND_COLOR);
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.insets = new Insets(5, 5, 5, 5);
+        gbc.weightx = 1.0;
+
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        savingAdvicePanelContent.add(new JLabel("Top spending this month:"), gbc);
+        gbc.gridy++;
+        savingAdvicePanelContent.add(topSpendingCategoryLabel, gbc);
+        gbc.gridy++;
+        savingAdvicePanelContent.add(new JLabel("Large consumption (Over 7% of income):"), gbc);
+        gbc.gridy++;
+        savingAdvicePanelContent.add(new JScrollPane(largeConsumptionTextArea), gbc);
+        largeConsumptionTextArea.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
+
+        return savingAdvicePanelContent;
+    }
+
+    private JPanel createSpendingStatusPanelContent() {
+        JPanel spendingStatusPanelContent = new JPanel(new GridBagLayout());
+        spendingStatusPanelContent.setBackground(SECTION_BACKGROUND_COLOR);
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.insets = new Insets(5, 5, 5, 5);
+        gbc.weightx = 1.0;
+
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        spendingStatusPanelContent.add(new JLabel("This month's expenditure:"), gbc);
+        gbc.gridx = 1;
+        spendingStatusPanelContent.add(expenditureValueLabel, gbc);
+        gbc.gridx = 0;
+        gbc.gridy++;
+        spendingStatusPanelContent.add(budgetStatusLabel, gbc);
+
+        return spendingStatusPanelContent;
+    }
+
+    private void loadBudgetData() {
+        setLabelsLoading();
         SwingWorker<BudgetDataContainer, Void> worker = new SwingWorker<>() {
             @Override
             protected BudgetDataContainer doInBackground() throws Exception {
-                // Ensure username is valid before proceeding
                 if (username == null || username.trim().isEmpty()) {
-                     throw new IllegalStateException("Username is not set for BudgetManagementPanel.");
+                    throw new IllegalStateException("Username is not set for BudgetManagementPanel.");
                 }
                 LocalDate today = LocalDate.now();
                 BudgetRecommendation recommendation = BudgetAdvisor.calculateRecommendation(username, today);
                 List<TransactionData> transactions = TransactionService.readTransactions(username);
+                double currentMonthIncome = calculateCurrentMonthIncome(transactions); // 重新计算当月收入
                 double currentMonthExpense = calculateCurrentMonthExpense(transactions);
-                Map<String, Double> topCategories = findTopExpenseCategories(transactions, 2);
-                return new BudgetDataContainer(recommendation, currentMonthExpense, topCategories);
+                String topCategory = findTopExpenseCategory(transactions);
+                List<String> largeConsumptions = findLargeConsumptions(transactions, currentMonthIncome); // 使用实际收入作为参考
+                return new BudgetDataContainer(recommendation, currentMonthExpense, currentMonthIncome, topCategory, largeConsumptions);
             }
 
             @Override
             protected void done() {
                 try {
-                    BudgetDataContainer data = get(); // Get result
-                    updateLabels(data); // Update UI on EDT
+                    BudgetDataContainer data = get();
+                    updateLabels(data);
                 } catch (Exception e) {
                     System.err.println("ERROR: BudgetPanel - Failed to load or display budget data.");
                     e.printStackTrace();
-                    setLabelsError(); // Show error state on labels
+                    setLabelsError();
                 }
             }
         };
+        List<TransactionData> transactions = TransactionService.readTransactions(username);
+        System.out.println("---- Expenses for April 2025: ----");
+        DateTimeFormatter debugFormatter = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+        for (TransactionData tx : transactions) {
+            if ("Expense".equalsIgnoreCase(tx.getOperation())) {
+                try {
+                    LocalDate transactionDate = LocalDate.parse(tx.getTime(), BudgetAdvisor.DATE_FORMATTER);
+                    if (transactionDate.getYear() == 2025 && transactionDate.getMonthValue() == 4) {
+                        System.out.println("  时间: " + transactionDate.format(debugFormatter) + ", 金额: " + tx.getAmount() + ", 类型: " + tx.getType());
+                    }
+                } catch (DateTimeParseException e) {
+                    System.err.println("Error parsing date for debug: " + tx.getTime());
+                }
+            }
+        }
+        System.out.println("---- End of Expenses for April 2025 ----");
         worker.execute();
     }
 
-    // --- Update UI Labels based on loaded data ---
     private void updateLabels(BudgetDataContainer data) {
         BudgetRecommendation recommendation = data.recommendation;
         double currentMonthExpense = data.currentMonthExpense;
-        Map<String, Double> topCategories = data.topCategories;
+        double currentMonthIncome = data.currentMonthIncome;
+        String topCategory = data.topCategory;
+        List<String> largeConsumptions = data.largeConsumptions;
 
-        // Update Top Spending Labels
-        if (!topCategories.isEmpty()) {
-            int count = 0;
-            // Use iterator to ensure order if LinkedHashMap is used
-            for (Map.Entry<String, Double> entry : topCategories.entrySet()) {
-                count++;
-                String text = String.format("%s: ¥%.2f", entry.getKey(), entry.getValue());
-                if (count == 1) topCategory1Label.setText("1. " + text);
-                if (count == 2) topCategory2Label.setText("2. " + text);
-            }
-            if (count < 2) topCategory2Label.setText("Top Spending 2: N/A");
-            if (count < 1) topCategory1Label.setText("Top Spending 1: N/A"); // Should not happen if !isEmpty
+        // Update Monthly Saving Goal & Budget
+        Double customBudget = BudgetAdvisor.getCustomBudget(this.username);
+        double budgetToUse = (customBudget != null) ? customBudget : recommendation.suggestedBudget;
+        budgetValueLabel.setText(String.format("¥%.2f", budgetToUse));
+        savingGoalValueLabel.setText(String.format("¥%.2f", currentMonthIncome - budgetToUse)); // 使用实际收入减去使用的预算作为储蓄目标
+        modeValueLabel.setText(recommendation.mode.getDisplayName());
+        reasonValueLabel.setText(recommendation.reason);
+
+        // Update Custom Budget input field (if a custom budget exists)
+        customBudgetInputField.setText(customBudget != null ? String.format("%.2f", customBudget) : "");
+
+        // Update Saving Advice
+        topSpendingCategoryLabel.setText(topCategory != null ? topCategory : "No expenses this month");
+        if (largeConsumptions.isEmpty()) {
+            largeConsumptionTextArea.setText("No large consumptions found this month (over 7% of income).");
         } else {
-            topCategory1Label.setText("Top Spending: No expenses this month.");
-            topCategory2Label.setText("");
+            largeConsumptionTextArea.setText(String.join("\n", largeConsumptions));
         }
 
-        // Update Goals & Mode Labels
-        String budgetGoalText;
-        double budgetToUse = recommendation.suggestedBudget; // Default to recommended
-
-        // Check for custom budget
-        Double customBudget = BudgetAdvisor.getCustomBudget(this.username); // Use stored username
-        if (customBudget != null) {
-            budgetToUse = customBudget; // Use custom budget for remaining calc
-            budgetGoalText = String.format("¥%.2f (Custom)", customBudget);
-            modeLabel.setText("Budget Mode: Custom");
-            modeLabel.setToolTipText("You have set a custom monthly budget.");
-        } else {
-            // Use recommended budget and mode info
-            budgetGoalText = String.format("¥%.2f", recommendation.suggestedBudget);
-            modeLabel.setText(String.format("Mode: %s", recommendation.mode.getDisplayName()));
-            modeLabel.setToolTipText(recommendation.reason);
-        }
-        budgetGoalLabel.setText("Budget Goal: " + budgetGoalText);
-        // Saving goal is always based on recommendation, regardless of custom budget
-        savingGoalLabel.setText(String.format("Suggested Saving: ¥%.2f", recommendation.suggestedSaving));
-
-        // Update Status Labels
-        spentLabel.setText(String.format("Spent This Month: ¥%.2f", currentMonthExpense));
-        // Calculate remaining based on the budget being used (custom or recommended)
+        // Update Spending status
+        expenditureValueLabel.setText(String.format("¥%.2f", currentMonthExpense));
         double remaining = budgetToUse - currentMonthExpense;
-        updateRemainingLabel(remaining);
+        updateBudgetStatusLabel(remaining);
 
-        // Ensure panel redraws
         this.revalidate();
         this.repaint();
+
+        System.out.println("Current Month Income (updateLabels): " + currentMonthIncome);
+        System.out.println("Budget To Use (updateLabels): " + budgetToUse);
+        savingGoalValueLabel.setText(String.format("¥%.2f", currentMonthIncome - budgetToUse));
     }
 
-    // --- Set labels to loading state ---
-     private void setLabelsLoading() {
+    private void setLabelsLoading() {
         String loading = "Loading...";
-        topCategory1Label.setText("Top Spending 1: " + loading);
-        topCategory2Label.setText("Top Spending 2: " + loading);
-        budgetGoalLabel.setText("Budget Goal: " + loading);
-        savingGoalLabel.setText("Saving Goal: " + loading);
-        modeLabel.setText("Budget Mode: " + loading);
-        spentLabel.setText("Spent This Month: " + loading);
-        remainingLabel.setText("Remaining Budget: " + loading);
-        remainingLabel.setForeground(Color.GRAY); // Indicate loading state visually
+        budgetValueLabel.setText(loading);
+        savingGoalValueLabel.setText(loading);
+        modeValueLabel.setText(loading);
+        reasonValueLabel.setText(loading);
+        topSpendingCategoryLabel.setText("N/A");
+        expenditureValueLabel.setText(loading);
+        budgetStatusLabel.setText(loading);
+        largeConsumptionTextArea.setText("Loading...");
     }
 
-    // --- Set labels to error state ---
     private void setLabelsError() {
-         String error = "Error loading data";
-         topCategory1Label.setText("Top Spending 1: " + error);
-         topCategory2Label.setText("");
-         budgetGoalLabel.setText("Budget Goal: " + error);
-         savingGoalLabel.setText("Saving Goal: " + error);
-         modeLabel.setText("Budget Mode: " + error);
-         spentLabel.setText("Spent This Month: " + error);
-         remainingLabel.setText("Remaining Budget: " + error);
-         remainingLabel.setForeground(Color.RED);
+        String error = "Error loading data";
+        budgetValueLabel.setText(error);
+        savingGoalValueLabel.setText(error);
+        modeValueLabel.setText(error);
+        reasonValueLabel.setText(error);
+        topSpendingCategoryLabel.setText("N/A");
+        expenditureValueLabel.setText(error);
+        budgetStatusLabel.setText(error);
+        largeConsumptionTextArea.setText(error);
     }
 
-
-   // Inside BudgetManagementPanel.java
-
-private void handleModifyBudget() {
-    String username = this.username; // Use the stored username
-    if (username == null) {
-        System.err.println("ERROR: handleModifyBudget - Username is null.");
-        return;
-    }
-
-    Double currentCustomDbl = BudgetAdvisor.getCustomBudget(username);
-    String currentCustomStr = (currentCustomDbl != null) ? String.format("%.2f", currentCustomDbl) : "";
-
-   // --- MODIFICATION START ---
-   // 1. Receive the result as an Object first
-   Object result = JOptionPane.showInputDialog(
-       this,
-       "Enter new monthly budget (¥).\nLeave empty or cancel to clear custom budget:",
-       "Set Custom Budget",
-       JOptionPane.PLAIN_MESSAGE,
-       null,           // Icon
-       null,           // Selection values (not used here)
-       currentCustomStr // Initial selection value
-   );
-
-   // 2. Check if the user cancelled (result will be null)
-   if (result != null) {
-       // 3. Cast the Object to String since we expect text input here
-       String newBudgetStr = (String) result;
-
-       // 4. Process the input string (the rest of your logic)
-        if (newBudgetStr.trim().isEmpty()) {
-            // User confirmed OK but left it empty -> Clear custom budget
-            BudgetAdvisor.clearCustomBudget(this.username);
-            JOptionPane.showMessageDialog(this, "Custom budget cleared. Using system recommendation.");
-        } else {
-            // User entered a value, try to parse and save
+    private void handleSaveCustomBudget() {
+        String newBudgetStr = customBudgetInputField.getText().trim();
+        if (!newBudgetStr.isEmpty()) {
             try {
-                double newBudget = Double.parseDouble(newBudgetStr.trim());
+                double newBudget = Double.parseDouble(newBudgetStr);
                 if (newBudget >= 0) {
                     BudgetAdvisor.saveCustomBudget(this.username, newBudget);
                     JOptionPane.showMessageDialog(this, "Custom budget set to ¥" + String.format("%.2f", newBudget));
+                    loadBudgetData(); // Refresh data to reflect the change
                 } else {
                     JOptionPane.showMessageDialog(this, "Budget cannot be negative.", "Input Error", JOptionPane.ERROR_MESSAGE);
                 }
             } catch (NumberFormatException nfe) {
-                 JOptionPane.showMessageDialog(this, "Invalid number format entered.", "Input Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Invalid number format.", "Input Error", JOptionPane.ERROR_MESSAGE);
             }
-        }
-        // Refresh the display after potentially changing the budget
-        loadBudgetData(); // Reload and update labels
-   }
-   // If result is null (user cancelled), do nothing.
-   // --- MODIFICATION END ---
-}
-
-    // --- Helper method to update the remaining/overspent label ---
-    private void updateRemainingLabel(double remainingValue) {
-        if (remainingValue >= 0) {
-            remainingLabel.setText(String.format("Remaining Budget: ¥%.2f", remainingValue));
-            remainingLabel.setForeground(new Color(0, 128, 0)); // Green
         } else {
-            remainingLabel.setText(String.format("Overspent By: ¥%.2f", Math.abs(remainingValue)));
-            remainingLabel.setForeground(Color.RED); // Red
+            int choice = JOptionPane.showConfirmDialog(this, "Do you want to clear your custom budget?", "Clear Budget", JOptionPane.YES_NO_OPTION);
+            if (choice == JOptionPane.YES_OPTION) {
+                BudgetAdvisor.clearCustomBudget(this.username);
+                JOptionPane.showMessageDialog(this, "Custom budget cleared. Using system recommendation.");
+                loadBudgetData(); // Refresh data
+            }
         }
     }
 
-    // --- Helper class to hold data fetched in background ---
+    private void handleRestoreIntelligent() {
+        BudgetAdvisor.clearCustomBudget(this.username);
+        JOptionPane.showMessageDialog(this, "Intelligent budget recommendation restored.");
+        loadBudgetData(); // Refresh data
+    }
+
+    private void updateBudgetStatusLabel(double remainingValue) {
+        if (remainingValue >= 0) {
+            budgetStatusLabel.setText(String.format("Distance to the budget: ¥%.2f", remainingValue));
+            budgetStatusLabel.setForeground(new Color(0, 128, 0)); // Green
+        } else {
+            budgetStatusLabel.setText(String.format("Overspent by: ¥%.2f", Math.abs(remainingValue)));
+            budgetStatusLabel.setForeground(Color.RED); // Red
+        }
+    }
+
+    private String findTopExpenseCategory(List<TransactionData> transactions) {
+        if (transactions == null) return null;
+        Map<String, Double> categoryTotals = new HashMap<>();
+        LocalDate now = LocalDate.now();
+        for (TransactionData tx : transactions) {
+            if ("Expense".equalsIgnoreCase(tx.getOperation())) {
+                try {
+                    LocalDate transactionDate = LocalDate.parse(tx.getTime(), TRANSACTION_TIME_FORMATTER);
+                    if (transactionDate.getYear() == now.getYear() && transactionDate.getMonthValue() == now.getMonthValue()) {
+                        String category = tx.getType();
+                        if (category == null || category.trim().isEmpty() || "u".equalsIgnoreCase(category.trim())) {
+                            category = "Unclassified";
+                        } else {
+                            category = category.trim();
+                        }
+                        categoryTotals.put(category, categoryTotals.getOrDefault(category, 0.0) + tx.getAmount());
+                    }
+                } catch (DateTimeParseException e) {
+                    System.err.println("ERROR: Failed to parse date in findTopExpenseCategory: " + tx.getTime() + " - " + e.getMessage());
+                    e.printStackTrace();
+                }
+            }
+        }
+        return categoryTotals.entrySet().stream()
+                .max(Map.Entry.comparingByValue())
+                .map(Map.Entry::getKey)
+                .orElse(null);
+    }
+
+    private List<String> findLargeConsumptions(List<TransactionData> transactions, double currentMonthIncome) {
+        if (transactions == null || currentMonthIncome <= 0) return List.of();
+        List<String> largeConsumptions = new ArrayList<>();
+        LocalDate now = LocalDate.now();
+        double largeThreshold = currentMonthIncome * 0.07;
+        DateTimeFormatter displayFormatter = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+
+        for (TransactionData tx : transactions) {
+            if ("Expense".equalsIgnoreCase(tx.getOperation())) {
+                try {
+                    LocalDate transactionDate = LocalDate.parse(tx.getTime(), TRANSACTION_TIME_FORMATTER);
+                    if (transactionDate.getYear() == now.getYear() && transactionDate.getMonthValue() == now.getMonthValue() && tx.getAmount() > largeThreshold) {
+                        largeConsumptions.add(String.format("%s - ¥%.2f - %s", transactionDate.format(displayFormatter), tx.getAmount(), tx.getType()));
+                    }
+                } catch (DateTimeParseException e) {
+                    System.err.println("ERROR: Failed to parse date in findLargeConsumptions: " + tx.getTime() + " - " + e.getMessage());
+                    e.printStackTrace();
+                }
+            }
+        }
+        return largeConsumptions;
+    }
+
+    private double calculateCurrentMonthIncome(List<TransactionData> transactions) {
+        if (transactions == null) return 0.0;
+        double totalIncome = 0.0;
+        LocalDate now = LocalDate.now();
+        for (TransactionData tx : transactions) {
+            if ("Income".equalsIgnoreCase(tx.getOperation())) {
+                try {
+                    LocalDate transactionDate = LocalDate.parse(tx.getTime(), TRANSACTION_TIME_FORMATTER);
+                    if (transactionDate.getYear() == now.getYear() && transactionDate.getMonthValue() == now.getMonthValue()) {
+                        totalIncome += tx.getAmount();
+                    }
+                } catch (DateTimeParseException e) {
+                    System.err.println("ERROR: Failed to parse date in calculateCurrentMonthIncome: " + tx.getTime() + " - " + e.getMessage());
+                    e.printStackTrace();
+                }
+            }
+        }
+        return totalIncome;
+    }
+
+    private double calculateCurrentMonthExpense(List<TransactionData> transactions) {
+        if (transactions == null) {
+            System.out.println("calculateCurrentMonthExpense: transactions is null");
+            return 0.0;
+        }
+        double totalExpense = 0.0;
+        LocalDate now = LocalDate.now();
+        System.out.println("calculateCurrentMonthExpense: Now is " + now.toString());
+        LocalDate firstDayOfMonth = now.withDayOfMonth(1);
+        LocalDate lastDayOfMonth = now.withDayOfMonth(now.lengthOfMonth());
+        System.out.println("calculateCurrentMonthExpense: First day of month is " + firstDayOfMonth.toString());
+        System.out.println("calculateCurrentMonthExpense: Last day of month is " + lastDayOfMonth.toString());
+
+        for (TransactionData tx : transactions) {
+            System.out.println("calculateCurrentMonthExpense: Processing transaction - Operation: " + tx.getOperation() + ", Time: " + tx.getTime() + ", Amount: " + tx.getAmount());
+            if ("Expense".equalsIgnoreCase(tx.getOperation())) {
+                try {
+                    LocalDate transactionDate = LocalDate.parse(tx.getTime(), TRANSACTION_TIME_FORMATTER);
+                    System.out.println("calculateCurrentMonthExpense: Parsed transaction date is " + transactionDate.toString());
+                    if (!transactionDate.isBefore(firstDayOfMonth) && !transactionDate.isAfter(lastDayOfMonth)) {
+                        totalExpense += tx.getAmount();
+                        System.out.println("calculateCurrentMonthExpense: Expense added - Amount: " + tx.getAmount() + ", Total Expense: " + totalExpense);
+                    } else {
+                        System.out.println("calculateCurrentMonthExpense: Transaction date " + transactionDate.toString() + " is not within the current month.");
+                    }
+                } catch (DateTimeParseException e) {
+                    System.err.println("ERROR: Failed to parse date in calculateCurrentMonthExpense: " + tx.getTime() + " - " + e.getMessage());
+                    e.printStackTrace();
+                }
+            }
+        }
+        System.out.println("calculateCurrentMonthExpense: Total expense for the month is " + totalExpense);
+        return totalExpense;
+    }
+
+    private void styleCustomBudgetButton(JButton button) {
+        button.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        button.setForeground(BUTTON_FOREGROUND_COLOR);
+        button.setBackground(BUTTON_BACKGROUND_COLOR);
+        button.setFocusPainted(false);
+        button.setBorder(BorderFactory.createEmptyBorder(5, 15, 5, 15));
+        button.setCursor(new Cursor(Cursor.HAND_CURSOR));
+    }
+
+    // Helper class to hold data fetched in background
     private static class BudgetDataContainer {
         final BudgetRecommendation recommendation;
         final double currentMonthExpense;
-        final Map<String, Double> topCategories;
+        final double currentMonthIncome;
+        final String topCategory;
+        final List<String> largeConsumptions;
 
-        BudgetDataContainer(BudgetRecommendation rec, double expense, Map<String, Double> top) {
+        BudgetDataContainer(BudgetRecommendation rec, double expense, double income, String top, List<String> large) {
             this.recommendation = rec;
             this.currentMonthExpense = expense;
-            this.topCategories = top;
+            this.currentMonthIncome = income;
+            this.topCategory = top;
+            this.largeConsumptions = large;
         }
     }
-
-    // --- Helper method to create styled section panels ---
-    private JPanel createSectionPanel(String title) {
-        JPanel sectionPanel = new JPanel();
-        sectionPanel.setLayout(new BoxLayout(sectionPanel, BoxLayout.Y_AXIS));
-        sectionPanel.setBackground(new Color(248, 249, 250));
-        Border lineBorder = BorderFactory.createLineBorder(new Color(210, 215, 220));
-        Border titledBorder = BorderFactory.createTitledBorder(
-            lineBorder,
-            " " + title + " ",
-            TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION,
-            new Font("Segoe UI", Font.BOLD, 15), new Color(70, 80, 90)
-        );
-        Border paddingBorder = BorderFactory.createEmptyBorder(8, 12, 8, 12);
-        sectionPanel.setBorder(new CompoundBorder(titledBorder, paddingBorder));
-        sectionPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
-        // Ensure labels added later also align left
-        // For BoxLayout on Y_AXIS, components usually align based on their X alignment property.
-        // Setting it on the panel helps if components don't have it set.
-        return sectionPanel;
-    }
-
-    // --- Helper to calculate current month's expense (remains the same) ---
-    private double calculateCurrentMonthExpense(List<TransactionData> transactions) {
-         if (transactions == null) return 0.0;
-         double totalExpense = 0.0;
-         LocalDate now = LocalDate.now();
-         for (TransactionData tx : transactions) {
-             if ("Expense".equalsIgnoreCase(tx.getOperation())) {
-                 try {
-                     LocalDateTime dt = LocalDateTime.parse(tx.getTime(), TRANSACTION_TIME_FORMATTER);
-                     if (dt.getYear() == now.getYear() && dt.getMonthValue() == now.getMonthValue()) {
-                         totalExpense += tx.getAmount();
-                     }
-                 } catch (DateTimeParseException e) { /* Log error */ }
-             }
-         }
-         return totalExpense;
-    }
-
-    // --- Helper to find top N expense categories (remains the same) ---
-    private Map<String, Double> findTopExpenseCategories(List<TransactionData> transactions, int topN) {
-         if (transactions == null) return new HashMap<>();
-         Map<String, Double> categoryTotals = new HashMap<>();
-         LocalDate now = LocalDate.now();
-         for (TransactionData tx : transactions) {
-             if ("Expense".equalsIgnoreCase(tx.getOperation())) {
-                  try {
-                     LocalDateTime dt = LocalDateTime.parse(tx.getTime(), TRANSACTION_TIME_FORMATTER);
-                     if (dt.getYear() == now.getYear() && dt.getMonthValue() == now.getMonthValue()) {
-                         String category = tx.getType();
-                         if (category == null || category.trim().isEmpty() || "u".equalsIgnoreCase(category.trim())) {
-                             category = "Unclassified";
-                         } else { category = category.trim(); }
-                         categoryTotals.put(category, categoryTotals.getOrDefault(category, 0.0) + tx.getAmount());
-                     }
-                 } catch (DateTimeParseException e) { /* Log error */ }
-             }
-         }
-         // Sort and limit
-         return categoryTotals.entrySet().stream()
-                              .sorted(Map.Entry.<String, Double>comparingByValue().reversed())
-                              .limit(topN)
-                              .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
-    }
-
-     // --- Helper to style buttons (can use UIUtils or style locally) ---
-     private void styleBudgetButton(JButton button) {
-         button.setFont(new Font("Segoe UI", Font.BOLD, 14));
-         button.setForeground(Color.WHITE);
-         button.setBackground(new Color(0, 120, 215)); // Blue
-         button.setPreferredSize(new Dimension(250, 40)); // Make button wider
-         button.setFocusPainted(false);
-         button.setBorder(BorderFactory.createEmptyBorder(5, 15, 5, 15));
-         button.setCursor(new Cursor(Cursor.HAND_CURSOR));
-     }
-
-} // End of BudgetManagementPanel class
+}

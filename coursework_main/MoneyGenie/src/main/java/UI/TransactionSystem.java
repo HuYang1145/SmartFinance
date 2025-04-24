@@ -39,13 +39,8 @@ import java.util.List;
 import java.util.Map;
 
 import javax.swing.*;
-import javax.swing.plaf.basic.BasicComboBoxUI;
-import javax.swing.plaf.basic.BasicComboPopup;
 import javax.swing.plaf.basic.BasicScrollBarUI;
 import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.plaf.basic.BasicArrowButton;
-import javax.swing.plaf.basic.BasicComboBoxUI;
-import javax.swing.plaf.basic.BasicComboPopup;
 
 
 import AccountModel.AccountModel;
@@ -61,9 +56,8 @@ import com.google.gson.Gson;
 
 import AccountModel.TransactionService;
 import AccountModel.TransactionService.TransactionData;
-import static PersonModel.BillStatics.filterByYearMonth;
-import PersonModel.ExpenseDialog;
-import PersonModel.IncomeDialog;
+import static PersonModel.IncomeExpenseChart.filterByYearMonth;
+
 import UI.AccountManagementUI.RoundBorder;
 import UI.RoundedInputField.*;
 import AccountModel.UserSession;
@@ -95,8 +89,8 @@ public class TransactionSystem extends JPanel {
     private static final Color MID_GRADIENT_END = new Color(60, 120, 250);
     private static final Color LIGHT_GRADIENT_START = new Color(200, 80, 220);
     private static final Color LIGHT_GRADIENT_END = new Color(80, 140, 255); // Fixed Blue from 290 to 255
-    private static final Color TEXT_COLOR = Color.ORANGE;
-    private static final Color HIGHLIGHT_COLOR = Color.WHITE; ;
+    private static final Color TEXT_COLOR = Color.BLACK;
+    private static final Color HIGHLIGHT_COLOR = Color.WHITE;
 
     public TransactionSystem(String username) {
         this.username = username;
@@ -124,12 +118,9 @@ public class TransactionSystem extends JPanel {
 
    // Module 1: Real-Time Exchange Rate Monitoring
    JPanel createExchangeRatePanel() {
-    JPanel panel = new DeepBlueGradientPanel();
-    panel.setLayout(new BorderLayout(5, 5));
-    panel.setBorder(BorderFactory.createCompoundBorder(
-            new RoundBorder(10, HIGHLIGHT_COLOR),
-            BorderFactory.createEmptyBorder(20, 10, 10, 10)));
-
+       JPanel panel = new BrandGradientPanel();
+       panel.setLayout(new BorderLayout(10,10));
+       panel.setBorder(BorderFactory.createEmptyBorder(15,15,15,15));
     JLabel title = new JLabel("Real-Time Exchange Rates", SwingConstants.CENTER);
     title.setFont(new Font("Segoe UI", Font.BOLD, 20));
     title.setForeground(Color.WHITE);
@@ -216,106 +207,83 @@ public class TransactionSystem extends JPanel {
 
    // Module 2: Currency Conversion
    JPanel createCurrencyConversionPanel() {
-    JPanel panel = new DeepBlueGradientPanel();
-    panel.setLayout(new GridBagLayout());
-    panel.setBorder(BorderFactory.createCompoundBorder(
-            new RoundBorder(10, HIGHLIGHT_COLOR),
-            BorderFactory.createEmptyBorder(20, 10, 10, 10)));
-    GridBagConstraints gbc = new GridBagConstraints();
-    gbc.insets = new Insets(12, 12, 12, 12);
-    gbc.fill = GridBagConstraints.HORIZONTAL;
+       // ===== 外层容器，带阴影 + 圆角边框 =====
+       JPanel panel = new BrandGradientPanel();
+       panel.setLayout(new BorderLayout(10,10));
+       panel.setBorder(BorderFactory.createEmptyBorder(15,15,15,15));
 
-    JLabel title = new JLabel("Currency Conversion", SwingConstants.CENTER);
-    title.setFont(new Font("Segoe UI", Font.BOLD, 20));
-    title.setForeground(Color.WHITE);
-    gbc.gridx = 0; gbc.gridy = 0; gbc.gridwidth = 2;
-    panel.add(title, gbc);
+       // ===== 顶部标题 =====
+       JLabel title = new JLabel("Currency Conversion", SwingConstants.CENTER);
+       title.setFont(new Font("Segoe UI", Font.BOLD, 20));
+       title.setForeground(Color.WHITE);
+       panel.add(title, BorderLayout.NORTH);
 
-    JLabel amountLabel = new JLabel("Amount (CNY):");
-    amountLabel.setFont(new Font("Segoe UI", Font.PLAIN, 16));
-    amountLabel.setForeground(Color.WHITE);
-    gbc.gridx = 0; gbc.gridy = 1; gbc.gridwidth = 1;
-    panel.add(amountLabel, gbc);
+       // ===== 中部表单区域（GridBagLayout） =====
+       JPanel formPanel = new JPanel(new GridBagLayout());
+       formPanel.setOpaque(false); // 保持背景透明以显示外部渐变
 
-    RoundedTextField amountField = new RoundedTextField("Enter amount");
-    amountField.setFont(new Font("Segoe UI", Font.PLAIN, 16));
-    amountField.setPreferredSize(new Dimension(200, 40));
-    gbc.gridx = 1; gbc.gridy = 1;
-    panel.add(amountField, gbc);
+       GridBagConstraints gbc = new GridBagConstraints();
+       gbc.insets = new Insets(12, 12, 12, 12);
+       gbc.fill = GridBagConstraints.HORIZONTAL;
 
-    JLabel currencyLabel = new JLabel("Target Currency:");
-    currencyLabel.setFont(new Font("Segoe UI", Font.PLAIN, 16));
-    currencyLabel.setForeground(Color.WHITE);
-    gbc.gridx = 0; gbc.gridy = 2;
-    panel.add(currencyLabel, gbc);
+       // -- Amount Label
+       JLabel amountLabel = new JLabel("Amount (CNY):");
+       amountLabel.setFont(new Font("Segoe UI", Font.PLAIN, 16));
+       amountLabel.setForeground(Color.WHITE);
+       gbc.gridx = 0; gbc.gridy = 0;
+       formPanel.add(amountLabel, gbc);
 
-    currencyComboBox = new RoundedComboBox<>(currencies);
+       // -- Amount Field
+       RoundedTextField amountField = new RoundedTextField("Enter amount");
+       amountField.setFont(new Font("Segoe UI", Font.PLAIN, 16));
+       amountField.setPreferredSize(new Dimension(200, 40));
+       gbc.gridx = 1;
+       formPanel.add(amountField, gbc);
+
+       // -- Currency Label
+       JLabel currencyLabel = new JLabel("Target Currency:");
+       currencyLabel.setFont(new Font("Segoe UI", Font.PLAIN, 16));
+       currencyLabel.setForeground(Color.WHITE);
+       gbc.gridx = 0; gbc.gridy = 1;
+       formPanel.add(currencyLabel, gbc);
+
+       // -- Currency ComboBox
+       currencyComboBox = new RoundedComboBox<>(currencies);
        currencyComboBox.setFont(new Font("Segoe UI", Font.PLAIN, 16));
        currencyComboBox.setPreferredSize(new Dimension(200, 40));
+       gbc.gridx = 1;
+       formPanel.add(currencyComboBox, gbc);
 
-       currencyComboBox.setOpaque(false);
-       currencyComboBox.setBackground(new Color(255,255,255,0)); // 透明
-
-       currencyComboBox.setUI(new BasicComboBoxUI() {
-           @Override
-           protected JButton createArrowButton() {
-               // SOUTH：箭头向下；参数依次是 background, shadow, darkShadow, highlight
-               BasicArrowButton arrow = new BasicArrowButton(
-                       SwingConstants.SOUTH,
-                       new Color(10,25,70),  // btn 背景
-                       new Color(10,25,70),  // 阴影
-                       new Color(255,255,255),// 箭头颜色
-                       new Color(255,255,255) // 箭头高光
-               );
-               arrow.setBorder(null);
-               arrow.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-               return arrow;
-           }
-
-
-
-           @Override
-           public void installUI(JComponent c) {
-               super.installUI(c);
-               // 如果你想修改下拉列表背景，也可以在这里拿到 popup
-               if (popup instanceof BasicComboPopup) {
-                   JList list = ((BasicComboPopup)popup).getList();
-                   list.setBackground(new Color(255,255,255,230));
-                   list.setSelectionBackground(new Color(200,200,255));
-               }
-           }
-       });
-
-       gbc.gridx = 1; gbc.gridy = 2;
-       panel.add(currencyComboBox, gbc);
+       // -- Conversion Result
        conversionResultLabel = new JLabel("Result: -", SwingConstants.CENTER);
        conversionResultLabel.setFont(new Font("Segoe UI", Font.PLAIN, 18));
-       conversionResultLabel.setForeground(TEXT_COLOR);
-       gbc.gridx = 0; gbc.gridy = 3; gbc.gridwidth = 2;
-       panel.add(conversionResultLabel, gbc);
+       conversionResultLabel.setForeground(Color.WHITE);
+       gbc.gridx = 0; gbc.gridy = 2; gbc.gridwidth = 2;
+       formPanel.add(conversionResultLabel, gbc);
 
+       // 加入表单面板到中间区域
+       panel.add(formPanel, BorderLayout.CENTER);
 
+       // 监听输入和选择
        amountField.getDocument().addDocumentListener(new javax.swing.event.DocumentListener() {
-        @Override public void insertUpdate(javax.swing.event.DocumentEvent e) { updateConversion(); }
-        @Override public void removeUpdate(javax.swing.event.DocumentEvent e) { updateConversion(); }
-        @Override public void changedUpdate(javax.swing.event.DocumentEvent e) { updateConversion(); }
-    });
-    currencyComboBox.addActionListener(e -> {
-        updateConversion();
-        updateHistoricalTrend();
-    });
+           public void insertUpdate(javax.swing.event.DocumentEvent e) { updateConversion(); }
+           public void removeUpdate(javax.swing.event.DocumentEvent e) { updateConversion(); }
+           public void changedUpdate(javax.swing.event.DocumentEvent e) { updateConversion(); }
+       });
 
-    return panel;
-}
+       currencyComboBox.addActionListener(e -> {
+           updateConversion();
+           updateHistoricalTrend(); // 如果你需要刷新趋势图
+       });
 
-   // Module 4: Selected Currency Historical Exchange Rate Trend
+       return panel;
+   }
+
+    // Module 4: Selected Currency Historical Exchange Rate Trend
    JPanel createHistoricalTrendPanel() {
-   JPanel panel = new DeepBlueGradientPanel();
-    panel.setLayout(new BorderLayout(5, 5));
-    panel.setBorder(BorderFactory.createCompoundBorder(
-            new RoundBorder(10, HIGHLIGHT_COLOR),
-            BorderFactory.createEmptyBorder(20, 10, 10, 10)));
-
+       JPanel panel = new BrandGradientPanel();
+       panel.setLayout(new BorderLayout(10,10));
+       panel.setBorder(BorderFactory.createEmptyBorder(15,15,15,15));
     JLabel title = new JLabel("Historical Exchange Rate Trend", SwingConstants.CENTER);
     title.setFont(new Font("Segoe UI", Font.BOLD, 20));
     title.setForeground(Color.WHITE);
