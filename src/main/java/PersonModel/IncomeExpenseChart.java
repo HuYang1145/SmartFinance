@@ -1,6 +1,5 @@
 package PersonModel;
 
-import java.awt.BasicStroke;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -383,29 +382,13 @@ public class IncomeExpenseChart {
     public static JPanel getTransactionTablePanel(String username, String yearMonth) {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBackground(Color.WHITE);
-
+    
         // Title
         JLabel title = new JLabel("Transaction Records", SwingConstants.CENTER);
         title.setFont(new Font("Segoe UI", Font.BOLD, 16));
-        title.setBorder(BorderFactory.createEmptyBorder(5, 0, 5, 0)); // Reduced bottom padding
+        title.setBorder(BorderFactory.createEmptyBorder(5, 0, 5, 0));
         panel.add(title, BorderLayout.NORTH);
-
-        // Purple line below the title
-        JPanel linePanel = new JPanel() {
-            @Override
-            protected void paintComponent(Graphics g) {
-                super.paintComponent(g);
-                Graphics2D g2d = (Graphics2D) g.create();
-                g2d.setColor(new Color(128, 0, 128));
-                g2d.setStroke(new BasicStroke(4));
-                g2d.drawLine(0, getHeight() - 1, getWidth(), getHeight() - 1);
-                g2d.dispose();
-            }
-        };
-        linePanel.setPreferredSize(new Dimension(0, 10));
-        linePanel.setBackground(Color.WHITE);
-        panel.add(linePanel, BorderLayout.CENTER);
-
+    
         // Table
         List<TransactionData> transactions = TransactionService.readTransactions(username);
         transactions = filterByYearMonth(transactions, yearMonth);
@@ -420,7 +403,7 @@ public class IncomeExpenseChart {
                 t.getLocation()
             };
         }
-
+    
         JTable table = new JTable(data, columnNames) {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -433,33 +416,33 @@ public class IncomeExpenseChart {
         table.setBackground(Color.WHITE);
         table.setForeground(Color.BLACK);
         table.setIntercellSpacing(new Dimension(0, 0));
-
+    
         DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
         renderer.setHorizontalAlignment(SwingConstants.CENTER);
         renderer.setBackground(Color.WHITE);
         for (int i = 0; i < table.getColumnCount(); i++) {
             table.getColumnModel().getColumn(i).setCellRenderer(renderer);
         }
-
+    
         JTableHeader header = table.getTableHeader();
         header.setFont(new Font("Segoe UI", Font.BOLD, 14));
         header.setBackground(Color.WHITE);
         header.setBorder(BorderFactory.createMatteBorder(0, 0, 3, 0, Color.BLACK));
-
+    
         JScrollPane scrollPane = new JScrollPane(table);
-        scrollPane.setBorder(BorderFactory.createEmptyBorder());
-        scrollPane.setPreferredSize(new Dimension(0, 250)); // Height matches Daily Income & Expense
-
+        scrollPane.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1)); // Add black border
+        scrollPane.setPreferredSize(new Dimension(0, 250));
+    
         scrollPane.getVerticalScrollBar().setUI(new ModernScrollBarUI());
         scrollPane.getHorizontalScrollBar().setUI(new ModernScrollBarUI());
-
-        // Add table in a wrapper panel to reduce spacing
+    
+        // Add table in a wrapper panel with no top padding
         JPanel tableWrapper = new JPanel(new BorderLayout());
         tableWrapper.setBackground(Color.WHITE);
-        tableWrapper.setBorder(BorderFactory.createEmptyBorder(5, 0, 0, 0)); // Minimal top padding
+        tableWrapper.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0)); // Remove top padding
         tableWrapper.add(scrollPane, BorderLayout.CENTER);
-        panel.add(tableWrapper, BorderLayout.SOUTH);
-
+        panel.add(tableWrapper, BorderLayout.CENTER); // Use CENTER instead of SOUTH
+    
         return panel;
     }
 
@@ -723,9 +706,9 @@ public class IncomeExpenseChart {
         JPanel panel = new JPanel(new GridBagLayout());
         panel.setBackground(Color.WHITE);
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(10, 10, 10, 10);
+        gbc.insets = new Insets(5, 5, 5, 5); // Reduce spacing
         gbc.fill = GridBagConstraints.BOTH;
-
+    
         // Plate 1: Expense Donut Chart
         JPanel expensePanel = new JPanel(new BorderLayout(10, 10));
         expensePanel.setBackground(Color.WHITE);
@@ -741,19 +724,19 @@ public class IncomeExpenseChart {
         gbc.weightx = 0.33;
         gbc.weighty = 0.4;
         panel.add(expensePanel, gbc);
-
+    
         // Plate 2: Income Donut Chart
         JPanel incomePanel = new JPanel(new BorderLayout(10, 10));
         incomePanel.setBackground(Color.WHITE);
         JLabel incomeTitle = new JLabel("Income Categories", SwingConstants.CENTER);
         incomeTitle.setFont(new Font("Segoe UI", Font.BOLD, 16));
         incomePanel.add(incomeTitle, BorderLayout.NORTH);
-        JPanel incomeChartPanel = getIncomeChartPanel(username, yearMonth); // Corrected line
+        JPanel incomeChartPanel = getIncomeChartPanel(username, yearMonth);
         incomePanel.add(incomeChartPanel, BorderLayout.CENTER);
         gbc.gridx = 1;
         gbc.gridy = 0;
         panel.add(incomePanel, gbc);
-
+    
         // Plate 3 & 4: Transaction Table
         JPanel tablePanel = getTransactionTablePanel(username, yearMonth);
         gbc.gridx = 0;
@@ -763,7 +746,7 @@ public class IncomeExpenseChart {
         gbc.weightx = 0.66;
         gbc.weighty = 0.6;
         panel.add(tablePanel, gbc);
-
+    
         // Plate 5: Type Analysis
         JPanel typeAnalysisPanel = new JPanel(new BorderLayout(10, 10));
         typeAnalysisPanel.setBackground(Color.WHITE);
@@ -778,7 +761,7 @@ public class IncomeExpenseChart {
         gbc.weightx = 0.33;
         gbc.weighty = 0.4;
         panel.add(typeAnalysisPanel, gbc);
-
+    
         // Plate 6: Daily Bar Chart
         JPanel barChartPanel = new JPanel(new BorderLayout(10, 10));
         barChartPanel.setBackground(Color.WHITE);
@@ -793,7 +776,7 @@ public class IncomeExpenseChart {
         gbc.weightx = 0.33;
         gbc.weighty = 0.6;
         panel.add(barChartPanel, gbc);
-
+    
         return panel;
     }
 

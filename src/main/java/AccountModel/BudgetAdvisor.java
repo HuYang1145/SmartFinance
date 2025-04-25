@@ -1,59 +1,49 @@
 package AccountModel;
 
-// Import TransactionService and its DTO
-import AccountModel.TransactionService;
-import AccountModel.TransactionService.TransactionData;
-
-import java.io.BufferedReader; // Keep for reading budget file
-import java.io.File;
-import java.io.FileReader;   // Keep for reading budget file
-import java.io.FileWriter;   // Keep for writing budget file
-import java.io.IOException;  // Keep for budget file IO
+import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.Month;
 import java.time.format.DateTimeFormatter;
-// Import needed formatters and exception types
 import java.time.format.DateTimeFormatterBuilder;
 import java.time.format.DateTimeParseException;
-import java.time.LocalDateTime; // Use LocalDateTime for parsing time part
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors; // Keep if used elsewhere, or remove
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.time.temporal.ChronoField;
 
-import javax.swing.JOptionPane;
 
-/**
- * Provides budget recommendations and calculations based on transaction history
- * obtained via TransactionService. Manages custom user budgets stored in user_budget.csv.
- */
 public class BudgetAdvisor {
-    private static final String BUDGET_FILE = "user_budget.csv"; // File for custom budgets
-    // TRANSACTIONS_FILE constant is no longer needed for direct reading
-
-    // Define the formatter consistent with TransactionService/TransactionModel timestamps
-    public static final DateTimeFormatter TRANSACTION_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm");
-
-    // Constants for budget logic
-    private static final double DEFAULT_SAVING_RATIO = 0.2;
-    private static final double ECONOMICAL_SAVING_INCREASE = 0.1;
+    private static final String BUDGET_FILE = "user_budget.csv";
+    private static final String TRANSACTIONS_FILE = "transactions.csv";
+    // 使用 DateTimeFormatterBuilder 创建可以解析两种格式的 formatter
+    public static final DateTimeFormatter DATE_FORMATTER = new DateTimeFormatterBuilder()
+            .appendPattern("yyyy/M/d")
+            .optionalStart()
+            .appendPattern(" HH:mm")
+            .optionalEnd()
+            .optionalStart()
+            .appendPattern(":ss")
+            .optionalEnd()
+            .toFormatter();
+    private static final double DEFAULT_SAVING_RATIO = 0.2; // 默认储蓄比例
+    private static final double ECONOMICAL_SAVING_INCREASE = 0.1; // 经济模式增加的储蓄比例
     private static final double LARGE_TRANSACTION_THRESHOLD = 1000;
-    private static final int LARGE_TRANSACTION_COUNT_THRESHOLD = 3; // Threshold for number of large expenses
-    private static final int LEARNING_MONTHS = 3; // Number of past months to analyze for patterns
-
-    // Cache for custom budgets read from BUDGET_FILE
+    private static final int LARGE_TRANSACTION_COUNT_THRESHOLD = 3;
+    private static final int LEARNING_MONTHS = 3;
     private static Map<String, Double> cachedCustomBudgets = new HashMap<>();
 
-    /**
-     * Represents the result of a budget calculation.
-     */
     public static class BudgetRecommendation {
         public final BudgetMode mode;
         public final double suggestedBudget;
         public final double suggestedSaving;
         public final String reason;
-        public final boolean hasPastData; // Flag indicating if enough historical data was available
+        public final boolean hasPastData; // Flag to indicate if past 3 months data exists
 
         public BudgetRecommendation(BudgetMode mode, double budget, double saving, String reason, boolean hasPastData) {
             this.mode = mode;
@@ -62,402 +52,379 @@ public class BudgetAdvisor {
             this.reason = reason;
             this.hasPastData = hasPastData;
         }
-
-        @Override
-        public String toString() { // Helpful for debugging
-             return String.format("BudgetRecommendation[Mode=%s, Budget=%.2f, Saving=%.2f, HasPastData=%b, Reason=%s]",
-                                  mode, suggestedBudget, suggestedSaving, hasPastData, reason);
-        }
     }
 
-    /**
-     * Represents the different budget modes determined by the advisor.
-     */
     public enum BudgetMode {
-        NORMAL("Normal Mode", "Consumption is stable and predictable."),
-        ECONOMICAL_UNSTABLE("Economical Mode", "Recent spending patterns were unstable."),
-        ECONOMICAL_FESTIVAL("Economical Mode", "Prepare for potential increased spending next month (shopping festival)."),
-        CUSTOM("Custom Mode", "Following your defined budget goal.");
-        // Add more modes if needed
+        NORMAL("Normal Mode", "Consumption is stable and predictable now."),
+        ECONOMICAL_UNSTABLE("Economical Mode", "Users' spending is unstable."),
+        ECONOMICAL_FESTIVAL("Economical Mode", "Next month is the shopping festival."),
+        CUSTOM("Custom Mode", "Following your defined budget.");
 
         private final String displayName;
         private final String reason;
 
-        BudgetMode(String name, String reason) { this.displayName = name; this.reason = reason; }
-        public String getDisplayName() { return displayName; }
-        public String getReason() { return reason; }
+        BudgetMode(String name, String reason) {
+            this.displayName = name;
+            this.reason = reason;
+        }
+
+        public String getDisplayName() {
+            return displayName;
+        }
+
+        public String getReason() {
+            return reason;
+        }
     }
 
-    /**
-     * Calculates a budget recommendation for the current user and date.
-     * Considers custom budgets first, then determines a mode and calculates
-     * suggested budget and savings based on transaction history via TransactionService.
-     *
-     * @param currentUser The username of the user.
-     * @param now The current date (used for monthly calculations).
-     * @return A BudgetRecommendation object. Returns default/fallback if data is unavailable.
-     */
     public static BudgetRecommendation calculateRecommendation(String currentUser, LocalDate now) {
-        if (currentUser == null || currentUser.trim().isEmpty()) {
-             System.err.println("ERROR: BudgetAdvisor - Cannot calculate recommendation for null or empty user.");
-             // Return a default/error state recommendation
-             return new BudgetRecommendation(BudgetMode.NORMAL, 0, 0, "User not specified.", false);
-        }
-
-        // 1. Check for Custom Budget
         Double customBudget = loadCustomBudget(currentUser);
+
         if (customBudget != null && customBudget >= 0) {
-            // If custom budget exists, calculate income to estimate potential saving against it
-            double totalIncomeThisMonth = calculateTotalIncomeForMonth(currentUser, now); // Uses TransactionService
-            System.out.println("DEBUG: BudgetAdvisor - Using custom budget: " + customBudget + " for user: " + currentUser);
-            return new BudgetRecommendation(BudgetMode.CUSTOM, customBudget, Math.max(0, totalIncomeThisMonth - customBudget), BudgetMode.CUSTOM.getReason(), false);
+            double totalIncomeThisMonth = calculateTotalIncomeForMonth(currentUser, now);
+            return new BudgetRecommendation(BudgetMode.CUSTOM, customBudget, Math.max(0, totalIncomeThisMonth - customBudget), BudgetMode.CUSTOM.getReason(), false); // hasPastData doesn't matter for custom
         }
 
-        System.out.println("DEBUG: BudgetAdvisor - Calculating recommended budget for user: " + currentUser);
-        // 2. Determine Budget Mode (based on spending stability and upcoming events)
-        BudgetMode mode = determineBudgetMode(currentUser, now); // Uses TransactionService via helper
-
-        // 3. Calculate Income and check historical data
-        double totalIncomeThisMonth = calculateTotalIncomeForMonth(currentUser, now); // Uses TransactionService
-        boolean hasPastData = hasSufficientPastData(currentUser, now); // Uses TransactionService via helper
-
-        // 4. Calculate Budget and Saving based on mode
+        BudgetMode mode = determineBudgetMode(currentUser, now);
+        double totalIncomeThisMonth = calculateTotalIncomeForMonth(currentUser, now);
+        System.out.println("四月份的总收入: " + totalIncomeThisMonth);
         double suggestedBudget;
         double suggestedSaving;
+        boolean hasPastData = hasSufficientPastData(currentUser, now);
 
         if (mode == BudgetMode.ECONOMICAL_UNSTABLE || mode == BudgetMode.ECONOMICAL_FESTIVAL) {
-            suggestedBudget = calculateEconomicalBudget(totalIncomeThisMonth);
+            suggestedBudget = calculateEconomicalBudget(currentUser, now, totalIncomeThisMonth);
+            suggestedSaving = Math.max(0, totalIncomeThisMonth - suggestedBudget);
         } else { // Normal Mode
             suggestedBudget = calculateNormalBudget(currentUser, now, totalIncomeThisMonth, hasPastData);
+            suggestedSaving = Math.max(0, totalIncomeThisMonth - suggestedBudget);
         }
-        // Ensure budget isn't negative (e.g., if income is zero)
-        suggestedBudget = Math.max(0, suggestedBudget);
-        // Calculate suggested saving based on calculated income and budget
-        suggestedSaving = Math.max(0, totalIncomeThisMonth - suggestedBudget);
+        System.out.println("当前月份总收入 (calculateRecommendation): " + totalIncomeThisMonth);
+        System.out.println("计算出的预算 (calculateRecommendation): " + suggestedBudget);
+        System.out.println("计算出的储蓄 (calculateRecommendation): " + suggestedSaving);
+        System.out.println("当前的预算模式 (calculateRecommendation): " + mode);
+        System.out.println("自定义预算 (calculateRecommendation): " + customBudget);
 
-        System.out.println("DEBUG: BudgetAdvisor - Recommendation: Mode=" + mode + ", Budget=" + suggestedBudget + ", Saving=" + suggestedSaving + ", Income=" + totalIncomeThisMonth + ", HasPast=" + hasPastData);
         return new BudgetRecommendation(mode, suggestedBudget, suggestedSaving, mode.getReason(), hasPastData);
     }
 
-    // --- Helper Methods using TransactionService ---
-
     private static BudgetMode determineBudgetMode(String currentUser, LocalDate now) {
-        // Check spending stability first
-        if (hasUnstableSpendingLastMonth(currentUser, now)) { // Uses TransactionService
+        if (hasUnstableSpendingLastMonth(currentUser, now)) {
             return BudgetMode.ECONOMICAL_UNSTABLE;
         }
-        // Check for upcoming shopping festivals
+        // 判断下个月是否是购物节月份
         if (isShoppingFestivalMonth(now.plusMonths(1))) {
             return BudgetMode.ECONOMICAL_FESTIVAL;
         }
-        // Default to Normal mode
         return BudgetMode.NORMAL;
     }
 
-    // Checks if next month is a designated shopping month
     private static boolean isShoppingFestivalMonth(LocalDate date) {
         Month month = date.getMonth();
-        // Example shopping months
         return month == Month.MARCH || month == Month.JUNE || month == Month.NOVEMBER || month == Month.DECEMBER;
     }
 
-    // Calculates budget for Normal mode, using past consumption ratio if available
     private static double calculateNormalBudget(String currentUser, LocalDate now, double totalIncomeThisMonth, boolean hasPastData) {
         double consumptionRatio;
         if (hasPastData) {
-            consumptionRatio = calculateAverageConsumptionRatio(currentUser, now); // Uses TransactionService
-            System.out.println("DEBUG: BudgetAdvisor - Using average consumption ratio: " + consumptionRatio);
+            consumptionRatio = calculateAverageConsumptionRatio(currentUser, now);
+            System.out.println("计算出的消费比例: " + consumptionRatio);
         } else {
-            consumptionRatio = (1 - DEFAULT_SAVING_RATIO); // Default if no history
-             System.out.println("DEBUG: BudgetAdvisor - Using default consumption ratio: " + consumptionRatio);
+            consumptionRatio = (1 - DEFAULT_SAVING_RATIO);
+            System.out.println("使用的默认消费比例: " + consumptionRatio + " (DEFAULT_SAVING_RATIO: " + DEFAULT_SAVING_RATIO + ")");
         }
-
-        // Ensure ratio is reasonable (e.g., between 0 and 1, or apply other logic)
-        if (consumptionRatio <= 0 || consumptionRatio > 1.5) { // Example bounds check
-             System.out.println("DEBUG: BudgetAdvisor - Consumption ratio out of bounds (" + consumptionRatio + "), using fallback.");
-             consumptionRatio = (1 - DEFAULT_SAVING_RATIO); // Use default if calculated ratio is strange
-        }
-
         return totalIncomeThisMonth * consumptionRatio;
     }
 
-    // Calculates budget for Economical modes (simply increases saving ratio)
-    private static double calculateEconomicalBudget(double totalIncomeThisMonth) {
-        double savingRatio = DEFAULT_SAVING_RATIO + ECONOMICAL_SAVING_INCREASE;
-         System.out.println("DEBUG: BudgetAdvisor - Using economical saving ratio: " + savingRatio);
-        return totalIncomeThisMonth * (1 - savingRatio);
+    private static double calculateEconomicalBudget(String currentUser, LocalDate now, double totalIncomeThisMonth) {
+        return totalIncomeThisMonth * (1 - (DEFAULT_SAVING_RATIO + ECONOMICAL_SAVING_INCREASE)); // Increase saving
     }
 
-    // Calculates average expense-to-income ratio over the last LEARNING_MONTHS
     private static double calculateAverageConsumptionRatio(String currentUser, LocalDate now) {
-        double totalRatioSum = 0;
-        int monthsCounted = 0;
-
-        for (int i = 1; i <= LEARNING_MONTHS; i++) {
-            LocalDate monthDate = now.minusMonths(i);
-            // Get income and expense for that specific month using helpers
-            double monthlyIncome = calculateTotalIncomeForMonth(currentUser, monthDate); // Uses TransactionService
-            double monthlyExpense = calculateTotalExpenseForMonth(currentUser, monthDate); // Uses TransactionService
-
-            // Only include month if there was income to calculate a ratio
-            if (monthlyIncome > 0) {
-                totalRatioSum += (monthlyExpense / monthlyIncome);
-                monthsCounted++;
-                 System.out.println("DEBUG: BudgetAdvisor - Ratio for " + monthDate.getMonth() + ": " + (monthlyExpense / monthlyIncome));
-            } else {
-                 System.out.println("DEBUG: BudgetAdvisor - Skipping ratio calc for " + monthDate.getMonth() + " (Income <= 0)");
-            }
-        }
-
-        if (monthsCounted > 0) {
-            return totalRatioSum / monthsCounted;
-        } else {
-             System.out.println("DEBUG: BudgetAdvisor - No valid past months found for ratio calculation.");
-            return 0; // Or return default ratio (1 - DEFAULT_SAVING_RATIO)
-        }
-    }
-
-    // Checks if there is income data for the required number of past months
-    private static boolean hasSufficientPastData(String currentUser, LocalDate now) {
+        double totalConsumptionRatio = 0;
         int validMonths = 0;
         for (int i = 1; i <= LEARNING_MONTHS; i++) {
-            LocalDate monthDate = now.minusMonths(i);
-            // Check income for the month using the helper
-            if (calculateTotalIncomeForMonth(currentUser, monthDate) > 0) { // Uses TransactionService
+            LocalDate month = now.minusMonths(i);
+            double totalIncome = calculateTotalIncomeForMonth(currentUser, month);
+            double totalExpense = calculateTotalExpenseForMonth(currentUser, month);
+            if (totalIncome > 0) {
+                totalConsumptionRatio += (totalExpense / totalIncome);
                 validMonths++;
             }
         }
-        return validMonths >= LEARNING_MONTHS; // Check if we have data for ALL required months
+        if (validMonths > 0) {
+            return totalConsumptionRatio / validMonths;
+        }
+        return (1 - DEFAULT_SAVING_RATIO); // Default to default consumption ratio if no history
     }
 
-    // Checks for unstable spending (multiple large expenses) in the last month
-    private static boolean hasUnstableSpendingLastMonth(String currentUser, LocalDate now) {
-        LocalDate lastMonthStart = now.minusMonths(1).withDayOfMonth(1);
-        LocalDate lastMonthEnd = now.withDayOfMonth(1).minusDays(1); // End of last month
-
-        List<TransactionData> allUserTransactions = TransactionService.readTransactions(currentUser);
-        if (allUserTransactions == null) return false; // Service failed or no transactions
-
-        int largeExpenseCount = 0;
-        for (TransactionData tx : allUserTransactions) {
-            if ("Expense".equalsIgnoreCase(tx.getOperation())) { // Check for Expense type
-                try {
-                    LocalDateTime transactionDateTime = LocalDateTime.parse(tx.getTime().trim(), TRANSACTION_TIME_FORMATTER);
-                    LocalDate transactionDate = transactionDateTime.toLocalDate();
-
-                    // Check if date is within the last month
-                    if (!transactionDate.isBefore(lastMonthStart) && !transactionDate.isAfter(lastMonthEnd)) {
-                        // Check if amount exceeds threshold
-                        if (tx.getAmount() > LARGE_TRANSACTION_THRESHOLD) {
-                            largeExpenseCount++;
-                        }
-                    }
-                } catch (DateTimeParseException e) {
-                    System.err.println("BudgetAdvisor (Unstable Check): Skipping transaction due to date parse error: " + tx.getTime());
-                } catch (Exception e) {
-                     System.err.println("BudgetAdvisor (Unstable Check): Error processing transaction: " + tx + " | Error: " + e.getMessage());
-                }
+    private static boolean hasSufficientPastData(String currentUser, LocalDate now) {
+        int validMonths = 0;
+        for (int i = 1; i <= LEARNING_MONTHS; i++) {
+            LocalDate month = now.minusMonths(i);
+            double totalIncome = calculateTotalIncomeForMonth(currentUser, month);
+            if (totalIncome > 0) {
+                validMonths++;
             }
         }
-        System.out.println("DEBUG: BudgetAdvisor - Large expenses last month: " + largeExpenseCount);
-        // Check if the count meets the threshold
-        return largeExpenseCount >= LARGE_TRANSACTION_COUNT_THRESHOLD;
+        return validMonths == LEARNING_MONTHS;
     }
 
-    // --- Calculates total income for a given month using TransactionService ---
+    private static boolean hasUnstableSpendingLastMonth(String currentUser, LocalDate now) {
+        LocalDate lastMonthStart = now.minusMonths(1).withDayOfMonth(1);
+        LocalDate lastMonthEnd = now.minusMonths(1).withDayOfMonth(now.minusMonths(1).lengthOfMonth());
+        List<Double> lastMonthWithdrawals = getMonthlyWithdrawals(currentUser, lastMonthStart, lastMonthEnd);
+        if (lastMonthWithdrawals.size() >= LARGE_TRANSACTION_COUNT_THRESHOLD) {
+            int largeTransactionCount = 0;
+            for (double amount : lastMonthWithdrawals) {
+                if (Math.abs(amount) > LARGE_TRANSACTION_THRESHOLD) {
+                    largeTransactionCount++;
+                }
+            }
+            return largeTransactionCount >= LARGE_TRANSACTION_COUNT_THRESHOLD;
+        }
+        return false;
+    }
+
+    private static List<Double> getMonthlyWithdrawals(String username, LocalDate start, LocalDate end) {
+        List<Double> withdrawals = new ArrayList<>();
+        List<TransactionService.TransactionData> transactions = TransactionService.readTransactions(username);
+        if (transactions == null) return withdrawals;
+        for (TransactionService.TransactionData tx : transactions) {
+            try {
+                // 使用新的 DATE_FORMATTER 解析日期和时间
+                LocalDate transactionDate = LocalDate.parse(tx.time, DATE_FORMATTER);
+                if (!transactionDate.isBefore(start) && !transactionDate.isAfter(end) &&
+                        tx.operation.equalsIgnoreCase("Expense")) {
+                    withdrawals.add(tx.amount);
+                }
+            } catch (DateTimeParseException e) {
+                System.err.println("日期解析错误 (getMonthlyWithdrawals): " + tx.time + " - " + e.getMessage());
+            }
+        }
+        return withdrawals;
+    }
+
     private static double calculateTotalIncomeForMonth(String currentUser, LocalDate date) {
+        System.out.println("BudgetAdvisor.calculateTotalIncomeForMonth - date: " + date);
         LocalDate firstDayOfMonth = date.withDayOfMonth(1);
         LocalDate lastDayOfMonth = date.withDayOfMonth(date.lengthOfMonth());
         double totalIncome = 0.0;
+        List<TransactionService.TransactionData> transactions = TransactionService.readTransactions(currentUser);
+        if (transactions == null) {
+            System.out.println("警告: 未找到用户 " + currentUser + " 的交易记录。");
+            return 0.0;
+        }
+        System.out.println("正在计算用户 " + currentUser + " " + date.getMonth() + " 月的收入...");
+        // 打印返回的交易记录的用户名
+        System.out.println("---- 返回的交易记录 (用户): ----");
+        for (TransactionService.TransactionData tx : transactions) {
+            System.out.println("  用户: " + tx.username + ", 时间: " + tx.time + ", 操作: " + tx.operation + ", 金额: " + tx.amount);
+        }
+        System.out.println("---- 结束 ----");
 
-        List<TransactionData> allUserTransactions = TransactionService.readTransactions(currentUser);
-         if (allUserTransactions == null) return 0.0; // Handle service error
-
-        for (TransactionData tx : allUserTransactions) {
-            if ("Income".equalsIgnoreCase(tx.getOperation())) { // Check for Income type
-                try {
-                    LocalDateTime transactionDateTime = LocalDateTime.parse(tx.getTime().trim(), TRANSACTION_TIME_FORMATTER);
-                    LocalDate transactionDate = transactionDateTime.toLocalDate();
-                    if (!transactionDate.isBefore(firstDayOfMonth) && !transactionDate.isAfter(lastDayOfMonth)) {
-                        totalIncome += tx.getAmount();
-                    }
-                } catch (DateTimeParseException e) {
-                     System.err.println("BudgetAdvisor (Income Calc): Skipping transaction due to date parse error: " + tx.getTime());
-                } catch (Exception e) {
-                     System.err.println("BudgetAdvisor (Income Calc): Error processing transaction: " + tx + " | Error: " + e.getMessage());
+        for (TransactionService.TransactionData tx : transactions) {
+            try {
+                // 使用新的 DATE_FORMATTER 解析日期和时间
+                LocalDate transactionDate = LocalDate.parse(tx.time, DATE_FORMATTER);
+                if (tx.operation.equalsIgnoreCase("Income") &&
+                        !transactionDate.isBefore(firstDayOfMonth) && !transactionDate.isAfter(lastDayOfMonth)){
+                    totalIncome += tx.amount;
                 }
+            } catch (DateTimeParseException e) {
+                System.err.println("日期解析错误 (calculateTotalIncomeForMonth): " + tx.time + " - " + e.getMessage());
             }
         }
+        System.out.println(date.getMonth() + " 月的总收入计算结果: " + totalIncome);
         return totalIncome;
     }
 
-    // --- Calculates total expense for a given month using TransactionService ---
     private static double calculateTotalExpenseForMonth(String currentUser, LocalDate date) {
         LocalDate firstDayOfMonth = date.withDayOfMonth(1);
         LocalDate lastDayOfMonth = date.withDayOfMonth(date.lengthOfMonth());
         double totalExpense = 0.0;
-
-        List<TransactionData> allUserTransactions = TransactionService.readTransactions(currentUser);
-         if (allUserTransactions == null) return 0.0; // Handle service error
-
-        for (TransactionData tx : allUserTransactions) {
-            if ("Expense".equalsIgnoreCase(tx.getOperation())) { // Check for Expense type
-                try {
-                    LocalDateTime transactionDateTime = LocalDateTime.parse(tx.getTime().trim(), TRANSACTION_TIME_FORMATTER);
-                    LocalDate transactionDate = transactionDateTime.toLocalDate();
-                    if (!transactionDate.isBefore(firstDayOfMonth) && !transactionDate.isAfter(lastDayOfMonth)) {
-                        totalExpense += tx.getAmount(); // Amount is positive expense value
-                    }
-                } catch (DateTimeParseException e) {
-                     System.err.println("BudgetAdvisor (Expense Calc): Skipping transaction due to date parse error: " + tx.getTime());
-                } catch (Exception e) {
-                     System.err.println("BudgetAdvisor (Expense Calc): Error processing transaction: " + tx + " | Error: " + e.getMessage());
+        List<TransactionService.TransactionData> transactions = TransactionService.readTransactions(currentUser);
+        if (transactions == null) return 0.0;
+        for (TransactionService.TransactionData tx : transactions) {
+            try {
+                // 使用新的 DATE_FORMATTER 解析日期和时间
+                LocalDate transactionDate = LocalDate.parse(tx.time, DATE_FORMATTER);
+                if (tx.operation.equalsIgnoreCase("Expense") &&
+                        !transactionDate.isBefore(firstDayOfMonth) && !transactionDate.isAfter(lastDayOfMonth)) {
+                    totalExpense += Math.abs(tx.amount);
                 }
+            } catch (DateTimeParseException e) {
+                // Handle parsing errors if necessary
             }
         }
         return totalExpense;
     }
 
-    // --- Custom Budget File Handling (Remains the same, operates on user_budget.csv) ---
-
     private static Double loadCustomBudget(String username) {
         if (cachedCustomBudgets.containsKey(username)) {
             return cachedCustomBudgets.get(username);
         }
-        // Ensure file exists and potentially has headers if needed
-        ensureBudgetFileExists(); // Add helper to ensure file exists
-
         try (BufferedReader br = new BufferedReader(new FileReader(BUDGET_FILE))) {
             String line;
-            // Optional: Skip header if your budget file has one
-            // br.readLine();
             while ((line = br.readLine()) != null) {
-                if (line.trim().isEmpty()) continue;
-                String[] parts = line.split(",", -1); // Allow empty budget value if needed
-                if (parts.length == 2 && parts[0].trim().equals(username)) {
-                    try {
-                        // Handle potential empty string for budget value if allowed
-                        if (parts[1].trim().isEmpty()) {
-                             System.out.println("DEBUG: BudgetAdvisor - Empty budget value found for user: " + username);
-                             return null; // Or handle as 0? Define behavior.
-                        }
-                        double budget = Double.parseDouble(parts[1].trim());
-                        cachedCustomBudgets.put(username, budget);
-                        return budget;
-                    } catch (NumberFormatException e) {
-                         System.err.println("Error parsing budget amount for user " + username + " in file: " + line);
-                         // Decide whether to return null or skip the line
-                         return null;
-                    }
+                String[] parts = line.split(",");
+                if (parts.length == 2 && parts[0].trim().equals(username.trim())) {
+                    double budget = Double.parseDouble(parts[1].trim());
+                    cachedCustomBudgets.put(username, budget);
+                    return budget;
                 }
             }
         } catch (IOException e) {
             System.err.println("Error reading budget file: " + e.getMessage());
+        } catch (NumberFormatException e) {
+            System.err.println("Error parsing budget amount in file.");
         }
-        return null; // Return null if user not found or error occurred
+        return null;
     }
 
     public static void saveCustomBudget(String username, double budget) {
-        ensureBudgetFileExists(); // Ensure file exists before writing
-        // Update cache first
         cachedCustomBudgets.put(username, budget);
-        // Read existing budgets to rewrite the file (safer than assuming cache is complete)
-        Map<String, Double> allBudgets = loadAllBudgets();
-        allBudgets.put(username, budget); // Ensure the new/updated budget is in the map
-
-        // Rewrite the entire file
-        try (FileWriter fw = new FileWriter(BUDGET_FILE, false); // false = Overwrite
+        try (FileWriter fw = new FileWriter(BUDGET_FILE, false); // Overwrite for simplicity
              java.io.BufferedWriter bw = new java.io.BufferedWriter(fw)) {
-            // Optional: Write header if needed
-            // bw.write("username,budget"); bw.newLine();
-            for (Map.Entry<String, Double> entry : allBudgets.entrySet()) {
+            for (Map.Entry<String, Double> entry : cachedCustomBudgets.entrySet()) {
                 bw.write(entry.getKey() + "," + String.format("%.2f", entry.getValue()));
                 bw.newLine();
             }
-             System.out.println("DEBUG: BudgetAdvisor - Saved custom budget for " + username);
         } catch (IOException e) {
             System.err.println("Error writing to budget file: " + e.getMessage());
-            // Optionally inform user
-            JOptionPane.showMessageDialog(null, "Error saving custom budget.", "Save Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
     public static void clearCustomBudget(String username) {
-        ensureBudgetFileExists();
-        // Update cache
         cachedCustomBudgets.remove(username);
-         // Read existing budgets, remove the user, and rewrite
-         Map<String, Double> allBudgets = loadAllBudgets();
-         allBudgets.remove(username); // Remove the user's entry
-
-        // Rewrite the file without the cleared user
         try (FileWriter fw = new FileWriter(BUDGET_FILE, false);
              java.io.BufferedWriter bw = new java.io.BufferedWriter(fw)) {
-             // Optional: Write header
-             // bw.write("username,budget"); bw.newLine();
-            for (Map.Entry<String, Double> entry : allBudgets.entrySet()) {
+            for (Map.Entry<String, Double> entry : cachedCustomBudgets.entrySet()) {
                 bw.write(entry.getKey() + "," + String.format("%.2f", entry.getValue()));
                 bw.newLine();
             }
-             System.out.println("DEBUG: BudgetAdvisor - Cleared custom budget for " + username);
         } catch (IOException e) {
             System.err.println("Error writing to budget file when clearing: " + e.getMessage());
-             JOptionPane.showMessageDialog(null, "Error clearing custom budget.", "Save Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
-    // Public getter remains the same
     public static Double getCustomBudget(String username) {
         return loadCustomBudget(username);
     }
 
-    // Helper to load all budgets from file (used for save/clear)
-    private static Map<String, Double> loadAllBudgets() {
-         Map<String, Double> allBudgets = new HashMap<>();
-         ensureBudgetFileExists();
-         try (BufferedReader br = new BufferedReader(new FileReader(BUDGET_FILE))) {
-            String line;
-            // Optional: Skip header
-            // br.readLine();
-            while ((line = br.readLine()) != null) {
-                if (line.trim().isEmpty()) continue;
-                String[] parts = line.split(",", -1);
-                if (parts.length == 2 && !parts[0].trim().isEmpty()) {
-                     try {
-                         if (!parts[1].trim().isEmpty()) {
-                             allBudgets.put(parts[0].trim(), Double.parseDouble(parts[1].trim()));
-                         }
-                    } catch (NumberFormatException e) {
-                         System.err.println("Skipping budget line due to parse error: " + line);
-                    }
-                }
-            }
-        } catch (IOException e) {
-            System.err.println("Error loading all budgets: " + e.getMessage());
+    // --- Methods for UI Display ---
+
+    public static String getCurrentBudget(String username, LocalDate now) {
+        Double customBudget = loadCustomBudget(username);
+        if (customBudget != null) {
+            return String.format("¥%.2f", customBudget);
         }
-        return allBudgets;
+        BudgetRecommendation recommendation = calculateRecommendation(username, now);
+        return String.format("¥%.2f", recommendation.suggestedBudget);
     }
 
-     // Helper to ensure budget file exists (similar to ensureFileExists in AdminUI/TransactionService)
-    private static void ensureBudgetFileExists() {
-        File file = new File(BUDGET_FILE);
-        if (!file.exists()) {
+    public static String getSavingGoal(String username, LocalDate now) {
+        BudgetRecommendation recommendation = calculateRecommendation(username, now);
+        return String.format("¥%.2f", recommendation.suggestedSaving);
+    }
+
+    public static String getBudgetMode(String username, LocalDate now) {
+        Double customBudget = loadCustomBudget(username);
+        if (customBudget != null) {
+            return BudgetMode.CUSTOM.getDisplayName();
+        }
+        return calculateRecommendation(username, now).mode.getDisplayName();
+    }
+
+    public static String getBudgetReason(String username, LocalDate now) {
+        Double customBudget = loadCustomBudget(username);
+        if (customBudget != null) {
+            return BudgetMode.CUSTOM.getReason();
+        }
+        return calculateRecommendation(username, now).reason;
+    }
+
+    public static BudgetRecommendation getViewSuggestionDetails(String username, LocalDate now) {
+        return calculateRecommendation(username, now);
+    }
+
+    public static String getTopSpendingCategory(String username, LocalDate now) {
+        Map<String, Double> categoryTotals = new HashMap<>();
+        List<TransactionService.TransactionData> transactions = TransactionService.readTransactions(username);
+        if (transactions == null) return "N/A";
+
+        LocalDate firstDayOfMonth = now.withDayOfMonth(1);
+        LocalDate lastDayOfMonth = now.withDayOfMonth(now.lengthOfMonth());
+
+        for (TransactionService.TransactionData tx : transactions) {
             try {
-                if (file.createNewFile()) {
-                    System.out.println("Created new file: " + BUDGET_FILE);
-                    // Optional: Write header if your budget file needs one
-                    // try (BufferedWriter bw = new BufferedWriter(new FileWriter(file))) {
-                    //     bw.write("username,budget");
-                    //     bw.newLine();
-                    // }
+                LocalDate transactionDate = LocalDate.parse(tx.time, DATE_FORMATTER);
+                if (tx.operation.equalsIgnoreCase("Expense") &&
+                        !transactionDate.isBefore(firstDayOfMonth) && !transactionDate.isAfter(lastDayOfMonth) &&
+                        tx.category != null && !tx.category.trim().isEmpty()) {
+                    categoryTotals.put(tx.category.trim(), categoryTotals.getOrDefault(tx.category.trim(), 0.0) + Math.abs(tx.amount));
+                } else if (tx.operation.equalsIgnoreCase("Expense") &&
+                        !transactionDate.isBefore(firstDayOfMonth) && !transactionDate.isAfter(lastDayOfMonth)) {
+                    categoryTotals.put("Unclassified", categoryTotals.getOrDefault("Unclassified", 0.0) + Math.abs(tx.amount));
                 }
-            } catch (IOException e) {
-                System.err.println("Error creating budget file " + BUDGET_FILE + ": " + e.getMessage());
+            } catch (DateTimeParseException e) {
+                // Handle parsing errors if necessary
             }
         }
+
+        return categoryTotals.entrySet().stream()
+                .max(Map.Entry.comparingByValue())
+                .map(Map.Entry::getKey)
+                .orElse("N/A");
     }
 
-    // Remove the old inner Transaction class - use TransactionData from TransactionService instead
-    // public static class Transaction { ... }
+    public static List<String> getLargeConsumptions(String username, LocalDate now) {
+        List<String> largeConsumptions = new ArrayList<>();
+        List<TransactionService.TransactionData> transactions = TransactionService.readTransactions(username);
+        if (transactions == null) return largeConsumptions;
 
-} // End of BudgetAdvisor class
+        double currentMonthIncome = calculateTotalIncomeForMonth(username, now);
+        double largeThreshold = currentMonthIncome * 0.07; // 7% of income
+        DateTimeFormatter displayFormatter = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+        LocalDate firstDayOfMonth = now.withDayOfMonth(1);
+        LocalDate lastDayOfMonth = now.withDayOfMonth(now.lengthOfMonth());
+
+        for (TransactionService.TransactionData tx : transactions) {
+            try {
+                LocalDate transactionDate = LocalDate.parse(tx.time, DATE_FORMATTER);
+                if (tx.operation.equalsIgnoreCase("Expense") &&
+                        !transactionDate.isBefore(firstDayOfMonth) && !transactionDate.isAfter(lastDayOfMonth) &&
+                        Math.abs(tx.amount) > largeThreshold) {
+                    String formattedDate = tx.time;
+                    largeConsumptions.add(String.format("%s - ¥%.2f - %s", formattedDate, Math.abs(tx.amount), tx.type));
+                }
+            } catch (DateTimeParseException e) {
+                // Handle parsing errors if necessary
+            }
+        }
+        return largeConsumptions;
+    }
+
+    public static String getCurrentMonthExpenditure(String username, LocalDate now) {
+        double expenditure = calculateTotalExpenseForMonth(username, now);
+        return String.format("¥%.2f", expenditure);
+    }
+
+    public static String getBudgetStatus(String username, LocalDate now) {
+        double budget = 0;
+        Double customBudget = loadCustomBudget(username);
+        if (customBudget != null) {
+            budget = customBudget;
+        } else {
+            budget = calculateRecommendation(username, now).suggestedBudget;
+        }
+        double expenditure = calculateTotalExpenseForMonth(username, now);
+        double difference = budget - expenditure;
+
+        if (difference < 0) {
+            return String.format("Overspent by: ¥%.2f", Math.abs(difference));
+        } else {
+            return String.format("Distance to the budget: ¥%.2f", difference);
+        }
+    }
+}

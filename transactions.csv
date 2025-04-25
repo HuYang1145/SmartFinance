@@ -219,7 +219,29 @@ user,operation,amount,time,merchant,type,remark,category,payment_method,location
 2,Expense,65.00,2025/04/19,Restaurant,Food,"Lunch with colleagues","Food-Dining","WeChat Pay","In-store","Essential","[Attachment: Receipt]","Non-recurring"
 2,Expense,45.00,2025/04/21,Transport Authority,Transport,"Train fare","Transport-Public","Credit Card","Offline","Essential","[Attachment: Ticket]","Non-recurring"
 2,Expense,50.00,2025/04/24,Spotify,Entertainment,"Music subscription","Entertainment-Subscription","Credit Card","Online","Essential","[Attachment: Receipt]","Recurring"
-2,Expense,88.00,2025/04/29,Restaurant,Food,"Impulse takeout","Food-Takeout","WeChat Pay","Online","Treat","[Attachment: Receipt]","Non-recurring"2,Expense,20.00,2025/04/21 18:12,bupt,Education,Education,Education,Education,Education,Education,Education,Education
+2,Expense,88.00,2025/04/29,Restaurant,Food,"Impulse takeout","Food-Takeout","WeChat Pay","Online","Treat","[Attachment: Receipt]","Non-recurring"
+2,Expense,20.00,2025/04/21 18:12,bupt,Education,Education,Education,Education,Education,Education,Education,Education
 yaqi,Income,1000.00,2025/04/21 18:19,I,I,1,1,1,1,1,1,1
 yaqi,Expense,20.00,2025/04/21 18:19,bupt,Food,Food,Food,Food,Food,Food,Food,Food
 yaqi,Expense,30.00,2025/04/21 18:19,ali,Shopping,Shopping,Shopping,Shopping,Shopping,Shopping,Shopping,Shopping
+BigSpenderBob,Income,10000.00,2025/05/02 09:00,Employer,Salary,"May Salary","Income-Salary","Bank Transfer","Online","Income","Payslip.pdf","Non-recurring"
+BigSpenderBob,Expense,150.00,2025/05/03 12:30,Restaurant,Food,"Lunch out","Food-Dining","Credit Card","In-store","Treat","Receipt.jpg","Non-recurring"
+BigSpenderBob,Expense,200.00,2025/05/04 18:00,Amazon,Shopping,"Gadget","Shopping-Electronics","Credit Card","Online","Non-essential","Invoice.pdf","Non-recurring"
+BigSpenderBob,Expense,3500.00,2025/05/05 15:00,Luxury Store,Shopping,"Designer Watch","Shopping-Luxury","Credit Card","In-store","Treat","AuthCard.jpg","Non-recurring"
+BigSpenderBob,Expense,50.00,2025/05/06 08:00,Metro,Transport,"Commute ticket","Transport-Public","Cash","Offline","Essential","Ticket.png","Recurring"
+AverageJane,Expense,5000.00,2025/05/02 09:30,Company ABC,Salary,"May Salary","Income-Salary","Bank Transfer","Online","Income","Payslip.pdf","Non-recurring"
+AverageJane,Expense,100.00,2025/05/03 19:00,Supermarket,Food,"Groceries","Food-Groceries","Debit Card","In-store","Essential","Receipt.jpg","Recurring"
+AverageJane,Expense,80.00,2025/05/04 07:45,Gas Station,Transport,"Fuel","Transport-Car","Credit Card","Offline","Essential","Receipt.jpg","Recurring"
+AverageJane,Expense,120.00,2025/05/05 16:00,Online Retailer,Shopping,"Books","Shopping-Books","Credit Card","Online","Non-essential","Invoice.pdf","Non-recurring"
+AverageJane,Expense,150.00,2025/05/06 20:00,Cinema,Entertainment,"Movie night","Entertainment-Movies","Debit Card","In-store","Treat","Ticket.png","Non-recurring"
+AverageJane,Expense,90.00,2025/05/07 10:00,Utility Co,Utilities,"Electricity Bill","Housing-Utilities","Bank Transfer","Online","Essential","Bill.pdf","Recurring"
+AverageJane,Expense,400.00,2025/05/08 11:00,Airline,Travel,"Weekend flight","Travel-Flights","Credit Card","Online","Non-essential","BookingRef.txt","Non-recurring"
+AverageJane,Expense,110.00,2025/05/09 12:00,Cafe,Food,"Lunch","Food-Dining","Cash","In-store","Essential","Receipt.jpg","Non-recurring"
+RapidFireRita,Income,15000.00,2025/05/02 10:00,Tech Corp,Salary,"May Salary","Income-Salary","Bank Transfer","Online","Income","Payslip.pdf","Non-recurring"
+RapidFireRita,Expense,1100.00,2025/05/10 10:00,Apple Store,Electronics,"New Laptop","Shopping-Electronics","Credit Card","In-store","Non-essential","Receipt.jpg","Non-recurring"
+RapidFireRita,Expense,1200.00,2025/05/10 11:30,IKEA,Furniture,"Desk and Chair","Shopping-Household","Credit Card","In-store","Essential","Receipt.jpg","Non-recurring"
+RapidFireRita,Expense,1050.00,2025/05/10 14:15,Fashion Boutique,Shopping,"Designer Dress","Shopping-Apparel","Credit Card","In-store","Treat","Receipt.jpg","Non-recurring"
+RapidFireRita,Expense,1300.00,2025/05/10 16:45,Expedia,Travel,"Vacation Package Deposit","Travel-Package","Credit Card","Online","Non-essential","BookingConf.pdf","Non-recurring"
+RapidFireRita,Expense,50.00,2025/05/11 12:00,Grocery Store,Food,"Snacks","Food-Groceries","Debit Card","In-store","Essential","Receipt.jpg","Non-recurring"
+2,Income,1000.00,2025/04/23 01:08,I,I,,u,,,,,
+2,Expense,100.00,2025/04/23 01:08,Luckin,Food,,u,,,,,

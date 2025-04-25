@@ -7,6 +7,7 @@ import javax.swing.*;
 import javax.swing.border.AbstractBorder;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
+import javax.swing.plaf.basic.BasicScrollBarUI;
 import javax.swing.text.JTextComponent;
 import java.awt.*;
 import java.awt.event.FocusAdapter;
@@ -390,7 +391,7 @@ public class AccountManagementUI extends JFrame {
         p.add(emailField, gbc);
 
         // Gender 下拉
-        RoundedComboBox<String> genderBox = new RoundedComboBox<>(new String[]{"Male", "Female"});
+        RoundedComboBox<String> genderBox = new RoundedComboBox<>(new String[]{"Male","Female"});
         gbc.gridy = 5;
         p.add(genderBox, gbc);
 
@@ -445,8 +446,61 @@ public class AccountManagementUI extends JFrame {
         scroll.setBorder(null);
         scroll.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         scroll.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
-        // 保持背景一致
         scroll.getViewport().setBackground(panel.getBackground());
+
+        // 垂直滚动条
+        JScrollBar bar = scroll.getVerticalScrollBar();
+        bar.setUnitIncrement(16);
+        bar.setUI(new BasicScrollBarUI() {
+            // 拖块
+            @Override protected void configureScrollBarColors() {
+                this.thumbColor = new Color(156,39,176);
+                this.trackColor = new Color(40,100,250);
+            }
+            // 无按钮
+            @Override protected JButton createDecreaseButton(int orientation) {
+                return createZeroButton();
+            }
+            @Override protected JButton createIncreaseButton(int orientation) {
+                return createZeroButton();
+            }
+            private JButton createZeroButton() {
+                JButton btn = new JButton();
+                btn.setPreferredSize(new Dimension(0,0));
+                btn.setMinimumSize(new Dimension(0,0));
+                btn.setMaximumSize(new Dimension(0,0));
+                return btn;
+            }
+            // 拖块圆角
+            @Override protected void paintThumb(Graphics g, JComponent c, Rectangle thumbBounds) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                g2.setColor(thumbColor);
+                g2.fillRoundRect(
+                        thumbBounds.x,
+                        thumbBounds.y,
+                        thumbBounds.width,
+                        thumbBounds.height,
+                        10, 10
+                );
+                g2.dispose();
+            }
+            // 不画轨道
+            @Override protected void paintTrack(Graphics g, JComponent c, Rectangle trackBounds) {
+                // 留空，或者画半透明背景：
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setColor(new Color(255,255,255,50));
+                g2.fillRoundRect(
+                        trackBounds.x,
+                        trackBounds.y,
+                        trackBounds.width,
+                        trackBounds.height,
+                        10, 10
+                );
+                g2.dispose();
+            }
+        });
+
         return scroll;
     }
 

@@ -1,37 +1,42 @@
 package UI;
 
-
 import AccountModel.TransactionService;
-import AccountModel.TransactionService.TransactionData;
+// import AccountModel.TransactionService.TransactionData; // Not used directly in this snippet of Code 1
 import AccountModel.UserSession;
-import PersonModel.ExpenseDialog;
-import PersonModel.IncomeDialog;
+// import PersonModel.ExpenseDialog; // Not used directly in this snippet of Code 1
+// import PersonModel.IncomeDialog; // Not used directly in this snippet of Code 1
 import PersonModel.IncomeExpenseChart;
 import UI.AccountManagementUI.RoundBorder;
+// --- Added Import for the new panel ---
+import UI.HoroscopePanel; // <<< MODIFICATION: Added import for the new panel (assuming package UI)
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.plaf.basic.BasicComboBoxUI;
+import javax.swing.table.DefaultTableCellRenderer; // Not used directly in this snippet of Code 1
 import java.awt.*;
 import java.awt.event.*;
-import UI.RoundedInputField.*;
+import java.util.Calendar;
+import java.util.List; // Explicit import for List
 
-import static PersonModel.IncomeExpenseChart.filterByYearMonth;
-// --- Added Import from Code Two for Budget Management ---
+import UI.RoundedInputField.*; // Assuming GradientLabel is here as per Code 1 reference in createSidebar
+
+// import static PersonModel.IncomeExpenseChart.filterByYearMonth; // Not used directly in this snippet of Code 1
 
 
 public class PersonalMainPlane extends JFrame {
     private JPanel contentPanel;
     private CardLayout cardLayout;
     private String username;
-    private Component chartPanel;
+    private Component chartPanel; // Kept from Code 1
+    // Using java.util.List explicitly as in Code 1
     private final java.util.List<NavItemPanel> navItems = new java.util.ArrayList<>();
 
 
     public PersonalMainPlane(String username) {
         this.username = username;
         setTitle("Smart Finance - Personal Dashboard");
-        setSize(1920, 1080); // Keep original size
+        setSize(1920, 1080); // Keep original size from Code 1
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLayout(new BorderLayout());
@@ -49,52 +54,103 @@ public class PersonalMainPlane extends JFrame {
         mainPanel.add(contentPanel, BorderLayout.CENTER);
 
         initializeContentPanels();
-        cardLayout.show(contentPanel, "Personal Center"); // Keep original default view behavior (implicit or explicit)
+        // Keep original default view behavior from Code 1
+        // Code 1 *did* explicitly show "Personal Center" in the provided snippet, let's retain that
+        cardLayout.show(contentPanel, "Personal Center");
+
+        // Ensure the corresponding nav item is selected if "Personal Center" is default
+        // This part might need adjustment based on how selection was originally intended in Code 1,
+        // but we'll add basic selection sync based on the explicit show() call above.
+        for(NavItemPanel item : navItems) {
+            if(item.name.equals("Personal Center")) {
+                item.setSelected(true);
+            } else {
+                // Ensure others aren't selected by default if logic wasn't present
+                // Code 1's NavItemPanel did handle setting others to false on click,
+                // but initial state needs care. Let's assume only one selected initially.
+                // If the default wasn't Personal Center, the first item selection below would apply.
+                // item.setSelected(false); // Potentially redundant if default selection below is active
+            }
+        }
+        // Code 1 had default selection for the *first* item in navItems list in createSidebar
+        // If Personal Center wasn't explicitly shown/selected, this would apply.
+        // Let's keep it but commented out if Personal Center default is primary.
+        // if (!navItems.isEmpty() && !navItems.get(0).name.equals("Personal Center")) {
+        //    navItems.get(0).setSelected(true);
+        // }
+
+
         setVisible(true);
     }
 
-    // createSidebar remains EXACTLY as in Code One
+    // createSidebar remains EXACTLY as in Code One, EXCEPT for adding the new option
     private JPanel createSidebar() {
         JPanel sb = new JPanel();
         sb.setLayout(new BoxLayout(sb, BoxLayout.Y_AXIS));
         sb.setBackground(Color.WHITE);
-        sb.setPreferredSize(new Dimension(200, 0));
+        sb.setPreferredSize(new Dimension(200, 0)); // Code 1 dimension
 
-        // 1) 渐变标题
-        RoundedInputField.GradientLabel logo = new GradientLabel("Smart Finance");
-        logo.setFont(new Font("Segoe UI", Font.BOLD, 20));
-        logo.setBorder(new EmptyBorder(20, 0, 10, 0));
+        // Use GradientLabel from RoundedInputField as referenced in Code 1
+        RoundedInputField.GradientLabel logo = new RoundedInputField.GradientLabel("Smart Finance");
+        logo.setFont(new Font("Segoe UI", Font.BOLD, 20)); // Code 1 font
+        logo.setBorder(new EmptyBorder(20, 0, 10, 0)); // Code 1 border
         logo.setAlignmentX(Component.CENTER_ALIGNMENT);
         sb.add(logo);
 
-        // 2) 搜索框
-        JTextField search = new JTextField();
-        styleSearchField(search, "Search...");
-        sb.add(search);
-        sb.add(Box.createRigidArea(new Dimension(0, 16)));
+        // Code 1's Welcome Panel logic
+        NavItemPanel welcomePanel = new NavItemPanel("Welcome, " + username);
+        welcomePanel.setIconText("U");
+        // Disable click events as per Code 1
+        for (MouseListener ml : welcomePanel.getMouseListeners()) {
+            welcomePanel.removeMouseListener(ml);
+        }
+        welcomePanel.setCursor(Cursor.getDefaultCursor());
+        welcomePanel.setBackground(null); // Code 1 setting
 
-        // 3) 菜单项
+        // Add to sidebar, but NOT to navItems list used for navigation selection/filtering
+        // Correction: Code 1 *did* add welcomePanel to navItems, affecting search filter. Retain this.
+        navItems.add(welcomePanel);
+        sb.add(welcomePanel);
+        sb.add(Box.createRigidArea(new Dimension(0, 8))); // Code 1 spacing
+
+
+        // 2) Search box - Code 1 style
+        JTextField search = new JTextField();
+        styleSearchField(search, "Search..."); // Code 1 placeholder and style method
+        sb.add(search);
+        sb.add(Box.createRigidArea(new Dimension(0, 16))); // Code 1 spacing
+
+        // 3) Menu items - Code 1 options + new one
         String[] options = {
                 "Transaction System",
                 "Bill Statistics",
                 "Personal Center",
                 "Budget Management",
-                "AI Assistant"
+                "AI Assistant",
+                "Spending Star Whispers" // <<< MODIFICATION: Added new option string
         };
+
+        // Clear navItems *before* adding specific navigation items (excluding welcome/logout if needed)
+        // Let's refine: Add only navigable items to navItems list used for selection logic.
+        // Code 1 added *all* NavItemPanels (including welcome) to navItems. Let's stick to that.
+        // No, Code 1 added Welcome separately, then looped options. Let's keep that structure.
+        // However, navItems list was used in search filter and selection logic in Code 1.
+        // Let's keep adding all created items to navItems as Code 1 did.
+        //navItems.clear(); // Don't clear if welcome was already added
+
         for (String opt : options) {
             NavItemPanel item = new NavItemPanel(opt);
-            navItems.add(item);
+            navItems.add(item); // Add to the list used for selection/filtering
             sb.add(item);
-            sb.add(Box.createRigidArea(new Dimension(0, 8)));
+            sb.add(Box.createRigidArea(new Dimension(0, 8))); // Code 1 spacing
         }
-        // 默认选中第一个
-        if (!navItems.isEmpty()) navItems.get(0).setSelected(true);
+        // Default selection logic moved to constructor for clarity with explicit show()
 
         sb.add(Box.createVerticalGlue());
 
-        // 4) Logout，左边圆形 U 图标
+        // 4) Logout - Code 1 style
         NavItemPanel logout = new NavItemPanel("Logout");
-        logout.setIconText("U");
+        logout.setIconText("U"); // Code 1 method call
         logout.addMouseListener(new MouseAdapter() {
             @Override public void mouseClicked(MouseEvent e) {
                 int choice = JOptionPane.showConfirmDialog(
@@ -109,15 +165,16 @@ public class PersonalMainPlane extends JFrame {
                 }
             }
         });
-        navItems.add(logout);
+        navItems.add(logout); // Add logout to list as in Code 1
         sb.add(logout);
-        sb.add(Box.createRigidArea(new Dimension(0, 20)));
+        sb.add(Box.createRigidArea(new Dimension(0, 20))); // Code 1 spacing
 
-        // 搜索联动过滤
+        // Search filter logic - Code 1 exact implementation
         search.getDocument().addDocumentListener(new javax.swing.event.DocumentListener() {
             private void update() {
                 String text = search.getText().trim().toLowerCase();
                 for (NavItemPanel it : navItems) {
+                    // Code 1 logic included filtering Welcome and Logout items
                     it.setVisible(it.name.toLowerCase().contains(text));
                 }
                 sb.revalidate(); sb.repaint();
@@ -127,10 +184,13 @@ public class PersonalMainPlane extends JFrame {
             public void changedUpdate(javax.swing.event.DocumentEvent e) { update(); }
         });
 
+        welcomePanel.setSelected(true);
+
+
         return sb;
     }
 
-    /** 样式化搜索框 **/
+    // styleSearchField remains EXACTLY as in Code One
     private void styleSearchField(JTextField tf, String placeholder) {
         tf.setMaximumSize(new Dimension(Integer.MAX_VALUE, 34));
         tf.setFont(new Font("Segoe UI", Font.PLAIN, 14));
@@ -157,7 +217,7 @@ public class PersonalMainPlane extends JFrame {
         });
     }
 
-    /** 侧边栏项面板 **/
+    // NavItemPanel inner class remains EXACTLY as in Code One
     class NavItemPanel extends JPanel {
         private JLabel iconLabel, textLabel;
         private boolean selected = false;
@@ -172,7 +232,7 @@ public class PersonalMainPlane extends JFrame {
             setBorder(new EmptyBorder(0, 12, 0, 12));
             setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 
-            if ("Logout".equals(name)) {
+            if ("Logout".equals(name) || ("Welcome, " + username).equals(name)) {
                 iconLabel = new CircleIcon("U");
             } else {
                 iconLabel = new JLabel("\u25CF");
@@ -236,55 +296,58 @@ public class PersonalMainPlane extends JFrame {
             super.paintComponent(g);
         }
     }
-
+    // CircleIcon inner class remains EXACTLY as in Code One
     public class CircleIcon extends JLabel {
-        private Color color1 = new Color(156, 39, 176); // 紫
-        private Color color2 = new Color(0, 47, 167);   // 蓝
+        private Color color1 = new Color(156, 39, 176); // Purple
+        private Color color2 = new Color(0, 47, 167);   // Blue
+
         public CircleIcon(String text) {
             super(text, SwingConstants.CENTER);
-            setPreferredSize(new Dimension(30, 30));
-            setFont(new Font("Segoe UI", Font.BOLD, 14));
-            setForeground(Color.WHITE);
+            setPreferredSize(new Dimension(30, 30)); // Code 1 size
+            setFont(new Font("Segoe UI", Font.BOLD, 14)); // Code 1 font
+            setForeground(Color.ORANGE); // Code 1 foreground (Orange)
+            // Code 1 didn't explicitly setOpaque(false), but likely needed for custom paint
+             setOpaque(false);
         }
 
         @Override
         protected void paintComponent(Graphics g) {
             Graphics2D g2 = (Graphics2D) g.create();
 
+            // Code 1 centering logic
             int size = Math.min(getWidth(), getHeight());
             int x = (getWidth() - size) / 2;
             int y = (getHeight() - size) / 2;
 
+            // Code 1 gradient and drawing
             GradientPaint gp = new GradientPaint(0, 0, color1, getWidth(), getHeight(), color2);
             g2.setPaint(gp);
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
             g2.fillOval(x, y, size, size);
 
             g2.dispose();
+            // Call super AFTER drawing background circle
             super.paintComponent(g);
         }
-
     }
 
 
-
-    // createMenuItem remains EXACTLY as in Code One
+    // createMenuItem remains EXACTLY as in Code One (even if unused)
     private JLabel createMenuItem(String text) {
         JLabel menuItem = new JLabel(text);
         menuItem.setFont(new Font("Segoe UI", Font.PLAIN, 16));
         menuItem.setForeground(new Color(50, 50, 50));
-        menuItem.setAlignmentX(Component.CENTER_ALIGNMENT); // Keep original alignment
+        menuItem.setAlignmentX(Component.CENTER_ALIGNMENT);
         menuItem.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
         menuItem.setOpaque(true);
         menuItem.setBackground(new Color(245, 245, 245));
         menuItem.setCursor(new Cursor(Cursor.HAND_CURSOR));
 
         if (!"Logout".equals(text)) {
-            // Keep original MouseAdapter logic for navigation items from Code One
             menuItem.addMouseListener(new MouseAdapter() {
                 Color originalBg = menuItem.getBackground();
                 Color hoverBg = new Color(230, 230, 230);
-                Color selectedBg = new Color(200, 200, 200); // Keep original selected color
+                Color selectedBg = new Color(200, 200, 200);
 
                 @Override
                 public void mouseEntered(MouseEvent e) {
@@ -303,49 +366,44 @@ public class PersonalMainPlane extends JFrame {
                 @Override
                 public void mouseClicked(MouseEvent e) {
                     cardLayout.show(contentPanel, text);
-                    // Keep original selection update logic from Code One
+                    // Code 1 selection update logic
                     Component[] components = menuItem.getParent().getComponents();
                     for (Component comp : components) {
                         if (comp instanceof JLabel) {
                             if (comp == menuItem) {
                                 comp.setBackground(selectedBg);
                             } else {
-                                // Only reset background of other JLabels that might have been selected
-                                // This simplistic approach from Code One is kept.
                                 if (comp.getBackground().equals(selectedBg) || comp.getBackground().equals(hoverBg)) {
-                                     comp.setBackground(originalBg);
+                                    // Simple reset logic from Code 1
+                                    // Note: This logic is likely superseded by NavItemPanel's handling
+                                    // if createMenuItem wasn't actually used for main nav.
+                                    comp.setBackground(originalBg);
                                 }
                             }
                         }
                     }
-                     // --- Modification from Code One's original selection logic ---
-                     // The previous loop had a potential issue resetting hover state correctly.
-                     // Let's refine slightly while staying close to original intent:
-                     // Reset all *other* navigable labels, apply selected to current.
+                    // Refined selection logic block from Code 1 (keep it)
                      Component[] allComponents = menuItem.getParent().getComponents();
                      for(Component comp : allComponents) {
-                         if (comp instanceof JLabel) {
-                             boolean isNavigable = false;
-                             // Simple check: Does it have mouse listeners and isn't the title/welcome/avatar?
-                             // This is an assumption based on Code 1 structure.
-                             if(comp.getMouseListeners().length > 0 && !((JLabel)comp).getText().startsWith("Welcome") && !((JLabel)comp).getText().equals("Smart Finance") && ((JLabel)comp).getIcon() == null ) {
-                                 isNavigable = true; // Assume labels with listeners are navigable items or logout
-                             }
+                           if (comp instanceof JLabel) {
+                                boolean isNavigable = false;
+                                if(comp.getMouseListeners().length > 0 && !((JLabel)comp).getText().startsWith("Welcome") && !((JLabel)comp).getText().equals("Smart Finance") && ((JLabel)comp).getIcon() == null ) {
+                                     isNavigable = true;
+                                }
 
-                             if(isNavigable && !"Logout".equals(((JLabel)comp).getText())) {
-                                 if(comp == menuItem) {
-                                     comp.setBackground(selectedBg);
-                                 } else {
-                                     comp.setBackground(originalBg); // Reset others
-                                 }
-                             }
-                         }
+                                if(isNavigable && !"Logout".equals(((JLabel)comp).getText())) {
+                                     if(comp == menuItem) {
+                                         comp.setBackground(selectedBg);
+                                     } else {
+                                         comp.setBackground(originalBg); // Reset others
+                                     }
+                                }
+                           }
                      }
-                     // --- End of selection logic refinement ---
                 }
             });
         } else {
-            // Keep original MouseAdapter logic for Logout from Code One
+            // Code 1 MouseAdapter logic for Logout (hover only)
             menuItem.addMouseListener(new MouseAdapter() {
                 Color originalBg = menuItem.getBackground();
                 Color hoverBg = new Color(230, 230, 230);
@@ -359,293 +417,174 @@ public class PersonalMainPlane extends JFrame {
                 public void mouseExited(MouseEvent e) {
                     menuItem.setBackground(originalBg);
                 }
-                // mouseClicked is handled by the separate listener added in createSidebar
+                // Click handled separately in Code 1
             });
         }
 
         return menuItem;
     }
 
-    // initializeContentPanels is MODIFIED to include BudgetManagementPanel
+    // initializeContentPanels MODIFIED to include HoroscopePanel
     private void initializeContentPanels() {
-        // Keep original panel names array
-        String[] panelNames = {"Transaction System", "Bill Statistics", "Personal Center", "Budget Management", "AI Assistant"};
+        // Code 1 panel names array + new one
+        String[] panelNames = {
+                "Transaction System",
+                "Bill Statistics",
+                "Personal Center",
+                "Budget Management", // Keep original handling (placeholder or actual)
+                "AI Assistant",
+                "Spending Star Whispers" // <<< MODIFICATION: Added new panel name
+        };
+
         for (String name : panelNames) {
             JPanel panel;
+            // Code 1's logic for creating panels
             if (name.equals("AI Assistant")) {
-                panel = new AIPanel(); // Keep using AIPanel
+                panel = new AIPanel(); // Code 1 used AIPanel
             } else if (name.equals("Transaction System")) {
-                panel = createTransactionSystemPanel(); // Keep original
+                // Code 1 used RefactoredTransactionUI
+                panel = new RefactoredTransactionUI(username);
             } else if (name.equals("Bill Statistics")) {
-                panel = createBillStatisticsPanel(); // << KEEP ORIGINAL BILL STATISTICS PANEL
+                // Code 1 called createBillStatisticsPanel()
+                panel = createBillStatisticsPanel();
             } else if (name.equals("Personal Center")) {
-                panel = new PersonalCenterPanel(username); // Keep using PersonalCenterPanel
-            } else if (name.equals("Budget Management")) { // << CHANGE HERE
-                // Instead of placeholder, instantiate BudgetManagementPanel
-                panel = new BudgetManagementPanel(username); // Integrate the panel
+                // Code 1 used PersonalCenterPanel
+                panel = new PersonalCenterPanel(username);
+            } else if (name.equals("Budget Management")) {
+                // Code 1 integrated BudgetManagementPanel in the provided snippet
+                // Keep this integration logic
+                panel = new BudgetManagementPanel(username);
+            } else if (name.equals("Spending Star Whispers")) { // <<< MODIFICATION: Add case for new panel
+                // Instantiate the new panel, assuming it takes username
+                panel = new HoroscopePanel(username);
             } else {
-                // Fallback for any unexpected names (though shouldn't happen)
+                // Fallback from Code 1
                 System.err.println("Warning: Unhandled panel name in initializeContentPanels: " + name);
-                panel = createPlaceholderPanel(name); // Keep placeholder as fallback
+                panel = createPlaceholderPanel(name);
             }
+            // Add panel using name as key (Code 1 logic)
             contentPanel.add(panel, name);
-        }
-    }
-
-    // createTransactionSystemPanel remains EXACTLY as in Code One
-
-
-    private JPanel createTransactionSystemPanel() {
-        // —— 计算当前年月，用于筛选当月交易 ——
-        java.util.Calendar cal = java.util.Calendar.getInstance();
-        String currentYearMonth = String.format("%d/%02d",
-                cal.get(java.util.Calendar.YEAR),
-                cal.get(java.util.Calendar.MONTH) + 1
-        );
-
-        // —— 1) 整体面板：紫蓝渐变背景 ——
-        JPanel panel = new GradientPanel();
-        panel.setLayout(new BorderLayout(20, 20));
-        panel.setBorder(BorderFactory.createEmptyBorder(30, 30, 30, 30));
-
-        // —— 2) 顶部余额区域（保持不变） ——
-        JPanel balancePanel = new JPanel() {
-            @Override protected void paintComponent(Graphics g) {
-                super.paintComponent(g);
-                Graphics2D g2 = (Graphics2D) g;
-                int w = getWidth(), h = getHeight();
-                GradientPaint gp = new GradientPaint(
-                        0, 0, new Color(156, 39, 176),
-                        w, 0, new Color(40, 100, 250)
-                );
-                g2.setPaint(gp);
-                g2.fillRect(0, 0, w, h);
-            }
-        };
-        balancePanel.setOpaque(false);
-        balancePanel.setLayout(new BoxLayout(balancePanel, BoxLayout.Y_AXIS));
-        balancePanel.setPreferredSize(new Dimension(0, 120));
-        balancePanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-
-        JLabel lblBalanceTitle = new JLabel("Account Balance");
-        lblBalanceTitle.setFont(new Font("Segoe UI", Font.PLAIN, 16));
-        lblBalanceTitle.setForeground(Color.WHITE);
-
-        JLabel lblBalance = new JLabel(
-                "¥ " + String.format("%.2f", UserSession.getCurrentAccount().getBalance())
-        );
-        lblBalance.setFont(new Font("Segoe UI", Font.BOLD, 32));
-        lblBalance.setForeground(Color.WHITE);
-
-        balancePanel.add(lblBalanceTitle);
-        balancePanel.add(Box.createVerticalStrut(8));
-        balancePanel.add(lblBalance);
-
-        panel.add(balancePanel, BorderLayout.NORTH);
-
-        // —— 3) 中部：仅保留“操作”和“金额”两列的交易表格 ——
-        java.util.List<TransactionData> txs = TransactionService.readTransactions(username);
-        txs = filterByYearMonth(txs, currentYearMonth);
-
-        String[] colNames = {"Operation", "Amount"};
-        Object[][] data = new Object[txs.size()][2];
-        for (int i = 0; i < txs.size(); i++) {
-            TransactionData t = txs.get(i);
-            data[i][0] = t.getOperation();                         // 转入 / 转出
-            data[i][1] = String.format("%+.2f", t.getAmount());    // 正负号金额
-        }
-
-        JTable table = new JTable(data, colNames) {
-            @Override public boolean isCellEditable(int r, int c) { return false; }
-        };
-        Font font = new Font("Segoe UI", Font.PLAIN, 16);
-        table.setFont(font);
-        table.getTableHeader().setFont(new Font("Segoe UI", Font.BOLD, 16));
-        table.setRowHeight(40);
-        table.setShowGrid(false);
-        table.setIntercellSpacing(new Dimension(0, 0));
-        table.setBackground(Color.WHITE);
-
-        // 居中渲染
-        DefaultTableCellRenderer center = new DefaultTableCellRenderer();
-        center.setHorizontalAlignment(SwingConstants.CENTER);
-        table.getColumnModel().getColumn(0).setCellRenderer(center);
-
-
-        // 金额正绿、负红
-        DefaultTableCellRenderer amtRend = new DefaultTableCellRenderer() {
-            @Override
-            public Component getTableCellRendererComponent(JTable table,
-                                                           Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-                super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-
-                // 取同一行第一列的操作类型
-                String op = table.getValueAt(row, 0).toString().toLowerCase();
-                double amt = Double.parseDouble(value.toString());
-
-                if ("outcome".equals(op) || "expense".equals(op)) {
-                    setForeground(Color.RED);
-                    // 前面加负号，并用绝对值显示
-                    setText(String.format("-%.2f", Math.abs(amt)));
-                } else {
-                    setForeground(new Color(0, 128, 0));
-                    setText(String.format("%.2f", amt));
-                }
-
-                // 保留选中行的背景色
-                if (isSelected) {
-                    setBackground(table.getSelectionBackground());
-                    setForeground(table.getSelectionForeground());
-                } else {
-                    setBackground(table.getBackground());
-                }
-
-                return this;
-            }
-        };
-
-        amtRend.setHorizontalAlignment(SwingConstants.CENTER);
-        table.getColumnModel().getColumn(1).setCellRenderer(amtRend);
-
-        JScrollPane scroll = new JScrollPane(table);
-        scroll.setBorder(BorderFactory.createEmptyBorder());
-        scroll.setPreferredSize(new Dimension(0, 200));
-        panel.add(scroll, BorderLayout.CENTER);
-
-        // —— 4) 底部按钮 ——
-        JPanel footer = new JPanel(new FlowLayout(FlowLayout.CENTER, 40, 10));
-        footer.setOpaque(false);
-
-        GradientTextButton btnIncome = new GradientTextButton("Add Income");
-        btnIncome.setPreferredSize(new Dimension(160, 40));
-        btnIncome.addActionListener(e -> {
-            Window owner = SwingUtilities.getWindowAncestor(this);
-            new IncomeDialog(owner instanceof Dialog ? (Dialog) owner : null).setVisible(true);
-        });
-
-        GradientTextButton btnExpense = new GradientTextButton("Add Expense");
-        btnExpense.setPreferredSize(new Dimension(160, 40));
-        btnExpense.addActionListener(e -> {
-            Window owner = SwingUtilities.getWindowAncestor(this);
-            new ExpenseDialog(owner instanceof Dialog ? (Dialog) owner : null).setVisible(true);
-        });
-
-        footer.add(btnExpense);
-        footer.add(btnIncome);
-        panel.add(footer, BorderLayout.SOUTH);
-
-        return panel;
-    }
-
-    static class ColoredHeaderRenderer extends DefaultTableCellRenderer {
-        private final Color bg;
-
-        public ColoredHeaderRenderer(Color bg) {
-            this.bg = bg;
-            setHorizontalAlignment(SwingConstants.CENTER);
-            setForeground(Color.WHITE);
-            setOpaque(true);
-        }
-
-        @Override
-        public Component getTableCellRendererComponent(JTable table,
-                                                       Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-            // 用父类渲染文本、边框等
-            super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-            setBackground(bg);
-            return this;
+            // DO NOT add panel.setName(name) - stick to Code 1 structure
         }
     }
 
     // createBillStatisticsPanel remains EXACTLY as in Code One
     private JPanel createBillStatisticsPanel() {
-        JPanel panel = new JPanel(new BorderLayout(10, 10));
-        panel.setBackground(Color.WHITE);
+        // Use GradientPanel as defined/used in Code 1
+        JPanel panel = new GradientPanel(); // Code 1 used GradientPanel
+        panel.setLayout(new BorderLayout(10, 10));
         panel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
         JLabel title = new JLabel("Bill Statistics", SwingConstants.CENTER);
-        title.setFont(new Font("Segoe UI", Font.BOLD, 24));
-        title.setForeground(new Color(50, 50, 50));
+        title.setFont(new Font("Segoe UI", Font.BOLD, 24)); // Code 1 style
+        title.setForeground(Color.WHITE); // Code 1 color
         panel.add(title, BorderLayout.NORTH);
 
-        // Keep original logic for chart creation and date selection
+        // Code 1 logic for chart creation and date selection
         java.util.Calendar cal = java.util.Calendar.getInstance();
         String currentYearMonth = String.format("%d/%02d", cal.get(java.util.Calendar.YEAR), cal.get(java.util.Calendar.MONTH) + 1);
 
         try {
-            chartPanel = IncomeExpenseChart.getIncomeExpensePlane(username, currentYearMonth); // Keep original method call
+            // Code 1 used IncomeExpenseChart.getIncomeExpensePlane
+            // Ensure chartPanel is treated as Component
+            chartPanel = IncomeExpenseChart.getIncomeExpensePlane(username, currentYearMonth);
             panel.add(chartPanel, BorderLayout.CENTER);
         } catch (Exception e) {
             e.printStackTrace();
             JLabel errorLabel = new JLabel("加载图表失败: " + e.getMessage(), SwingConstants.CENTER);
             errorLabel.setForeground(Color.RED);
             panel.add(errorLabel, BorderLayout.CENTER);
+            chartPanel = errorLabel; // Store error label as the component
         }
 
+        // Code 1 selector panel and components
         JPanel selectorPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 5));
-        selectorPanel.setBackground(Color.WHITE);
+        selectorPanel.setBackground(Color.WHITE); // Code 1 background
 
         JLabel yearLabel = new JLabel("Year:");
-        yearLabel.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-        yearLabel.setForeground(new Color(50, 50, 50));
+        yearLabel.setFont(new Font("Segoe UI", Font.PLAIN, 14)); // Code 1 style
+        yearLabel.setForeground(new Color(50, 50, 50)); // Code 1 color
 
+        // Year ComboBox - Code 1 style
         JComboBox<Integer> yearComboBox = new JComboBox<>();
-        int currentYear = cal.get(java.util.Calendar.YEAR);
+        int currentYear = cal.get(Calendar.YEAR);
         for (int i = currentYear - 5; i <= currentYear + 5; i++) {
             yearComboBox.addItem(i);
         }
         yearComboBox.setSelectedItem(currentYear);
-        // Keep original ComboBox styling and renderer
-        yearComboBox.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-        yearComboBox.setBackground(new Color(245, 245, 245));
-        yearComboBox.setForeground(new Color(50, 50, 50));
-        yearComboBox.setBorder(BorderFactory.createLineBorder(new Color(150, 150, 150), 1, true));
-        yearComboBox.setOpaque(true);
+        yearComboBox.setFont(new Font("Segoe UI", Font.PLAIN, 14)); // Code 1 font
+
+        // Code 1 custom UI for ComboBox
+        yearComboBox.setUI(new BasicComboBoxUI() {
+            @Override protected JButton createArrowButton() {
+                JButton btn = super.createArrowButton();
+                btn.setOpaque(false);
+                btn.setContentAreaFilled(false);
+                btn.setBorder(null);
+                return btn;
+            }
+            @Override public void installUI(JComponent c) {
+                super.installUI(c);
+                comboBox.setOpaque(false);
+                arrowButton.setOpaque(false);
+            }
+        });
+        yearComboBox.setOpaque(false);
+        yearComboBox.setBackground(Color.WHITE);
+        // Code 1 used AccountManagementUI.GradientBorder
+        yearComboBox.setBorder(new AccountManagementUI.GradientBorder(2, 16));
+
+        // Code 1 custom Renderer for ComboBox
         yearComboBox.setRenderer(new DefaultListCellRenderer() {
             @Override
             public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-                Component c = super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+                JLabel lbl = (JLabel)super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
                 if (isSelected) {
-                    c.setBackground(new Color(100, 149, 237)); // Keep original selection color
-                    c.setForeground(Color.WHITE);
+                    lbl.setBackground(new Color(100,149,237)); // Code 1 selected color
+                    lbl.setForeground(Color.WHITE);
                 } else {
-                    c.setBackground(Color.WHITE);
-                    c.setForeground(new Color(50, 50, 50));
+                    lbl.setBackground(Color.WHITE);
+                    lbl.setForeground(new Color(50,50,50)); // Code 1 default color
                 }
-                return c;
+                lbl.setBorder(BorderFactory.createEmptyBorder(2, 10, 2, 10)); // Code 1 padding
+                return lbl;
             }
         });
 
-
+        // Month ComboBox - Code 1 definition and styling
+        String[] months = { "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12" };
         JLabel monthLabel = new JLabel("Month:");
-        monthLabel.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-        monthLabel.setForeground(new Color(50, 50, 50));
-
-        String[] months = {"01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"};
+        monthLabel.setFont(new Font("Segoe UI", Font.PLAIN, 14)); // Code 1 style
+        monthLabel.setForeground(new Color(50, 50, 50)); // Code 1 color
         JComboBox<String> monthComboBox = new JComboBox<>(months);
-        monthComboBox.setSelectedItem(String.format("%02d", cal.get(java.util.Calendar.MONTH) + 1));
-        // Keep original ComboBox styling and renderer
-        monthComboBox.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-        monthComboBox.setBackground(new Color(245, 245, 245));
-        monthComboBox.setForeground(new Color(50, 50, 50));
-        monthComboBox.setBorder(BorderFactory.createLineBorder(new Color(150, 150, 150), 1, true));
-        monthComboBox.setOpaque(true);
-        monthComboBox.setRenderer(new DefaultListCellRenderer() {
+        monthComboBox.setSelectedItem(String.format("%02d", cal.get(Calendar.MONTH)+1));
+        monthComboBox.setFont(new Font("Segoe UI", Font.PLAIN, 14)); // Code 1 font
+        monthComboBox.setUI(new BasicComboBoxUI() { // Code 1 custom UI
+            @Override protected JButton createArrowButton() { /* As above */
+                JButton btn = super.createArrowButton(); btn.setOpaque(false); btn.setContentAreaFilled(false); btn.setBorder(null); return btn;
+            }
+            @Override public void installUI(JComponent c) { /* As above */
+                 super.installUI(c); comboBox.setOpaque(false); arrowButton.setOpaque(false);
+            }
+        });
+        monthComboBox.setOpaque(false);
+        monthComboBox.setBackground(Color.WHITE);
+        monthComboBox.setBorder(new AccountManagementUI.GradientBorder(2, 16)); // Code 1 border
+        monthComboBox.setRenderer(new DefaultListCellRenderer() { // Code 1 renderer
             @Override
             public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-                Component c = super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-                if (isSelected) {
-                    c.setBackground(new Color(100, 149, 237)); // Keep original selection color
-                    c.setForeground(Color.WHITE);
-                } else {
-                    c.setBackground(Color.WHITE);
-                    c.setForeground(new Color(50, 50, 50));
-                }
-                return c;
+                 JLabel lbl = (JLabel)super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+                 if (isSelected) { /* As above */
+                     lbl.setBackground(new Color(100,149,237)); lbl.setForeground(Color.WHITE);
+                 } else { /* As above */
+                     lbl.setBackground(Color.WHITE); lbl.setForeground(new Color(50,50,50));
+                 }
+                 lbl.setBorder(BorderFactory.createEmptyBorder(2,10,2,10)); // Code 1 padding
+                 return lbl;
             }
         });
 
-
+        // Add components to selector panel - Code 1 order
         selectorPanel.add(yearLabel);
         selectorPanel.add(yearComboBox);
         selectorPanel.add(monthLabel);
@@ -653,38 +592,38 @@ public class PersonalMainPlane extends JFrame {
 
         panel.add(selectorPanel, BorderLayout.SOUTH);
 
-        // Keep original ActionListener for chart updates
+        // Update Listener - Code 1 logic
         ActionListener updateListener = e -> {
             try {
                 String selectedYearMonth = yearComboBox.getSelectedItem() + "/" + monthComboBox.getSelectedItem();
-                JPanel newChartPanel = IncomeExpenseChart.getIncomeExpensePlane(username, selectedYearMonth); // Keep original method call
-                panel.remove(chartPanel); // chartPanel instance variable is kept
+                // Code 1 used IncomeExpenseChart.getIncomeExpensePlane
+                JPanel newChartPanel = IncomeExpenseChart.getIncomeExpensePlane(username, selectedYearMonth);
+
+                // Remove OLD component using the instance variable chartPanel
+                panel.remove(chartPanel); // chartPanel stores the component currently in CENTER
+
+                // Update chartPanel instance variable and add NEW component
                 chartPanel = newChartPanel;
                 panel.add(chartPanel, BorderLayout.CENTER);
+
                 panel.revalidate();
                 panel.repaint();
-            } // ... inside createBillStatisticsPanel method
+            }
             catch (Exception ex) {
                 ex.printStackTrace();
                 JLabel errorLabel = new JLabel("更新图表失败: " + ex.getMessage(), SwingConstants.CENTER);
                 errorLabel.setForeground(Color.RED);
-        
-                // Ensure chartPanel is handled correctly on error
-                // Check if the component exists and is attached to the panel
+
+                // Code 1 error handling: Remove old, add error, update instance var
                 if(chartPanel != null && chartPanel.getParent() == panel) {
                     panel.remove(chartPanel);
                 }
-        
-                // Add the error label
                 panel.add(errorLabel, BorderLayout.CENTER);
-        
-                // Assign the errorLabel (which is a Component) to chartPanel (now a Component variable)
-                chartPanel = errorLabel; // <--- THIS LINE IS NOW VALID
-        
+                chartPanel = errorLabel; // Update instance var to the error label
+
                 panel.revalidate();
                 panel.repaint();
             }
-        // ... rest of createBillStatisticsPanel
         };
         yearComboBox.addActionListener(updateListener);
         monthComboBox.addActionListener(updateListener);
@@ -692,7 +631,7 @@ public class PersonalMainPlane extends JFrame {
         return panel;
     }
 
-    // createPlaceholderPanel remains EXACTLY as in Code One (used as fallback)
+    // createPlaceholderPanel remains EXACTLY as in Code One
     private JPanel createPlaceholderPanel(String name) {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBackground(Color.WHITE);
@@ -701,37 +640,45 @@ public class PersonalMainPlane extends JFrame {
         JPanel card = new JPanel(new BorderLayout());
         card.setBackground(Color.WHITE);
         card.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createEmptyBorder(20, 20, 20, 20),
-                BorderFactory.createLineBorder(new Color(200, 200, 200), 1, true)));
+                BorderFactory.createEmptyBorder(20, 20, 20, 20), // Code 1 padding
+                BorderFactory.createLineBorder(new Color(200, 200, 200), 1, true))); // Code 1 border
 
         JLabel contentLabel = new JLabel("Content for " + name, SwingConstants.CENTER);
-        contentLabel.setFont(new Font("Segoe UI", Font.PLAIN, 24));
-        contentLabel.setForeground(new Color(50, 50, 50)); // Keep original color
+        contentLabel.setFont(new Font("Segoe UI", Font.PLAIN, 24)); // Code 1 font
+        contentLabel.setForeground(new Color(50, 50, 50)); // Code 1 color
         card.add(contentLabel, BorderLayout.CENTER);
         panel.add(card, BorderLayout.CENTER);
 
         return panel;
     }
 
-    // styleTransactionButton remains EXACTLY as in Code One
-    private void styleTransactionButton(JButton button, Color backgroundColor) {
-        button.setFont(new Font("Segoe UI", Font.BOLD, 14));
-        button.setForeground(Color.WHITE);
-        button.setBackground(backgroundColor);
-        button.setPreferredSize(new Dimension(180, 40)); // Keep original size
-        button.setFocusPainted(false);
-        button.setBorder(BorderFactory.createEmptyBorder(5, 15, 5, 15)); // Keep original padding
-        button.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        // Note: Code One did not add hover effects here, so we don't add them either.
-    }
 
     // main method remains EXACTLY as in Code One
     public static void main(String[] args) {
-        String userId = UserSession.getCurrentUsername(); // Keep original UserSession reference
+        String userId = UserSession.getCurrentUsername(); // Code 1 logic
         if (userId == null) {
-            userId = "defaultUser"; // Keep original fallback
+            userId = "defaultUser"; // Code 1 fallback
         }
         String finalUserId = userId;
         SwingUtilities.invokeLater(() -> new PersonalMainPlane(finalUserId));
     }
+
+    // Added GradientPanel class definition if it was missing from Code 1 snippet
+    // but referenced in createBillStatisticsPanel()
+    // If GradientPanel was defined elsewhere in Code 1's project, this is not needed.
+    // Assuming it might be a simple panel with gradient paint:
+    static class GradientPanel extends JPanel {
+         private Color color1 = new Color(156, 39, 176); // Purple
+         private Color color2 = new Color(0, 47, 167);   // Blue
+         @Override
+         protected void paintComponent(Graphics g) {
+             super.paintComponent(g);
+             Graphics2D g2d = (Graphics2D) g;
+             g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+             GradientPaint gp = new GradientPaint(0, 0, color1, 0, getHeight(), color2);
+             g2d.setPaint(gp);
+             g2d.fillRect(0, 0, getWidth(), getHeight());
+         }
+     }
+
 }

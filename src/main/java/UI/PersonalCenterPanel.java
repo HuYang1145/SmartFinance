@@ -23,18 +23,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.swing.BorderFactory;
-import javax.swing.DefaultListCellRenderer;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JTextArea;
-import javax.swing.SwingConstants;
-import javax.swing.Timer;
+import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
+import javax.swing.plaf.basic.BasicComboBoxUI;
 
 public class PersonalCenterPanel extends JPanel {
     private JLabel totalIncomeYearLabel, totalExpenseYearLabel, totalBalanceYearLabel;
@@ -49,17 +41,18 @@ public class PersonalCenterPanel extends JPanel {
         this.userId = userId;
         setLayout(new BorderLayout());
         setBackground(new Color(245, 245, 245)); // Soft light gray
-    
+
         // Font setup
-        Font labelFont = new Font("Segoe UI", Font.PLAIN, 14);
+        Font labelFont = new Font("Segoe UI", Font.BOLD, 14);
         Font titleFont = new Font("Segoe UI", Font.BOLD, 16);
-    
+
         // Year selector (top)
-        JPanel yearPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        JPanel yearPanel = new RoundedInputField.GradientPanel();
+        yearPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
         yearPanel.setOpaque(false);
         JLabel yearLabel = new JLabel("Select Year:");
         yearLabel.setFont(labelFont);
-        yearLabel.setForeground(Color.DARK_GRAY);
+        yearLabel.setForeground(Color.WHITE);
         yearComboBox = new JComboBox<>();
         int currentYear = Calendar.getInstance().get(Calendar.YEAR);
         for (int i = currentYear - 5; i <= currentYear + 5; i++) {
@@ -67,28 +60,60 @@ public class PersonalCenterPanel extends JPanel {
         }
         yearComboBox.setSelectedItem(currentYear);
         yearComboBox.setFont(labelFont);
-        yearComboBox.setBackground(new Color(245, 245, 245));
-        yearComboBox.setBorder(BorderFactory.createLineBorder(new Color(150, 150, 150), 1, true));
-        yearComboBox.setOpaque(true);
+
+// 1) 安装一个透明的箭头按钮，避免箭头区域破坏圆角／渐变
+        yearComboBox.setUI(new BasicComboBoxUI() {
+            @Override protected JButton createArrowButton() {
+                JButton btn = super.createArrowButton();
+                btn.setOpaque(false);
+                btn.setContentAreaFilled(false);
+                btn.setBorder(null);
+                return btn;
+            }
+            @Override public void installUI(JComponent c) {
+                super.installUI(c);
+                comboBox.setOpaque(false);
+                arrowButton.setOpaque(false);
+            }
+        });
+
+// 2) 让 comboBox 自己绘制白底+紫蓝渐变边框
+        yearComboBox.setOpaque(false);
+        yearComboBox.setBackground(Color.WHITE);
+        yearComboBox.setBorder(new AccountManagementUI.GradientBorder(2, 16));
+
+// 3) 保留你原来的列表渲染器设置（选中项高亮逻辑）：
         yearComboBox.setRenderer(new DefaultListCellRenderer() {
             @Override
-            public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-                Component c = super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+            public Component getListCellRendererComponent(JList<?> list,
+                                                          Object value,
+                                                          int index,
+                                                          boolean isSelected,
+                                                          boolean cellHasFocus) {
+                JLabel c = (JLabel) super.getListCellRendererComponent(
+                        list, value, index, isSelected, cellHasFocus);
                 if (isSelected) {
-                    c.setBackground(new Color(100, 149, 237));
+                    c.setBackground(new Color(100,149,237));
                     c.setForeground(Color.WHITE);
                 } else {
                     c.setBackground(Color.WHITE);
-                    c.setForeground(new Color(50, 50, 50));
+                    c.setForeground(new Color(50,50,50));
                 }
+                c.setBorder(BorderFactory.createEmptyBorder(0,10,0,10));
                 return c;
             }
         });
-        yearComboBox.addActionListener(e -> loadData((Integer) yearComboBox.getSelectedItem()));
+        yearComboBox.addActionListener(e -> {
+            int selectedYear = (Integer) yearComboBox.getSelectedItem();
+            loadData(selectedYear);
+        });
+
+
+// 4) 把它添加到 yearPanel
         yearPanel.add(yearLabel);
         yearPanel.add(yearComboBox);
         add(yearPanel, BorderLayout.NORTH);
-    
+
         // Main content panel
         JPanel mainContent = new JPanel(new GridLayout(2, 3, 10, 10));
         mainContent.setOpaque(false);
@@ -151,11 +176,11 @@ public class PersonalCenterPanel extends JPanel {
         panel.add(incomeChart, BorderLayout.CENTER);
     
         // Selected Category Info
-        JLabel selectedCategoryLabel = new JLabel("Click a category to view details", SwingConstants.CENTER);
-        selectedCategoryLabel.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-        selectedCategoryLabel.setForeground(Color.DARK_GRAY);
-        categoryChartPanel.setSelectedCategoryLabel(selectedCategoryLabel);
-        panel.add(selectedCategoryLabel, BorderLayout.SOUTH);
+        JLabel selectedIncomeCategoryLabel = new JLabel("Click a category to view details", SwingConstants.CENTER);
+        selectedIncomeCategoryLabel.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        selectedIncomeCategoryLabel.setForeground(Color.DARK_GRAY);
+        categoryChartPanel.setSelectedIncomeCategoryLabel(selectedIncomeCategoryLabel);
+        panel.add(selectedIncomeCategoryLabel, BorderLayout.SOUTH);
     
         return panel;
     }
@@ -177,6 +202,13 @@ public class PersonalCenterPanel extends JPanel {
         JPanel expenseChart = categoryChartPanel.createExpenseChart(userId, currentYear);
         expenseChart.setPreferredSize(new Dimension(300, 300));
         panel.add(expenseChart, BorderLayout.CENTER);
+    
+        // Selected Category Info for Expense
+        JLabel selectedExpenseCategoryLabel = new JLabel("Click a category to view details", SwingConstants.CENTER);
+        selectedExpenseCategoryLabel.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        selectedExpenseCategoryLabel.setForeground(Color.DARK_GRAY);
+        categoryChartPanel.setSelectedExpenseCategoryLabel(selectedExpenseCategoryLabel);
+        panel.add(selectedExpenseCategoryLabel, BorderLayout.SOUTH);
     
         return panel;
     }
@@ -277,7 +309,7 @@ public class PersonalCenterPanel extends JPanel {
         JLabel selectedCategoryLabel = new JLabel("Click a category to view details", SwingConstants.CENTER);
         selectedCategoryLabel.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         selectedCategoryLabel.setForeground(Color.DARK_GRAY);
-        categoryChartPanel.setSelectedCategoryLabel(selectedCategoryLabel);
+        categoryChartPanel.setSelectedIncomeCategoryLabel(selectedCategoryLabel);
         panel.add(selectedCategoryLabel, BorderLayout.SOUTH);
     
         return panel;
@@ -616,14 +648,36 @@ public class PersonalCenterPanel extends JPanel {
     class CategoryChartPanel {
         private List<Map.Entry<String, Double>> incomeCategories = new ArrayList<>();
         private List<Map.Entry<String, Double>> expenseCategories = new ArrayList<>();
-        private JLabel selectedCategoryLabel;
+        private JLabel selectedIncomeCategoryLabel;
+        private JLabel selectedExpenseCategoryLabel;
         private int incomeIndex = 0, expenseIndex = 0;
         private Timer incomeTimer, expenseTimer;
 
-        public CategoryChartPanel() {
-            selectedCategoryLabel = new JLabel("Click a category to view details", SwingConstants.CENTER);
+        // Add this method to update category data
+        public void updateData(List<Transaction> transactions, int selectedYear) {
+            Map<String, Double> incomeMap = new HashMap<>();
+            Map<String, Double> expenseMap = new HashMap<>();
+            String yearStr = String.valueOf(selectedYear);
+            for (Transaction tx : transactions) {
+                if (tx.time != null && tx.time.startsWith(yearStr)) {
+                    if ("Income".equals(tx.operation)) {
+                        incomeMap.put(tx.category, incomeMap.getOrDefault(tx.category, 0.0) + tx.amount);
+                    } else if ("Expense".equals(tx.operation)) {
+                        expenseMap.put(tx.category, expenseMap.getOrDefault(tx.category, 0.0) + tx.amount);
+                    }
+                }
+            }
+            incomeCategories = new ArrayList<>(incomeMap.entrySet());
+            expenseCategories = new ArrayList<>(expenseMap.entrySet());
+            incomeIndex = 0;
+            expenseIndex = 0;
         }
-
+    
+        public CategoryChartPanel() {
+            selectedIncomeCategoryLabel = new JLabel("Click a category to view details", SwingConstants.CENTER);
+            selectedExpenseCategoryLabel = new JLabel("Click a category to view details", SwingConstants.CENTER);
+        }
+    
         public JPanel createIncomeChart(String userId, String year) {
             JPanel panel = new JPanel(new BorderLayout()) {
                 @Override
@@ -631,15 +685,15 @@ public class PersonalCenterPanel extends JPanel {
                     super.paintComponent(g);
                     Graphics2D g2d = (Graphics2D) g;
                     g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-
+    
                     // Draw donut chart
                     double totalAmount = incomeCategories.stream().mapToDouble(Map.Entry::getValue).sum();
                     if (totalAmount <= 0) {
                         g2d.drawString("No income data", getWidth() / 2 - 50, getHeight() / 2);
                         return;
                     }
-
-                    int diameter = Math.min(getWidth(), getHeight() - 40) - 20; // Larger chart
+    
+                    int diameter = Math.min(getWidth(), getHeight() - 40) - 20;
                     int radius = diameter / 2;
                     int innerRadius = radius / 2;
                     int centerX = getWidth() / 2;
@@ -651,7 +705,7 @@ public class PersonalCenterPanel extends JPanel {
                         new Color(240, 230, 140), new Color(221, 160, 221), new Color(173, 216, 230),
                         new Color(255, 218, 185), new Color(200, 162, 200)
                     };
-
+    
                     for (Map.Entry<String, Double> entry : incomeCategories) {
                         double percentage = entry.getValue() / totalAmount;
                         int arcAngle = (int) Math.round(percentage * 360);
@@ -663,8 +717,7 @@ public class PersonalCenterPanel extends JPanel {
                     }
                     g2d.setColor(Color.WHITE);
                     g2d.fillArc(centerX - innerRadius, centerY - innerRadius, innerRadius * 2, innerRadius * 2, 0, 360);
-
-                    // Scrolling percentage in center
+    
                     if (!incomeCategories.isEmpty()) {
                         Map.Entry<String, Double> entry = incomeCategories.get(incomeIndex % incomeCategories.size());
                         double percentage = totalAmount > 0 ? (entry.getValue() / totalAmount) * 100 : 0;
@@ -694,8 +747,8 @@ public class PersonalCenterPanel extends JPanel {
                             double arcAngle = total > 0 ? (entry.getValue() / total) * 360 : 0;
                             if (angle >= currentAngle && angle < currentAngle + arcAngle) {
                                 double percentage = total > 0 ? (entry.getValue() / total) * 100 : 0;
-                                if (selectedCategoryLabel != null) {
-                                    selectedCategoryLabel.setText(String.format("Income: %s, ¥%.2f, %.1f%%",
+                                if (selectedIncomeCategoryLabel != null) {
+                                    selectedIncomeCategoryLabel.setText(String.format("Income: %s, ¥%.2f, %.1f%%",
                                         entry.getKey(), entry.getValue(), percentage));
                                 }
                                 break;
@@ -712,7 +765,7 @@ public class PersonalCenterPanel extends JPanel {
             incomeTimer.start();
             return panel;
         }
-
+    
         public JPanel createExpenseChart(String userId, String year) {
             JPanel panel = new JPanel(new BorderLayout()) {
                 @Override
@@ -720,15 +773,14 @@ public class PersonalCenterPanel extends JPanel {
                     super.paintComponent(g);
                     Graphics2D g2d = (Graphics2D) g;
                     g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-
-                    // Draw donut chart
+    
                     double totalAmount = expenseCategories.stream().mapToDouble(Map.Entry::getValue).sum();
                     if (totalAmount <= 0) {
                         g2d.drawString("No expense data", getWidth() / 2 - 50, getHeight() / 2);
                         return;
                     }
-
-                    int diameter = Math.min(getWidth(), getHeight() - 40) - 20; // Larger chart
+    
+                    int diameter = Math.min(getWidth(), getHeight() - 40) - 20;
                     int radius = diameter / 2;
                     int innerRadius = radius / 2;
                     int centerX = getWidth() / 2;
@@ -740,7 +792,7 @@ public class PersonalCenterPanel extends JPanel {
                         new Color(240, 230, 140), new Color(221, 160, 221), new Color(173, 216, 230),
                         new Color(255, 218, 185), new Color(200, 162, 200)
                     };
-
+    
                     for (Map.Entry<String, Double> entry : expenseCategories) {
                         double percentage = entry.getValue() / totalAmount;
                         int arcAngle = (int) Math.round(percentage * 360);
@@ -752,8 +804,7 @@ public class PersonalCenterPanel extends JPanel {
                     }
                     g2d.setColor(Color.WHITE);
                     g2d.fillArc(centerX - innerRadius, centerY - innerRadius, innerRadius * 2, innerRadius * 2, 0, 360);
-
-                    // Scrolling percentage in center
+    
                     if (!expenseCategories.isEmpty()) {
                         Map.Entry<String, Double> entry = expenseCategories.get(expenseIndex % expenseCategories.size());
                         double percentage = totalAmount > 0 ? (entry.getValue() / totalAmount) * 100 : 0;
@@ -783,8 +834,8 @@ public class PersonalCenterPanel extends JPanel {
                             double arcAngle = total > 0 ? (entry.getValue() / total) * 360 : 0;
                             if (angle >= currentAngle && angle < currentAngle + arcAngle) {
                                 double percentage = total > 0 ? (entry.getValue() / total) * 100 : 0;
-                                if (selectedCategoryLabel != null) {
-                                    selectedCategoryLabel.setText(String.format("Expense: %s, ¥%.2f, %.1f%%",
+                                if (selectedExpenseCategoryLabel != null) {
+                                    selectedExpenseCategoryLabel.setText(String.format("Expense: %s, ¥%.2f, %.1f%%",
                                         entry.getKey(), entry.getValue(), percentage));
                                 }
                                 break;
@@ -801,27 +852,13 @@ public class PersonalCenterPanel extends JPanel {
             expenseTimer.start();
             return panel;
         }
-
-        public void updateData(List<Transaction> transactions, int selectedYear) {
-            incomeCategories.clear();
-            expenseCategories.clear();
-            Map<String, Double> incomeMap = new HashMap<>();
-            Map<String, Double> expenseMap = new HashMap<>();
-            for (Transaction tx : transactions) {
-                if (tx.time.startsWith(String.valueOf(selectedYear))) {
-                    if ("Income".equals(tx.operation)) {
-                        incomeMap.put(tx.category, incomeMap.getOrDefault(tx.category, 0.0) + tx.amount);
-                    } else if ("Expense".equals(tx.operation)) {
-                        expenseMap.put(tx.category, expenseMap.getOrDefault(tx.category, 0.0) + tx.amount);
-                    }
-                }
-            }
-            incomeCategories.addAll(incomeMap.entrySet());
-            expenseCategories.addAll(expenseMap.entrySet());
+    
+        public void setSelectedIncomeCategoryLabel(JLabel label) {
+            this.selectedIncomeCategoryLabel = label;
         }
-
-        public void setSelectedCategoryLabel(JLabel label) {
-            this.selectedCategoryLabel = label;
+    
+        public void setSelectedExpenseCategoryLabel(JLabel label) {
+            this.selectedExpenseCategoryLabel = label;
         }
     }
 
