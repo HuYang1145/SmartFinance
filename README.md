@@ -1,3 +1,6 @@
+# 运行命令  
+请在命令行输入**java -jar target/group19-1.0.0-shaded.jar**运行程序  
+
 # Folder Structure
 ## AI模型文件
 通过网盘分享的文件：dist.zip
