@@ -11,27 +11,21 @@ import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.event.ActionListener;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JPasswordField;
-import javax.swing.JScrollBar;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.ScrollPaneConstants;
-import javax.swing.SwingConstants;
+import javax.swing.*;
 import javax.swing.plaf.basic.BasicScrollBarUI;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 
+import Model.User;
+import Model.UserSession;
+import View.LoginAndMain.GradientComponents;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.DateAxis;
@@ -64,30 +58,65 @@ public class TransactionSystemPlane extends JPanel {
     }
 
     private void initializePanel() {
-        setLayout(new GridLayout(2, 3, 15, 15));
-        setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
-        setBackground(new Color(245, 245, 245));
+        // 1. 整个面板改用 BorderLayout
+        setLayout(new BorderLayout(0,0));
+        setBorder(BorderFactory.createEmptyBorder(15,15,15,15));
+        setBackground(new Color(245,245,245));
 
-        // First row
-        add(createExchangeRatePanel());
-        add(createCurrencyConversionPanel());
-        add(createHistoricalTrendPanel());
+        // 2. 左右两侧面板
+        JSplitPane left = createLeftPanel();
+        JPanel right = createRightPanel();
 
-        // Second row
-        add(createTransactionInputPanel());
-        add(createTransactionHistoryPanel());
-        add(createPlaceholderPanel());
+        // 3. 用 SplitPane 分割，左 2/3、右 1/3
+        JSplitPane split = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, left, right);
+        split.setResizeWeight(0.67);      // 左侧占 67%
+        split.setDividerSize(4);
+        split.setContinuousLayout(true);
+        split.setBorder(null);
+        split.setOpaque(false);
+
+        add(split, BorderLayout.CENTER);
+
+        // 界面可见后再定位分隔条比例
+        SwingUtilities.invokeLater(() -> split.setDividerLocation(0.67));
+    }
+
+    // 左侧：交易历史 + 操作按钮
+    private JSplitPane createLeftPanel() {
+        JPanel history = createTransactionHistoryPanel();
+        JPanel input   = createTransactionInputPanel();
+
+        JSplitPane vsplit = new JSplitPane(
+                JSplitPane.VERTICAL_SPLIT,
+                history,
+                input
+        );
+        vsplit.setResizeWeight(0.8);     // 上半部分（历史）占 50%
+        vsplit.setDividerSize(4);
+        vsplit.setBorder(null);
+        return vsplit;
+    }
+
+
+    // 右侧：汇率、转换、趋势，垂直排列
+    private JPanel createRightPanel() {
+        JPanel p = new JPanel(new GridLayout(3,1,0,0));
+        p.setOpaque(false);
+        p.add(createExchangeRatePanel());
+        p.add(createCurrencyConversionPanel());
+        p.add(createHistoricalTrendPanel());
+        return p;
     }
 
     // Module 1: Real-Time Exchange Rate Monitoring
     private JPanel createExchangeRatePanel() {
-        JPanel panel = new TransactionSystemComponents.DarkGradientPanel();
+        JPanel panel = new TransactionSystemComponents.BlueGradientPanel();
         panel.setLayout(new BorderLayout(10, 10));
         panel.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
 
         JLabel title = new JLabel("Real-Time Exchange Rates", SwingConstants.CENTER);
         title.setFont(new Font("Segoe UI", Font.BOLD, 20));
-        title.setForeground(Color.WHITE);
+        title.setForeground(new Color(0x2C3C49));
         panel.add(title, BorderLayout.NORTH);
 
         int nonBaseCount = 0;
@@ -126,7 +155,7 @@ public class TransactionSystemPlane extends JPanel {
         rateTable.setBackground(Color.WHITE);
         DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
         centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
-        centerRenderer.setForeground(Color.BLACK);
+        centerRenderer.setForeground(new Color(0x84ACC9));
         rateTable.getColumnModel().getColumn(0).setCellRenderer(centerRenderer);
         rateTable.getColumnModel().getColumn(1).setCellRenderer(centerRenderer);
 
@@ -166,7 +195,7 @@ public class TransactionSystemPlane extends JPanel {
 
         countdownLabel = new JLabel("Next refresh in 60 seconds", SwingConstants.CENTER);
         countdownLabel.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-        countdownLabel.setForeground(Color.WHITE);
+        countdownLabel.setForeground(new Color(0x2C3C49));
         panel.add(countdownLabel, BorderLayout.SOUTH);
 
         return panel;
@@ -174,13 +203,13 @@ public class TransactionSystemPlane extends JPanel {
 
     // Module 2: Currency Conversion
     private JPanel createCurrencyConversionPanel() {
-        JPanel panel = new TransactionSystemComponents.MidGradientPanel();
+        JPanel panel = new TransactionSystemComponents.BlueGradientPanel();
         panel.setLayout(new BorderLayout(10, 10));
         panel.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
 
         JLabel title = new JLabel("Currency Conversion", SwingConstants.CENTER);
         title.setFont(new Font("Segoe UI", Font.BOLD, 20));
-        title.setForeground(Color.WHITE);
+        title.setForeground(new Color(0x2C3C49));
         panel.add(title, BorderLayout.NORTH);
 
         JPanel formPanel = new JPanel(new GridBagLayout());
@@ -192,7 +221,7 @@ public class TransactionSystemPlane extends JPanel {
 
         JLabel amountLabel = new JLabel("Amount (CNY):");
         amountLabel.setFont(new Font("Segoe UI", Font.PLAIN, 16));
-        amountLabel.setForeground(Color.WHITE);
+        amountLabel.setForeground(new Color(0x2C3C49));
         gbc.gridx = 0;
         gbc.gridy = 0;
         formPanel.add(amountLabel, gbc);
@@ -205,7 +234,7 @@ public class TransactionSystemPlane extends JPanel {
 
         JLabel currencyLabel = new JLabel("Target Currency:");
         currencyLabel.setFont(new Font("Segoe UI", Font.PLAIN, 16));
-        currencyLabel.setForeground(Color.WHITE);
+        currencyLabel.setForeground(new Color(0x2C3C49));
         gbc.gridx = 0;
         gbc.gridy = 1;
         formPanel.add(currencyLabel, gbc);
@@ -218,7 +247,7 @@ public class TransactionSystemPlane extends JPanel {
 
         conversionResultLabel = new JLabel("Result: -", SwingConstants.CENTER);
         conversionResultLabel.setFont(new Font("Segoe UI", Font.PLAIN, 18));
-        conversionResultLabel.setForeground(Color.WHITE);
+        conversionResultLabel.setForeground(new Color(0x2C3C49));
         gbc.gridx = 0;
         gbc.gridy = 2;
         gbc.gridwidth = 2;
@@ -231,32 +260,59 @@ public class TransactionSystemPlane extends JPanel {
 
     // Module 3: Selected Currency Historical Exchange Rate Trend
     private JPanel createHistoricalTrendPanel() {
-        JPanel panel = new TransactionSystemComponents.MidGradientPanel();
+        JPanel panel = new TransactionSystemComponents.BlueGradientPanel();
         panel.setLayout(new BorderLayout(10, 10));
         panel.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
 
         JLabel title = new JLabel("Historical Exchange Rate Trend", SwingConstants.CENTER);
         title.setFont(new Font("Segoe UI", Font.BOLD, 20));
-        title.setForeground(Color.WHITE);
+        title.setForeground(Color.BLACK);
         panel.add(title, BorderLayout.NORTH);
 
+        // 1. 创建时间序列
         TimeSeries series = new TimeSeries("Rate");
+
+        // 2. 自动生成最近6个月的模拟数据
+        try {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM");
+            Calendar cal = Calendar.getInstance();
+            double baseRate = 6.90; // 设定基准汇率
+
+            for (int i = 5; i >= 0; i--) {
+                Calendar temp = (Calendar) cal.clone();
+                temp.add(Calendar.MONTH, -i);  // 往前推i个月
+                Date date = temp.getTime();
+                double rate = baseRate + Math.random() * 0.2 - 0.1; // 小幅随机波动（±0.1）
+                series.add(new org.jfree.data.time.Month(date), rate);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         TimeSeriesCollection dataset = new TimeSeriesCollection(series);
+
+        // 3. 创建 Chart
         JFreeChart chart = org.jfree.chart.ChartFactory.createTimeSeriesChart(
                 null, "Month", "Rate",
                 dataset, false, true, false
         );
+
+        // 4. 美化 Chart 样式
         DateAxis dateAxis = (DateAxis) chart.getXYPlot().getDomainAxis();
         dateAxis.setDateFormatOverride(new java.text.SimpleDateFormat("yyyy-MM"));
         dateAxis.setLabelFont(new Font("Segoe UI", Font.PLAIN, 12));
         dateAxis.setTickLabelFont(new Font("Segoe UI", Font.PLAIN, 12));
+
         chart.getXYPlot().getRangeAxis().setLabelFont(new Font("Segoe UI", Font.PLAIN, 12));
         chart.getXYPlot().getRangeAxis().setTickLabelFont(new Font("Segoe UI", Font.PLAIN, 12));
+
         chart.getXYPlot().setBackgroundPaint(Color.WHITE);
         chart.getXYPlot().setDomainGridlinePaint(new Color(200, 200, 200));
         chart.getXYPlot().setRangeGridlinePaint(new Color(200, 200, 200));
-        chart.getXYPlot().getRenderer().setSeriesPaint(0, new Color(255, 165, 0));
+
+        chart.getXYPlot().getRenderer().setSeriesPaint(0, new Color(255, 165, 0)); // 橙色曲线
         chart.getXYPlot().getRenderer().setSeriesStroke(0, new java.awt.BasicStroke(2.0f));
+
         ChartPanel chartPanel = new ChartPanel(chart);
         chartPanel.setDomainZoomable(false);
         chartPanel.setRangeZoomable(false);
@@ -265,6 +321,7 @@ public class TransactionSystemPlane extends JPanel {
 
         return panel;
     }
+
     private void customizeScrollBar(JScrollPane scrollPane) {
         JScrollBar vbar = scrollPane.getVerticalScrollBar();
         vbar.setOpaque(false);
@@ -284,7 +341,7 @@ public class TransactionSystemPlane extends JPanel {
             protected JButton createIncreaseButton(int orientation) {
                 return createZeroButton();
             }
-    
+
             private JButton createZeroButton() {
                 JButton btn = new JButton();
                 btn.setPreferredSize(new Dimension(0, 0));
@@ -300,281 +357,309 @@ public class TransactionSystemPlane extends JPanel {
         panel.setLayout(new BorderLayout(10, 10));
         panel.setBorder(BorderFactory.createCompoundBorder(
                 new LoginRoundedInputField.ShadowBorder(10, Color.LIGHT_GRAY, 20),
-                BorderFactory.createEmptyBorder(20, 10, 10, 10)));
+                BorderFactory.createEmptyBorder(20, 10, 10, 10)
+        ));
 
         JLabel titleLabel = new JLabel("Add Transaction", SwingConstants.CENTER);
         titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 20));
-        titleLabel.setForeground(Color.WHITE);
+        titleLabel.setForeground(new Color(0x2C3C49));
         panel.add(titleLabel, BorderLayout.NORTH);
 
-        JPanel formPanel = new JPanel(new GridBagLayout());
-        formPanel.setOpaque(false);
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(8, 8, 8, 8);
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.anchor = GridBagConstraints.WEST;
+        JPanel content = new JPanel(new BorderLayout(20, 0));
+        content.setOpaque(false);
 
-        // Operation
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        formPanel.add(new JLabel("Operation:"), gbc);
-        operationComboBox = new LoginRoundedInputField.RoundedComboBox<>(new String[]{"Income", "Expense"});
-        operationComboBox.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-        operationComboBox.setPreferredSize(new Dimension(200, 40));
-        gbc.gridx = 1;
-        formPanel.add(operationComboBox, gbc);
+        // 左侧：表单（不含 Password）
+        JScrollPane formScroll = new JScrollPane(buildFormPanel(false));
+        formScroll.setBorder(null);
+        formScroll.setOpaque(false);
+        formScroll.getViewport().setOpaque(false);
+        formScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        formScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        customizeScrollBar(formScroll);
+        content.add(formScroll, BorderLayout.CENTER);
 
-        // Amount
-        gbc.gridx = 0;
-        gbc.gridy++;
-        formPanel.add(new JLabel("Amount (¥):"), gbc);
-        transactionAmountField = new LoginRoundedInputField.RoundedTextField("Enter amount (e.g., 100.50)");
-        transactionAmountField.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-        gbc.gridx = 1;
-        formPanel.add(transactionAmountField, gbc);
+        // 右侧：Password输入框 + 确认/取消按钮
+        JPanel btnBox = new JPanel();
+        btnBox.setOpaque(false);
+        btnBox.setLayout(new BoxLayout(btnBox, BoxLayout.Y_AXIS));
 
-        // Time
-        gbc.gridx = 0;
-        gbc.gridy++;
-        formPanel.add(new JLabel("Time (yyyy/MM/dd HH:mm):"), gbc);
-        transactionTimeField = new LoginRoundedInputField.RoundedTextField(new SimpleDateFormat("yyyy/MM/dd HH:mm").format(new Date()));
-        transactionTimeField.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-        gbc.gridx = 1;
-        formPanel.add(transactionTimeField, gbc);
-
-        // Merchant
-        gbc.gridx = 0;
-        gbc.gridy++;
-        formPanel.add(new JLabel("Merchant (English):"), gbc);
-        merchantField = new LoginRoundedInputField.RoundedTextField("Enter merchant (e.g., Amazon)");
-        merchantField.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-        gbc.gridx = 1;
-        formPanel.add(merchantField, gbc);
-
-        // Type
-        gbc.gridx = 0;
-        gbc.gridy++;
-        formPanel.add(new JLabel("Type:"), gbc);
-        String[] types = {"food", "salary", "rent", "freelance", "investment", "shopping", "Electronics", "Fitness", "Transport", "Entertainment", "Travel", "Gift"};
-        typeComboBox = new LoginRoundedInputField.RoundedComboBox<>(types);
-        typeComboBox.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-        typeComboBox.setPreferredSize(new Dimension(200, 40));
-        gbc.gridx = 1;
-        formPanel.add(typeComboBox, gbc);
-
-        // Remark
-        gbc.gridx = 0;
-        gbc.gridy++;
-        formPanel.add(new JLabel("Remark (Optional):"), gbc);
-        remarkField = new LoginRoundedInputField.RoundedTextField("Enter remark (e.g., Grocery)");
-        remarkField.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-        gbc.gridx = 1;
-        formPanel.add(remarkField, gbc);
-
-        // Category
-        gbc.gridx = 0;
-        gbc.gridy++;
-        formPanel.add(new JLabel("Category (Purpose):"), gbc);
-        categoryField = new LoginRoundedInputField.RoundedTextField("Enter category (e.g., Household)");
-        categoryField.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-        gbc.gridx = 1;
-        formPanel.add(categoryField, gbc);
-
-        // Payment Method
-        gbc.gridx = 0;
-        gbc.gridy++;
-        formPanel.add(new JLabel("Payment Method:"), gbc);
-        paymentMethodField = new LoginRoundedInputField.RoundedTextField("Enter payment method (e.g., Credit Card)");
-        paymentMethodField.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-        gbc.gridx = 1;
-        formPanel.add(paymentMethodField, gbc);
-
-        // Location
-        gbc.gridx = 0;
-        gbc.gridy++;
-        formPanel.add(new JLabel("Location:"), gbc);
-        locationComboBox = new LoginRoundedInputField.RoundedComboBox<>(new String[]{"Online", "Offline"});
-        locationComboBox.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-        locationComboBox.setPreferredSize(new Dimension(200, 40));
-        gbc.gridx = 1;
-        formPanel.add(locationComboBox, gbc);
-
-        // Tag
-        gbc.gridx = 0;
-        gbc.gridy++;
-        formPanel.add(new JLabel("Tag (Optional):"), gbc);
-        tagField = new LoginRoundedInputField.RoundedTextField("Enter tag (e.g., Urgent)");
-        tagField.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-        gbc.gridx = 1;
-        formPanel.add(tagField, gbc);
-
-        // Attachment
-        gbc.gridx = 0;
-        gbc.gridy++;
-        formPanel.add(new JLabel("Attachment (Optional):"), gbc);
-        attachmentField = new LoginRoundedInputField.RoundedTextField("Enter attachment path (e.g., receipt.pdf)");
-        attachmentField.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-        gbc.gridx = 1;
-        formPanel.add(attachmentField, gbc);
-
-        // Recurrence
-        gbc.gridx = 0;
-        gbc.gridy++;
-        formPanel.add(new JLabel("Recurrence (Optional):"), gbc);
-        recurrenceField = new LoginRoundedInputField.RoundedTextField("Enter recurrence (e.g., Monthly)");
-        recurrenceField.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-        gbc.gridx = 1;
-        formPanel.add(recurrenceField, gbc);
-
-        // Password
-        gbc.gridx = 0;
-        gbc.gridy++;
-        formPanel.add(new JLabel("Password:"), gbc);
         passwordField = new LoginRoundedInputField.RoundedPasswordField("Enter password");
-        passwordField.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-        gbc.gridx = 1;
-        formPanel.add(passwordField, gbc);
+        passwordField.setMaximumSize(new Dimension(200, 40));
+        passwordField.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        // Add formPanel to a JScrollPane
-        JScrollPane scrollPane = new JScrollPane(formPanel);
-        scrollPane.setBorder(null);
-        scrollPane.setOpaque(false);
-        scrollPane.getViewport().setOpaque(false);
-        scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
-        scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        JButton confirm = new GradientComponents.GradientButton("Confirm Transaction");
+        confirm.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        JScrollBar vbar = scrollPane.getVerticalScrollBar();
-        vbar.setOpaque(false);
-        vbar.setUI(new BasicScrollBarUI() {
-            @Override
-            protected void configureScrollBarColors() {
-                this.thumbColor = new Color(255, 255, 255, 120);
-                this.trackColor = new Color(0, 0, 0, 0);
-            }
+        JButton cancel = new GradientComponents.GradientButton("Cancel");
+        cancel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-            @Override
-            protected JButton createDecreaseButton(int orientation) {
-                return createZeroButton();
-            }
+        btnBox.add(Box.createVerticalGlue());
+        btnBox.add(passwordField);
+        btnBox.add(Box.createVerticalStrut(20));
+        btnBox.add(confirm);
+        btnBox.add(Box.createVerticalStrut(20));
+        btnBox.add(cancel);
+        btnBox.add(Box.createVerticalGlue());
 
-            @Override
-            protected JButton createIncreaseButton(int orientation) {
-                return createZeroButton();
-            }
+        content.add(btnBox, BorderLayout.EAST);
 
-            private JButton createZeroButton() {
-                JButton btn = new JButton();
-                btn.setPreferredSize(new Dimension(0, 0));
-                btn.setMinimumSize(new Dimension(0, 0));
-                btn.setMaximumSize(new Dimension(0, 0));
-                return btn;
-            }
-        });
+        panel.add(content, BorderLayout.CENTER);
 
-        panel.add(scrollPane, BorderLayout.CENTER);
-
-        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 15, 10));
-        buttonPanel.setOpaque(false);
-        JButton confirmButton = new LoginRoundedInputField.GradientButton("Confirm Transaction");
-        confirmButton.addActionListener(e -> {
+        // Confirm按钮
+        confirm.addActionListener(e -> {
             if (transactionActionListener != null) {
                 transactionActionListener.actionPerformed(e);
             }
         });
 
-        JButton cancelButton = new LoginRoundedInputField.GradientButton("Cancel");
-        cancelButton.addActionListener(e -> {
+// Cancel按钮
+        cancel.addActionListener(e -> {
             transactionAmountField.setText("");
             transactionTimeField.setText(new SimpleDateFormat("yyyy/MM/dd HH:mm").format(new Date()));
-            merchantField.setText("");
+            merchantField.setText("Enter merchant (e.g., Amazon)");
             typeComboBox.setSelectedIndex(0);
-            remarkField.setText("");
-            categoryField.setText("");
-            paymentMethodField.setText("");
+            remarkField.setText("Enter remark (e.g., Grocery)");
+            categoryField.setText("Enter category (e.g., Household)");
+            paymentMethodField.setText("Enter payment method (e.g., Credit Card)");
             locationComboBox.setSelectedIndex(0);
-            tagField.setText("");
-            attachmentField.setText("");
-            recurrenceField.setText("");
-            passwordField.setText("");
+            tagField.setText("Enter tag (e.g., Urgent)");
+            attachmentField.setText("Enter attachment path (e.g., receipt.pdf)");
+            recurrenceField.setText("Enter recurrence (e.g., Monthly)");
+            passwordField.setText("Enter password");
         });
-
-        buttonPanel.add(confirmButton);
-        buttonPanel.add(cancelButton);
-        panel.add(buttonPanel, BorderLayout.SOUTH);
 
         return panel;
     }
 
+
+    // 把你原来那一大块 GridBagLayout 代码提炼到这里
+    private JPanel buildFormPanel(boolean includePassword) {
+        JPanel form = new JPanel(new GridBagLayout());
+        form.setOpaque(false);
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(8, 8, 8, 8);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.anchor = GridBagConstraints.LINE_START; // 左对齐
+        gbc.weightx = 1.0;  // 让输入框撑满
+
+        int y = 0;
+
+        // Operation
+        gbc.gridx = 0; gbc.gridy = y;
+        form.add(createWhiteLabel("Operation:"), gbc);
+        gbc.gridx = 1;
+        form.add(operationComboBox = new LoginRoundedInputField.RoundedComboBox<>(
+                new String[]{"Income", "Expense"}), gbc);
+        y++;
+
+        // Amount
+        gbc.gridx = 0; gbc.gridy = y;
+        form.add(createWhiteLabel("Amount (¥):"), gbc);
+        gbc.gridx = 1;
+        form.add(transactionAmountField = new LoginRoundedInputField.RoundedTextField(
+                "Enter amount (e.g., 100.50)"), gbc);
+        y++;
+
+        // Time
+        gbc.gridx = 0; gbc.gridy = y;
+        form.add(createWhiteLabel("Time (yyyy/MM/dd HH:mm):"), gbc);
+        gbc.gridx = 1;
+        form.add(transactionTimeField = new LoginRoundedInputField.RoundedTextField(
+                new SimpleDateFormat("yyyy/MM/dd HH:mm").format(new Date())), gbc);
+        y++;
+
+        // Merchant
+        gbc.gridx = 0; gbc.gridy = y;
+        form.add(createWhiteLabel("Merchant (English):"), gbc);
+        gbc.gridx = 1;
+        form.add(merchantField = new LoginRoundedInputField.RoundedTextField(
+                "Enter merchant (e.g., Amazon)"), gbc);
+        y++;
+
+        // Type
+        gbc.gridx = 0; gbc.gridy = y;
+        form.add(createWhiteLabel("Type:"), gbc);
+        gbc.gridx = 1;
+        form.add(typeComboBox = new LoginRoundedInputField.RoundedComboBox<>(
+                new String[]{"food", "salary", "rent", "freelance", "investment",
+                        "shopping", "Electronics", "Fitness", "Transport",
+                        "Entertainment", "Travel", "Gift"}), gbc);
+        y++;
+
+        // Remark
+        gbc.gridx = 0; gbc.gridy = y;
+        form.add(createWhiteLabel("Remark (Optional):"), gbc);
+        gbc.gridx = 1;
+        form.add(remarkField = new LoginRoundedInputField.RoundedTextField(
+                "Enter remark (e.g., Grocery)"), gbc);
+        y++;
+
+        // Category
+        gbc.gridx = 0; gbc.gridy = y;
+        form.add(createWhiteLabel("Category (Purpose):"), gbc);
+        gbc.gridx = 1;
+        form.add(categoryField = new LoginRoundedInputField.RoundedTextField(
+                "Enter category (e.g., Household)"), gbc);
+        y++;
+
+        // Payment Method
+        gbc.gridx = 0; gbc.gridy = y;
+        form.add(createWhiteLabel("Payment Method:"), gbc);
+        gbc.gridx = 1;
+        form.add(paymentMethodField = new LoginRoundedInputField.RoundedTextField(
+                "Enter payment method (e.g., Credit Card)"), gbc);
+        y++;
+
+        // Location
+        gbc.gridx = 0; gbc.gridy = y;
+        form.add(createWhiteLabel("Location:"), gbc);
+        gbc.gridx = 1;
+        form.add(locationComboBox = new LoginRoundedInputField.RoundedComboBox<>(
+                new String[]{"Online", "Offline"}), gbc);
+        y++;
+
+        // Tag
+        gbc.gridx = 0; gbc.gridy = y;
+        form.add(createWhiteLabel("Tag (Optional):"), gbc);
+        gbc.gridx = 1;
+        form.add(tagField = new LoginRoundedInputField.RoundedTextField(
+                "Enter tag (e.g., Urgent)"), gbc);
+        y++;
+
+        // Attachment
+        gbc.gridx = 0; gbc.gridy = y;
+        form.add(createWhiteLabel("Attachment (Optional):"), gbc);
+        gbc.gridx = 1;
+        form.add(attachmentField = new LoginRoundedInputField.RoundedTextField(
+                "Enter attachment path (e.g., receipt.pdf)"), gbc);
+        y++;
+
+        // Recurrence
+        gbc.gridx = 0; gbc.gridy = y;
+        form.add(createWhiteLabel("Recurrence (Optional):"), gbc);
+        gbc.gridx = 1;
+        form.add(recurrenceField = new LoginRoundedInputField.RoundedTextField(
+                "Enter recurrence (e.g., Monthly)"), gbc);
+
+        // ➡️ 不加 Password（因为 Password 移到右边了）
+        return form;
+    }
+
+    private JLabel createWhiteLabel(String text) {
+        JLabel label = new JLabel(text);
+        label.setForeground(new Color(0x2C3C49));
+        label.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        return label;
+    }
+
+
     // Module 5: Transaction History (Detailed)
     private JPanel createTransactionHistoryPanel() {
-        JPanel panel = new TransactionSystemComponents.DarkGradientPanel();
-        panel.setLayout(new BorderLayout(10, 10));
-        panel.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
-    
-        JLabel title = new JLabel("Transaction History", SwingConstants.CENTER);
-        title.setFont(new Font("Segoe UI", Font.BOLD, 20));
-        title.setForeground(Color.WHITE);
-        panel.add(title, BorderLayout.NORTH);
-    
-        String[] columnNames = {"Operation", "Amount (¥)", "Time", "Merchant", "Type", "Remark"};
-        DefaultTableModel tableModel = new DefaultTableModel(columnNames, 0) {
-            @Override
-            public boolean isCellEditable(int row, int column) {
-                return false;
+        // 整体容器：白底
+        JPanel container = new JPanel(new BorderLayout());
+        container.setBorder(BorderFactory.createEmptyBorder(0, 30, 0, 10));
+        container.setBackground(Color.WHITE);
+
+        // 1. 渐变色头部：显示余额
+        TransactionSystemComponents.DarkGradientPanel header = new TransactionSystemComponents.DarkGradientPanel();
+        header.setPreferredSize(new Dimension(0, 120));
+        header.setLayout(null);
+        User acct = UserSession.getCurrentAccount();
+        JLabel lbl = new JLabel(
+                String.format("Your Balance: %.2f CNY", acct.getBalance()),
+                SwingConstants.LEFT
+        );
+        lbl.setFont(new Font("Segoe UI", Font.BOLD, 28));
+        lbl.setForeground(new Color(0x2C3C49));
+        lbl.setBounds(20, 20, 400, 40);
+        header.add(lbl);
+        container.add(header, BorderLayout.NORTH);
+
+        Calendar cal = Calendar.getInstance();
+        String ym = String.format("%d/%02d",
+                cal.get(Calendar.YEAR),
+                cal.get(Calendar.MONTH) + 1
+        );
+        List<Transaction> all = TransactionController.readTransactions(username);
+        DefaultListModel<Transaction> model = new DefaultListModel<>();
+        for (Transaction t : all) {
+            if (t.getTimestamp().startsWith(ym)) {
+                model.addElement(t);
             }
-        };
-        transactionTable = new JTable(tableModel);
-        transactionTable.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-        transactionTable.setRowHeight(30);
-        transactionTable.setShowGrid(false);
-        transactionTable.setOpaque(false);
-        transactionTable.setBackground(new Color(0, 0, 0, 0)); // 完全透明背景
-        transactionTable.setForeground(Color.BLACK);
-    
-        DefaultTableCellRenderer renderer = new DefaultTableCellRenderer() {
+        }
+
+        // 3. 用 JList + 自定义渲染器
+        JList<Transaction> list = new JList<>(model);
+        list.setCellRenderer(new ListCellRenderer<Transaction>() {
             @Override
-            public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-                Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-                c.setBackground(new Color(255, 255, 255, 200)); // 半透明白色背景
-                c.setForeground(Color.BLACK);
-                ((JLabel) c).setHorizontalAlignment(SwingConstants.CENTER);
-                return c;
+            public Component getListCellRendererComponent(JList<? extends Transaction> list,
+                                                          Transaction t, int idx,
+                                                          boolean isSel, boolean cellHasFocus) {
+                // 每一行都是一个 BorderLayout 容器
+                JPanel row = new JPanel(new BorderLayout());
+                row.setBackground(Color.WHITE);
+                row.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, new Color(230,230,230)));
+                row.setPreferredSize(new Dimension(0, 80));
+
+                // 左：操作 + 时间（垂直排）
+                JPanel left = new JPanel();
+                left.setLayout(new BoxLayout(left, BoxLayout.Y_AXIS));
+                left.setOpaque(false);
+                JLabel op = new JLabel("  " + t.getOperation());
+                op.setFont(new Font("Segoe UI", Font.BOLD, 14));
+                JLabel ti = new JLabel(" " + t.getTimestamp());
+                ti.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+                ti.setForeground(Color.GRAY);
+                left.add(op);
+                left.add(ti);
+                row.add(left, BorderLayout.WEST);
+
+                // 右：金额，红/绿色
+                String opText = t.getOperation().toLowerCase();
+                String amountText;
+                if (opText.contains("income") || opText.contains("receive")) {
+                    amountText = String.format("+%.2f", t.getAmount());
+                } else {
+                    amountText = String.format("-%.2f", Math.abs(t.getAmount()));
+                }
+                JLabel amt = new JLabel(amountText, SwingConstants.RIGHT);
+                amt.setFont(new Font("Segoe UI", Font.BOLD, 14));
+
+                if (opText.contains("income") || opText.contains("receive")) {
+                    amt.setForeground(new Color(0,150,0));  // 绿色
+                } else {
+                    amt.setForeground(new Color(200,0,0));  // 红色
+                }
+                row.add(amt, BorderLayout.EAST);
+
+
+                if (isSel) {
+                    row.setBackground(new Color(230,240,255));
+                }
+                return row;
             }
-        };
-        for (int i = 0; i < transactionTable.getColumnCount(); i++) {
-            transactionTable.getColumnModel().getColumn(i).setCellRenderer(renderer);
-        }
-    
-        JTableHeader header = transactionTable.getTableHeader();
-        header.setFont(new Font("Segoe UI", Font.BOLD, 14));
-        header.setOpaque(false);
-        header.setBackground(new Color(0, 0, 0, 0)); // 透明表头背景
-        header.setForeground(Color.WHITE);
-        header.setBorder(null); // 移除表头边框
-    
-        JScrollPane scrollPane = new JScrollPane(transactionTable);
-        scrollPane.setBorder(null); // 移除所有边框
-        scrollPane.setOpaque(false);
-        scrollPane.getViewport().setOpaque(false);
-        scrollPane.setBackground(new Color(0, 0, 0, 0)); // 透明背景
-        scrollPane.getViewport().setBorder(null); // 移除视口边框
-        customizeScrollBar(scrollPane);
-        panel.add(scrollPane, BorderLayout.CENTER);
-    
-        // Load transaction data
-        List<Transaction> transactions = TransactionController.readTransactions(username);
-        for (Transaction tx : transactions) {
-            tableModel.addRow(new Object[]{
-                    tx.getOperation(),
-                    tx.getAmount(),
-                    tx.getTimestamp(),
-                    tx.getMerchant(),
-                    tx.getType(),
-                    tx.getRemark()
-            });
-        }
-    
-        return panel;
+        });
+
+        // 4. 装到 JScrollPane，白底滚动区 + 自定义滚动条
+        JScrollPane scroll = new JScrollPane(list);
+        scroll.setBorder(BorderFactory.createEmptyBorder());
+        scroll.getViewport().setBackground(new Color(0xFAF0D2));
+        scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+        scroll.getVerticalScrollBar().setUI(new BasicScrollBarUI() {
+            @Override protected void configureScrollBarColors() {
+                thumbColor = Color.WHITE;
+                trackColor = new Color(245,245,245);
+            }
+            @Override protected JButton createDecreaseButton(int o){ return zero(); }
+            @Override protected JButton createIncreaseButton(int o){ return zero(); }
+            private JButton zero(){
+                JButton b = new JButton(); b.setPreferredSize(new Dimension(0,0));
+                b.setBorder(null); b.setContentAreaFilled(false); return b;
+            }
+        });
+
+        container.add(scroll, BorderLayout.CENTER);
+        return container;
     }
 
     // Module 6: Placeholder Panel

@@ -974,6 +974,7 @@ public class BillPanel extends JPanel {
         }
     }
 
+
     private static class ModernScrollBarUI extends BasicScrollBarUI {
         private static final Color TRACK_COLOR = new Color(240, 240, 240);
         private static final Color THUMB_COLOR = new Color(100, 149, 237);

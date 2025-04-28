@@ -13,7 +13,12 @@ import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.SwingWorker;
 
+import Repository.TransactionRepository;
+import Repository.UserRepository;
+import Service.AIService;
+import Service.DeepSeekService;
 import Service.ExchangeRateService;
+import Service.TransactionService;
 import View.AI.AIPanel;
 import View.Bill.BillPanel;
 import View.BudgetAdvisor.BudgetManagementPanel;
@@ -29,6 +34,7 @@ public class MainPanelController {
     private final CardLayout cardLayout;
     private PersonalCenterPanel personalCenterPanel;
     private TransactionSystemController transactionSystemController;
+    private AIController aiController;
 
     public MainPanelController(String username, JPanel contentPanel, PersonCenterController personCenterController, BillController billController, CardLayout cardLayout) {
         this.username = username;
@@ -87,7 +93,9 @@ public class MainPanelController {
                     return personalCenterPanel;
                 case "AI Assistant":
                     System.out.println("Loading AI Assistant panel");
-                    return new AIPanel();
+                    AIPanel aiPanel = new AIPanel();
+                    aiController = new AIController(aiPanel,new AIService(new TransactionService(new TransactionRepository()),new DeepSeekService(),new UserRepository()));
+                    return aiPanel;
                 case "Transaction System":
                     System.out.println("Loading Transaction System panel");
                     TransactionSystemPlane transactionSystemPlane = new TransactionSystemPlane(username);

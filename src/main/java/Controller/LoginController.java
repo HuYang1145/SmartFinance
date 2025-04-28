@@ -10,6 +10,7 @@ import Service.PersonChartDataService;
 import Service.PersonFinancialService;
 import View.LoginAndMain.Login;
 import View.LoginAndMain.MainPlane;
+import Controller.AIController;
 
 public class LoginController {
     private final AccountRepository accountRepository;

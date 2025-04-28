@@ -1,12 +1,6 @@
 package View.LoginAndMain;
 
-import java.awt.CardLayout;
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.GradientPaint;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.RenderingHints;
+import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.List;
@@ -24,15 +18,18 @@ public class NavItemPanel extends JPanel {
     private JLabel iconLabel;
     private JLabel textLabel;
     private boolean selected = false;
-    private Color start = new Color(156, 39, 176);
-    private Color end = new Color(0, 47, 167);
+    private Color start = new Color(0x84ACC9);
+    private Color end = new Color(0xA1DDA3);
     private String name;
     private CardLayout cardLayout;
     private JPanel contentPanel;
     private List<NavItemPanel> navItems;
     private MainPanelController contentPanelManager;
 
-    public static class GradientLabel extends JLabel {
+    static class GradientLabel extends JLabel {
+        private Color c1 = new Color(0x84ACC9);
+        private Color c2 = new Color(0xA1DDA3);
+
         public GradientLabel(String text) {
             super(text);
             setOpaque(false);
@@ -41,19 +38,33 @@ public class NavItemPanel extends JPanel {
         @Override
         protected void paintComponent(Graphics g) {
             Graphics2D g2 = (Graphics2D) g.create();
-            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-            int w = getWidth(), h = getHeight();
-            GradientPaint gp = new GradientPaint(0, 0, new Color(0x9C27B0), w, 0, new Color(0x002FA7));
-            g2.setPaint(gp);
-            g2.fillRect(0, 0, w, h);
-            g2.dispose();
-            super.paintComponent(g);
-        }
-    }
+            g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
+                    RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 
+            FontMetrics fm = g2.getFontMetrics(getFont());
+            int textWidth = fm.stringWidth(getText());
+            int textHeight = fm.getHeight();
+
+            // 构造水平渐变
+            GradientPaint gp = new GradientPaint(
+                    0, 0, c1,
+                    textWidth, 0, c2
+            );
+            g2.setPaint(gp);
+            g2.setFont(getFont());
+
+            // 文本基线
+            int x = 0;
+            int y = fm.getAscent();
+
+            g2.drawString(getText(), x, y);
+            g2.dispose();
+        }
+
+    }
     public static class CircleIcon extends JLabel {
-        private Color color1 = new Color(0x9C27B0);
-        private Color color2 = new Color(0x002FA7);
+        private Color color1 = new Color(0x84ACC9);
+        private Color color2 = new Color(0xA1DDA3);
 
         public CircleIcon(String text) {
             super(text, SwingConstants.CENTER);
@@ -113,7 +124,11 @@ public class NavItemPanel extends JPanel {
     private void initialize() {
         setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
         setOpaque(false);
-        setPreferredSize(new java.awt.Dimension(Short.MAX_VALUE, 60));
+        setPreferredSize(new Dimension(Short.MAX_VALUE, 60));
+        Dimension fix = getPreferredSize();
+        setMaximumSize(fix);
+        setMinimumSize(fix);
+
         setBorder(new EmptyBorder(0, 12, 0, 12));
 
         if ("Logout".equals(name) || name.startsWith("Welcome, ")) {

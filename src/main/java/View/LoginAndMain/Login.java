@@ -35,13 +35,9 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.plaf.basic.BasicScrollBarUI;
 
 import Controller.LoginController;
-import View.LoginAndMain.LoginComponents.GradientTextButton;
-import View.LoginAndMain.LoginComponents.LoginGradientPanel;
-import View.LoginAndMain.LoginComponents.RoundBorder;
-import View.LoginAndMain.LoginComponents.RoundedComboBox;
-import View.LoginAndMain.LoginComponents.RoundedPasswordField;
-import View.LoginAndMain.LoginComponents.RoundedTextField;
 import View.LoginAndMain.NavItemPanel.GradientLabel;
+import View.LoginAndMain.GradientComponents.*;
+import View.LoginAndMain.LoginRoundedInputField.*;
 
 public class Login extends JFrame {
     private JPanel sidebar;
@@ -131,7 +127,7 @@ public class Login extends JFrame {
     }
 
     private JPanel createWelcomePanel() {
-        JPanel p = new LoginGradientPanel();
+        JPanel p = new GradientPanel();
         p.setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.fill = GridBagConstraints.HORIZONTAL;
@@ -201,7 +197,7 @@ public class Login extends JFrame {
     }
 
     private JPanel createLoginPanel() {
-        JPanel p = new LoginGradientPanel();
+        JPanel p = new GradientPanel();
         p.setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.fill = GridBagConstraints.NONE;
@@ -255,7 +251,7 @@ public class Login extends JFrame {
     }
 
     private JPanel createRegisterPanel() {
-        JPanel p = new LoginGradientPanel();
+        JPanel p = new GradientPanel();
         p.setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.fill = GridBagConstraints.NONE;

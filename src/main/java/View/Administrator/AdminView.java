@@ -41,6 +41,8 @@ import Model.User;
 import Model.UserSession;
 import View.LoginAndMain.LoginComponents;
 
+import static View.LoginAndMain.LoginComponents.showCustomMessage;
+
 public class AdminView extends JDialog {
     public final CardLayout cardLayout;
     public JPanel contentPanel;
@@ -299,7 +301,7 @@ public class AdminView extends JDialog {
     public void updateAccountTable(List<User> accounts) {
         tableModel.setRowCount(0);
         if (accounts == null || accounts.isEmpty()) {
-            LoginComponents.showCustomMessage(this, "No accounts found!", "Information", JOptionPane.INFORMATION_MESSAGE);
+            showCustomMessage(this, "No accounts found!", "Information", JOptionPane.INFORMATION_MESSAGE);
             return;
         }
 

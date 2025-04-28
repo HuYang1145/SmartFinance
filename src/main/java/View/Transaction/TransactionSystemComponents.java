@@ -24,12 +24,13 @@ import javax.swing.border.Border;
 import javax.swing.plaf.basic.BasicComboBoxUI;
 import javax.swing.plaf.basic.BasicComboPopup;
 import javax.swing.table.DefaultTableCellRenderer;
+import View.LoginAndMain.LoginRoundedInputField.*;
 
 public class TransactionSystemComponents {
     // Gradient Panels
     public static class DarkGradientPanel extends JPanel {
-        private static final Color DARK_GRADIENT_START = new Color(156, 39, 176);
-        private static final Color DARK_GRADIENT_END = new Color(40, 100, 250);
+        private static final Color DARK_GRADIENT_START = new Color(0x84ACC9);
+        private static final Color DARK_GRADIENT_END = new Color(0xFAF0D2);
 
         @Override
         protected void paintComponent(Graphics g) {
@@ -42,8 +43,8 @@ public class TransactionSystemComponents {
     }
 
     public static class MidGradientPanel extends JPanel {
-        private static final Color MID_GRADIENT_START = new Color(180, 60, 200);
-        private static final Color MID_GRADIENT_END = new Color(60, 120, 250);
+        private static final Color MID_GRADIENT_START = new Color(0x84ACC9);
+        private static final Color MID_GRADIENT_END = new Color(0xFAF0D2);
 
         @Override
         protected void paintComponent(Graphics g) {
@@ -55,9 +56,10 @@ public class TransactionSystemComponents {
         }
     }
 
-    public static class LightGradientPanel extends JPanel {
-        private static final Color LIGHT_GRADIENT_START = new Color(200, 80, 220);
-        private static final Color LIGHT_GRADIENT_END = new Color(80, 140, 255);
+    public static class BlueGradientPanel extends JPanel {
+        private static final Color LIGHT_GRADIENT_START = new Color(0x84ACC9);
+        private static final Color LIGHT_GRADIENT_END = new Color(0xFAF0D2) ;
+
 
         @Override
         protected void paintComponent(Graphics g) {
@@ -69,48 +71,17 @@ public class TransactionSystemComponents {
         }
     }
 
-    // Gradient Text Button
-    public static class GradientTextButton extends JButton {
-        private Color colorStart = new Color(156, 39, 176);
-        private Color colorEnd = new Color(0, 47, 167);
-
-        public GradientTextButton(String text) {
-            super(text);
-            setFocusPainted(false);
-            setContentAreaFilled(true);
-            setOpaque(true);
-            setBorderPainted(false);
-            setBackground(Color.WHITE);
-            setFont(new Font("Segoe UI", Font.BOLD, 20));
-            setCursor(java.awt.Cursor.getPredefinedCursor(java.awt.Cursor.HAND_CURSOR));
-
-            addMouseListener(new MouseAdapter() {
-                @Override
-                public void mouseEntered(MouseEvent e) {
-                    setBackground(new Color(245, 245, 255));
-                }
-
-                @Override
-                public void mouseExited(MouseEvent e) {
-                    setBackground(Color.WHITE);
-                }
-            });
-        }
+    public static class LightGradientPanel extends JPanel {
+        private static final Color LIGHT_GRADIENT_START = new Color(0x84ACC9);
+        private static final Color LIGHT_GRADIENT_END = new Color(0xFAF0D2);
 
         @Override
         protected void paintComponent(Graphics g) {
-            super.paintComponent(g);
-            Graphics2D g2 = (Graphics2D) g.create();
-            g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-            java.awt.FontMetrics fm = g2.getFontMetrics();
-            int textWidth = fm.stringWidth(getText());
-            int x = (getWidth() - textWidth) / 2;
-            int y = (getHeight() + fm.getAscent() - fm.getDescent()) / 2;
-            GradientPaint gp = new GradientPaint(x, 0, colorStart, x + textWidth, 0, colorEnd);
+            Graphics2D g2 = (Graphics2D) g;
+            int w = getWidth(), h = getHeight();
+            GradientPaint gp = new GradientPaint(0, 0, LIGHT_GRADIENT_START, w, h, LIGHT_GRADIENT_END);
             g2.setPaint(gp);
-            g2.setFont(getFont());
-            g2.drawString(getText(), x, y);
-            g2.dispose();
+            g2.fillRect(0, 0, w, h);
         }
     }
 
@@ -190,33 +161,6 @@ public class TransactionSystemComponents {
         }
 
         // 自定义圆弧边框
-        private static class RoundedBorder implements Border {
-            private int radius;
-            private Color borderColor;
-
-            public RoundedBorder(int radius, Color borderColor) {
-                this.radius = radius;
-                this.borderColor = borderColor;
-            }
-
-            @Override
-            public void paintBorder(Component c, Graphics g, int x, int y, int width, int height) {
-                Graphics2D g2 = (Graphics2D) g;
-                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                g2.setColor(borderColor);
-                g2.drawRoundRect(x, y, width - 1, height - 1, radius, radius);
-            }
-
-            @Override
-            public Insets getBorderInsets(Component c) {
-                return new Insets(radius / 2, radius / 2, radius / 2, radius / 2);
-            }
-
-            @Override
-            public boolean isBorderOpaque() {
-                return false;
-            }
-        }
 
         // 自定义 UI 以处理下拉箭头
         private class RoundedComboBoxUI extends BasicComboBoxUI {

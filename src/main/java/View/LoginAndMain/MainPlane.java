@@ -27,6 +27,7 @@ import Controller.BillController;
 import Controller.MainPanelController;
 import Controller.PersonCenterController;
 import Model.UserSession;
+import View.LoginAndMain.LoginRoundedInputField.*;
 
 public class MainPlane extends JFrame {
     private JPanel contentPanel;
@@ -205,7 +206,7 @@ public class MainPlane extends JFrame {
         tf.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         tf.setBackground(new Color(240, 240, 240));
         tf.setBorder(BorderFactory.createCompoundBorder(
-                new LoginComponents.RoundBorder(17, new Color(200, 200, 200)),
+                new RoundBorder(17, new Color(200, 200, 200)),
                 BorderFactory.createEmptyBorder(4, 10, 4, 10)
         ));
         tf.setText(placeholder);

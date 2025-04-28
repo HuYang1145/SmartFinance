@@ -99,7 +99,7 @@ public class AIPanel extends JPanel {
                 super.paintComponent(g);
                 Graphics2D g2 = (Graphics2D) g;
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                GradientPaint gp = new GradientPaint(0, 0, new Color(0x9C, 0x27, 0xB0), getWidth(), 0, new Color(0x00, 0x2F, 0xA7));
+                GradientPaint gp = new GradientPaint(0, 0,Color.decode("#84ACC9"), getWidth(), 0, Color.decode("#A1DDA3"));
                 g2.setPaint(gp);
                 g2.fillRect(0, 0, getWidth(), getHeight());
             }
@@ -123,7 +123,7 @@ public class AIPanel extends JPanel {
                 super.paintComponent(g);
                 Graphics2D g2 = (Graphics2D) g;
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                GradientPaint gp = new GradientPaint(0, 0, new Color(0x9C, 0x27, 0xB0, 200), 0, getHeight(), new Color(0x00, 0x2F, 0xA7, 200));
+                GradientPaint gp = new GradientPaint(0, 0, new Color(0x84ACC9), 0, getHeight(), Color.decode("#A1DDA3"));
                 g2.setPaint(gp);
                 g2.fillRoundRect(0, 0, getWidth(), getHeight(), 20, 20);
             }
@@ -157,7 +157,7 @@ public class AIPanel extends JPanel {
             protected void paintComponent(Graphics g) {
                 Graphics2D g2 = (Graphics2D) g.create();
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                Color c = isUser ? new Color(0x9C27B0) : new Color(0x002FA7);
+                Color c = isUser ? Color.decode("#A1DDA3") :Color.decode("#84ACC9");
                 g2.setColor(c);
                 g2.fillOval(0, 0, getWidth(), getHeight());
                 g2.setColor(Color.WHITE);
@@ -200,7 +200,7 @@ public class AIPanel extends JPanel {
             protected void paintComponent(Graphics g) {
                 Graphics2D g2 = (Graphics2D) g.create();
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                Color bg = isUser ? new Color(0xE1BEE7) : new Color(0xE3F2FD);
+                Color bg = isUser ? Color.decode("#A1DDA3") : Color.decode("#84ACC9");
                 g2.setColor(bg);
                 g2.fillRoundRect(0, 0, getWidth(), getHeight(), 16, 16);
                 g2.dispose();
