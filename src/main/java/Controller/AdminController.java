@@ -1,0 +1,200 @@
+package Controller;
+
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.List;
+import java.util.Set;
+
+import javax.swing.JOptionPane;
+
+import Model.User;
+import Model.UserSession;
+import Repository.AccountRepository;
+import View.Administrator.AdminView;
+import View.LoginAndMain.LoginComponents;
+
+
+public class AdminController {
+    private final AccountRepository accountRepository;
+    private AdminView view; // 初始为 null
+
+    public AdminController(AccountRepository accountRepository) {
+        this.accountRepository = accountRepository;
+        try {
+            ensureFileExists("accounts.csv", AccountRepository.EXPECTED_ACCOUNT_HEADER);
+            ensureFileExists("transactions.csv", TransactionController.CSV_HEADER);
+        } catch (IOException e) {
+            // 记录错误，但不创建 AdminView
+            System.err.println("Error initializing files: " + e.getMessage());
+        }
+    }
+
+    // 延迟初始化 AdminView
+    private void initializeView() {
+        if (view == null) {
+            view = new AdminView(
+                    this::showDashboard,
+                    () -> view.showAdminInfoDialog(),
+                    this::handleModifyCustomer,
+                    this::handleCustomerInquiry,
+                    this::handleDeleteUsers,
+                    this::handleImportAccounts,
+                    this::handleImportTransactions,
+                    this::handleLogout
+            );
+        }
+    }
+
+    private void showDashboard() {
+        initializeView();
+        view.cardLayout.show(view.contentPanel, "dashboard");
+    }
+
+    private void handleModifyCustomer(String[] credentials) {
+        initializeView();
+        String username = credentials[0];
+        String password = credentials[1];
+
+        User adminAccount = accountRepository.findByUsername(username);
+        boolean isValidAdmin = adminAccount != null && adminAccount.getPassword().equals(password) && adminAccount.isAdmin();
+
+        if (isValidAdmin) {
+            String customerUsername = JOptionPane.showInputDialog(view, "Please enter the customer username to modify:");
+            if (customerUsername != null && !customerUsername.trim().isEmpty()) {
+                User targetAccount = accountRepository.findByUsername(customerUsername.trim());
+                if (targetAccount != null) {
+                    view.showModifyCustomerDialog(targetAccount, this::handleModifyConfirm);
+                } else {
+                    LoginComponents.showCustomMessage(view, "Customer username '" + customerUsername + "' not found!", "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            } else if (customerUsername != null) {
+                LoginComponents.showCustomMessage(view, "Customer username cannot be empty.", "Input Error", JOptionPane.WARNING_MESSAGE);
+            }
+        } else {
+            LoginComponents.showCustomMessage(view, "Invalid admin username or password, or not an admin account!", "Verification Failed", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void handleModifyConfirm(AdminView.ModifyCustomerDialog modifyView) {
+        String username = modifyView.getUsername();
+        String password = modifyView.getPassword();
+        String phone = modifyView.getPhone();
+        String email = modifyView.getEmail();
+        String gender = modifyView.getGender();
+        String address = modifyView.getAddress();
+        String accountStatusStr = modifyView.getAccountStatus();
+        String adminPassword = modifyView.getAdminPassword();
+        String currentAdminUsername = UserSession.getCurrentUsername();
+
+        try {
+            User adminAccount = accountRepository.findByUsername(currentAdminUsername);
+            if (currentAdminUsername == null || adminAccount == null || !adminAccount.getPassword().equals(adminPassword) || !adminAccount.isAdmin()) {
+                LoginComponents.showCustomMessage(modifyView, "Admin password incorrect or not logged in as admin!", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            User account = accountRepository.findByUsername(username);
+            if (account != null) {
+                account.setPassword(password);
+                account.setPhone(phone);
+                account.setEmail(email);
+                account.setGender(gender);
+                account.setAddress(address);
+
+                try {
+                    User.AccountStatus accountStatus = User.AccountStatus.valueOf(accountStatusStr.toUpperCase());
+                    account.setAccountStatus(accountStatus);
+                } catch (IllegalArgumentException ex) {
+                    LoginComponents.showCustomMessage(modifyView, "Invalid account status: " + accountStatusStr, "Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                List<User> accounts = accountRepository.readFromCSV();
+                accounts.removeIf(u -> u.getUsername().equals(username));
+                accounts.add(account);
+                accountRepository.saveToCSV(accounts, false);
+
+                LoginComponents.showCustomMessage(modifyView, "Customer information updated successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
+                modifyView.close();
+                if (view.isUserListVisible()) {
+                    handleCustomerInquiry(null);
+                }
+            } else {
+                LoginComponents.showCustomMessage(modifyView, "User does not exist!", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        } catch (RuntimeException e) {
+            LoginComponents.showCustomMessage(modifyView, "Error: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void handleCustomerInquiry(List<User> ignored) {
+        try {
+            List<User> accounts = accountRepository.readFromCSV();
+            view.updateAccountTable(accounts);
+        } catch (Exception e) {
+            LoginComponents.showCustomMessage(view, "Failed to load account data: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void handleDeleteUsers(Set<String> usernamesToDelete) {
+        if (usernamesToDelete.isEmpty()) {
+            LoginComponents.showCustomMessage(view, "No users selected for deletion.", "Information", JOptionPane.INFORMATION_MESSAGE);
+            return;
+        }
+
+        try {
+            List<User> accounts = accountRepository.readFromCSV();
+            accounts.removeIf(user -> usernamesToDelete.contains(user.getUsername()));
+            accountRepository.saveToCSV(accounts, false);
+            LoginComponents.showCustomMessage(view, "Selected users deleted successfully.", "Success", JOptionPane.INFORMATION_MESSAGE);
+            handleCustomerInquiry(null);
+        } catch (Exception e) {
+            LoginComponents.showCustomMessage(view, "Failed to delete users: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void handleImportAccounts(File file) {
+        try {
+            TransactionController.importTransactions(file, "accounts.csv");
+            LoginComponents.showCustomMessage(view, "Customer accounts imported successfully.", "Success", JOptionPane.INFORMATION_MESSAGE);
+            if (view.isUserListVisible()) {
+                handleCustomerInquiry(null);
+            }
+        } catch (IOException e) {
+            LoginComponents.showCustomMessage(view, "Failed to import accounts: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void handleImportTransactions(File file) {
+        try {
+            TransactionController.importTransactions(file, "transactions.csv");
+            LoginComponents.showCustomMessage(view, "Transaction records imported successfully.", "Success", JOptionPane.INFORMATION_MESSAGE);
+        } catch (IOException e) {
+            LoginComponents.showCustomMessage(view, "Failed to import transaction records: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void handleLogout() {
+        view.dispose();
+    }
+
+    private void ensureFileExists(String filePath, String expectedHeader) throws IOException {
+        File file = new File(filePath);
+        if (!file.exists()) {
+            try {
+                if (file.createNewFile()) {
+                    try (BufferedWriter bw = new BufferedWriter(new FileWriter(file, StandardCharsets.UTF_8))) {
+                        bw.write(expectedHeader);
+                        bw.newLine();
+                        System.out.println("Created new file: " + filePath);
+                    }
+                }
+            } catch (IOException e) {
+                throw new IOException("Error creating file: " + e.getMessage(), e);
+            }
+        }
+    }
+}
