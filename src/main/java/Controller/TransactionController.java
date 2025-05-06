@@ -14,16 +14,12 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 import javax.swing.JOptionPane;
 
 import Model.Transaction;
+import Model.User;
 import Service.BudgetService;
 
 public class TransactionController {
@@ -196,6 +192,62 @@ public class TransactionController {
         }
     }
 
+    /**
+     * 把识别到的实体映射成 CSV 记录并调用静态 addTransaction。
+     *
+     * @param user     当前用户
+     * @param entities 识别到的实体 Map，至少包含 operation, amount, timestamp
+     * @return true if saved successfully
+     */
+    public boolean addTransactionFromEntities(User user, Map<String, String> entities) {
+        // 1. 提取并校验必需字段
+        String username  = user.getUsername();
+        String operation = entities.get("operation");
+        String amtStr    = entities.get("amount");
+        String time      = entities.get("timestamp");
+        if (username == null || operation == null || amtStr == null || time == null) {
+            throw new IllegalArgumentException("缺少必需字段");
+        }
+        double amount;
+        try {
+            amount = Double.parseDouble(amtStr);
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("金额格式不正确：" + amtStr, e);
+        }
+
+        // 2. 其它可选字段
+        String merchant      = entities.getOrDefault("merchant", "");
+        String type          = entities.getOrDefault("type", "");
+        String remark        = entities.getOrDefault("remark", "");
+        String category      = entities.getOrDefault("category", "");
+        String paymentMethod = entities.getOrDefault("paymentMethod", "");
+        String location      = entities.getOrDefault("location", "");
+        String tag           = entities.getOrDefault("tag", "");
+        String attachment    = entities.getOrDefault("attachment", "");
+        String recurrence    = entities.getOrDefault("recurrence", "");
+
+        // 3. 调用静态方法写入 CSV
+        boolean ok = addTransaction(
+                username,
+                operation,
+                amount,
+                time,
+                merchant,
+                type,
+                remark,
+                category,
+                paymentMethod,
+                location,
+                tag,
+                attachment,
+                recurrence
+        );
+
+        if (!ok) {
+            throw new RuntimeException("记录交易失败: " + entities);
+        }
+        return true;
+    }
     public static boolean removeTransaction(String username, String time) {
         ensureFileExists();
         File file = new File(CSV_FILE_PATH);

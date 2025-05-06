@@ -94,7 +94,7 @@ public class MainPanelController {
                 case "AI Assistant":
                     System.out.println("Loading AI Assistant panel");
                     AIPanel aiPanel = new AIPanel();
-                    aiController = new AIController(aiPanel,new AIService(new TransactionService(new TransactionRepository()),new DeepSeekService(),new UserRepository()));
+                    aiController = new AIController(aiPanel,new AIService(new TransactionService(new TransactionRepository()),new TransactionController(),new DeepSeekService(),new UserRepository(),new ExchangeRateService()));
                     return aiPanel;
                 case "Transaction System":
                     System.out.println("Loading Transaction System panel");

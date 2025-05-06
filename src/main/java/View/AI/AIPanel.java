@@ -144,6 +144,7 @@ public class AIPanel extends JPanel {
         if (listener != null) {
             listener.onSendMessage(text);
         }
+        inputField.setText("");
     }
 
     private void addCustomBubble(String msg, boolean isUser) {
