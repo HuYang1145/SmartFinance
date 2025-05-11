@@ -20,18 +20,50 @@ import Service.ExchangeRateService;
 import View.Transaction.TransactionSystemComponents;
 import View.Transaction.TransactionSystemPlane;
 
+/**
+ * Controller class for managing the transaction system panel in a financial management application.
+ * It handles user interactions with the transaction interface, including adding transactions,
+ * converting currencies, updating exchange rates, and displaying historical exchange rate trends.
+ * The controller integrates with the exchange rate service and transaction controller to perform
+ * these operations and updates the view accordingly.
+ *
+ * @author Group 19
+ * @version 1.0
+ */
 public class TransactionSystemController {
+    /** The view component for the transaction system panel. */
     private final TransactionSystemPlane view;
+
+    /** Service for fetching and managing exchange rates. */
     private final ExchangeRateService exchangeRateService;
+
+    /** Controller for handling transaction-related operations. */
     private final TransactionController transactionController;
+
+    /** The username of the current user. */
     private final String username;
+
+    /** Timer for periodically updating exchange rates. */
     private Timer rateUpdateTimer;
+
+    /** Timer for updating the countdown display for the next rate refresh. */
     private Timer countdownTimer;
+
+    /** Timestamp for the next scheduled exchange rate refresh. */
     private long nextRefreshTime;
 
-    // Mock historical exchange rates (CNY to other currencies, 2020-2024)
+    /** Mock historical exchange rates for CNY to other currencies (2020-2024). */
     private final Map<String, Map<String, Double>> mockHistoricalRates = new HashMap<>();
 
+    /**
+     * Constructs a TransactionSystemController with the specified view, services, and username.
+     * Initializes mock historical rates, listeners, exchange rates, and timers for rate updates.
+     *
+     * @param view                  The transaction system view to control.
+     * @param exchangeRateService   The service for fetching exchange rates.
+     * @param transactionController The controller for transaction operations.
+     * @param username              The username of the current user.
+     */
     public TransactionSystemController(TransactionSystemPlane view, ExchangeRateService exchangeRateService,
                                        TransactionController transactionController, String username) {
         this.view = view;
@@ -49,6 +81,10 @@ public class TransactionSystemController {
         startRateUpdateTimer();
     }
 
+    /**
+     * Initializes mock historical exchange rates for CNY to various currencies (2020-2024).
+     * Populates the mockHistoricalRates map with approximate yearly rates for testing purposes.
+     */
     private void initializeMockHistoricalRates() {
         // Mock historical exchange rates for CNY to USD, EUR, GBP, JPY, AUD, CAD, CHF, HKD, SGD, NZD (2020-2024)
         // Data sourced from historical trends (approximated for simplicity)
@@ -83,6 +119,10 @@ public class TransactionSystemController {
         }
     }
 
+    /**
+     * Initializes listeners for user interactions, including transaction submission and currency conversion.
+     * Sets up action listeners for adding transactions and document listeners for real-time currency conversion updates.
+     */
     private void initializeListeners() {
         // Transaction Action Listener (Income/Expense)
         view.setTransactionActionListener(e -> {
@@ -174,6 +214,10 @@ public class TransactionSystemController {
         });
     }
 
+    /**
+     * Fetches exchange rates from the exchange rate service and updates the rate table and conversion display.
+     * Falls back to mock data if the fetch fails.
+     */
     private void fetchExchangeRates() {
         System.out.println("Calling fetchExchangeRates...");
         exchangeRateService.fetchExchangeRates(rates -> {
@@ -201,6 +245,11 @@ public class TransactionSystemController {
         });
     }
 
+    /**
+     * Starts timers for periodic exchange rate updates and countdown display.
+     * The rate update timer fetches new rates every 60 seconds, and the countdown timer
+     * updates the refresh countdown every second.
+     */
     private void startRateUpdateTimer() {
         nextRefreshTime = System.currentTimeMillis() + 60000;
         rateUpdateTimer = new Timer(60000, e -> {
@@ -221,6 +270,11 @@ public class TransactionSystemController {
         countdownTimer.start();
     }
 
+    /**
+     * Updates the exchange rate table with the provided rates.
+     *
+     * @param rates A map of currency codes to their exchange rates relative to CNY.
+     */
     private void updateRateTable(Map<String, Double> rates) {
         String[] currencies = view.getCurrencyComboBox().getModel().getSize() > 0 ?
                 new String[view.getCurrencyComboBox().getModel().getSize()] : new String[0];
@@ -240,6 +294,10 @@ public class TransactionSystemController {
         System.out.println("Updated rate table with rates: " + rates);
     }
 
+    /**
+     * Updates the currency conversion result based on the entered amount and selected currency.
+     * Displays an error if the amount format is invalid.
+     */
     private void updateConversion() {
         String amountText = view.getAmountField().getActualText();
         String targetCurrency = (String) view.getCurrencyComboBox().getSelectedItem();
@@ -255,6 +313,10 @@ public class TransactionSystemController {
         }
     }
 
+    /**
+     * Updates the historical exchange rate trend chart based on the selected currency.
+     * Uses mock historical rates (2020-2024) to populate the chart.
+     */
     private void updateHistoricalTrend() {
         JPanel historicalPanel = null;
         for (Component comp : view.getComponents()) {

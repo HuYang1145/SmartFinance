@@ -1,3 +1,11 @@
+/**
+ * Represents the main login and registration interface for the Smart Finance Application.
+ * Provides a sidebar for navigation and a card-based content area for welcome, login, registration,
+ * and post-login panels, managed by a LoginController.
+ *
+ * @author Group 19
+ * @version 1.0
+ */
 package View.LoginAndMain;
 
 import java.awt.BorderLayout;
@@ -46,11 +54,19 @@ public class Login extends JFrame {
     private LoginController controller;
     private List<NavItemPanel> navItems = new ArrayList<>();
 
+    /**
+     * Constructs a Login frame with the specified controller for handling authentication.
+     *
+     * @param controller the LoginController to manage login and registration actions
+     */
     public Login(LoginController controller) {
         this.controller = controller;
         initializeUI();
     }
 
+    /**
+     * Initializes the user interface, setting up the sidebar, content panel, and card layout.
+     */
     private void initializeUI() {
         setTitle("Smart Finance - Welcome");
         setSize(750, 450);
@@ -62,22 +78,28 @@ public class Login extends JFrame {
         mainPanel.setBackground(new Color(230, 230, 250));
         add(mainPanel);
 
-        // 初始化 cardLayout 和 contentPanel
+        // Initialize cardLayout and contentPanel
         cardLayout = new CardLayout();
         contentPanel = new JPanel(cardLayout);
         contentPanel.setBackground(new Color(230, 240, 250));
 
-        // 创建侧边栏
+        // Create sidebar
         sidebar = createSidebar(false);
         mainPanel.add(sidebar, BorderLayout.WEST);
 
         mainPanel.add(contentPanel, BorderLayout.CENTER);
 
-        // 初始化内容面板
+        // Initialize content panels
         initializeContentPanels();
         setVisible(true);
     }
 
+    /**
+     * Creates the sidebar with navigation items based on login state.
+     *
+     * @param isLoggedIn true if the user is logged in, false otherwise
+     * @return the configured sidebar panel
+     */
     private JPanel createSidebar(boolean isLoggedIn) {
         JPanel sb = new JPanel();
         sb.setLayout(new BoxLayout(sb, BoxLayout.Y_AXIS));
@@ -90,12 +112,12 @@ public class Login extends JFrame {
         logo.setAlignmentX(Component.CENTER_ALIGNMENT);
         sb.add(logo);
 
-        // 根据登录状态选择侧边栏选项
+        // Select sidebar options based on login state
         String[] options = isLoggedIn
                 ? new String[]{"Personal Main", "Account Management"}
                 : new String[]{"Welcome", "Login", "Register"};
 
-        // 清空 navItems 避免重复
+        // Clear navItems to avoid duplicates
         navItems.clear();
 
         for (String opt : options) {
@@ -106,7 +128,7 @@ public class Login extends JFrame {
             System.out.println("Added Login NavItem: " + opt + ", bounds: " + item.getBounds());
         }
 
-        // 默认选中第一个选项
+        // Default select the first option
         if (!navItems.isEmpty()) {
             navItems.get(0).setSelected(true);
         }
@@ -114,18 +136,26 @@ public class Login extends JFrame {
         return sb;
     }
 
+    /**
+     * Initializes the content panels for welcome, login, registration, and post-login views.
+     */
     private void initializeContentPanels() {
-        // 确保卡片名称与侧边栏选项一致
+        // Ensure card names match sidebar options
         contentPanel.add(wrapInScroll(createWelcomePanel()), "Welcome");
         contentPanel.add(wrapInScroll(createLoginPanel()), "Login");
         contentPanel.add(wrapInScroll(createRegisterPanel()), "Register");
         contentPanel.add(wrapInScroll(createPersonalMain()), "Personal Main");
         contentPanel.add(wrapInScroll(createAccountManagement()), "Account Management");
 
-        // 默认显示 Welcome 界面
+        // Default show Welcome panel
         cardLayout.show(contentPanel, "Welcome");
     }
 
+    /**
+     * Creates the welcome panel with login and registration buttons.
+     *
+     * @return the configured welcome panel
+     */
     private JPanel createWelcomePanel() {
         JPanel p = new GradientPanel();
         p.setLayout(new GridBagLayout());
@@ -161,7 +191,7 @@ public class Login extends JFrame {
         });
         bLogin.addActionListener(e -> {
             cardLayout.show(contentPanel, "Login");
-            // 更新选中状态
+            // Update selected state
             navItems.forEach(item -> item.setSelected(item.getName().equals("Login")));
         });
         gbc.gridy = 1;
@@ -187,7 +217,7 @@ public class Login extends JFrame {
         });
         bReg.addActionListener(e -> {
             cardLayout.show(contentPanel, "Register");
-            // 更新选中状态
+            // Update selected state
             navItems.forEach(item -> item.setSelected(item.getName().equals("Register")));
         });
         gbc.gridy = 2;
@@ -196,6 +226,11 @@ public class Login extends JFrame {
         return p;
     }
 
+    /**
+     * Creates the login panel with fields for username, password, and a login button.
+     *
+     * @return the configured login panel
+     */
     private JPanel createLoginPanel() {
         JPanel p = new GradientPanel();
         p.setLayout(new GridBagLayout());
@@ -250,6 +285,11 @@ public class Login extends JFrame {
         return p;
     }
 
+    /**
+     * Creates the registration panel with fields for user details and a register button.
+     *
+     * @return the configured registration panel
+     */
     private JPanel createRegisterPanel() {
         JPanel p = new GradientPanel();
         p.setLayout(new GridBagLayout());
@@ -329,6 +369,11 @@ public class Login extends JFrame {
         return p;
     }
 
+    /**
+     * Creates a placeholder panel for the personal main interface.
+     *
+     * @return the personal main panel
+     */
     private JPanel createPersonalMain() {
         JPanel p = new JPanel();
         p.setBackground(new Color(230, 240, 250));
@@ -336,6 +381,11 @@ public class Login extends JFrame {
         return p;
     }
 
+    /**
+     * Creates a placeholder panel for the account management interface.
+     *
+     * @return the account management panel
+     */
     private JPanel createAccountManagement() {
         JPanel p = new JPanel();
         p.setBackground(new Color(230, 240, 250));
@@ -343,6 +393,12 @@ public class Login extends JFrame {
         return p;
     }
 
+    /**
+     * Wraps a panel in a scroll pane with customized scrollbar appearance.
+     *
+     * @param panel the panel to wrap
+     * @return the configured scroll pane
+     */
     private JScrollPane wrapInScroll(JPanel panel) {
         JScrollPane scroll = new JScrollPane(panel);
         scroll.setBorder(null);
@@ -410,6 +466,9 @@ public class Login extends JFrame {
         return scroll;
     }
 
+    /**
+     * Switches the content panel to the login panel and updates the sidebar selection.
+     */
     public void switchToLoginPanel() {
         if (cardLayout != null && contentPanel != null) {
             cardLayout.show(contentPanel, "Login");
@@ -417,6 +476,9 @@ public class Login extends JFrame {
         }
     }
 
+    /**
+     * Closes the login window.
+     */
     public void closeWindow() {
         SwingUtilities.invokeLater(this::dispose);
     }

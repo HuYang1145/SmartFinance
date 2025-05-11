@@ -1,3 +1,4 @@
+
 package View.PersonalCenter;
 
 import java.awt.BasicStroke;
@@ -23,7 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import javax.swing.BorderFactory; // 添加导入
+import javax.swing.BorderFactory;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -48,13 +49,20 @@ import Service.PersonFinancialService;
 import View.PersonalCenter.PersonalCenterComponents.GradientBorder;
 import View.PersonalCenter.PersonalCenterComponents.GradientPanel;
 
+/**
+ * A JPanel that displays a user's financial overview, including income and expense categories,
+ * payment and location summaries, and annual income and expense trends.
+ * 
+ * @author Group 19
+ * @version 1.0
+ */
 public class PersonalCenterPanel extends JPanel {
     private JLabel totalIncomeYearLabel, totalExpenseYearLabel, totalBalanceYearLabel;
     private JLabel accountBalanceLabel, incomeChangeLabel, expenseChangeLabel;
     private JTextArea paymentLocationSummary;
     private JComboBox<Integer> yearComboBox;
     private JPanel annualChartPanel, incomeChartPanel, expenseChartPanel;
-    private JPanel incomeCategoriesPanel, expenseCategoriesPanel; // 保存对面板的引用
+    private JPanel incomeCategoriesPanel, expenseCategoriesPanel;
     private JLabel selectedIncomeCategoryLabel, selectedExpenseCategoryLabel;
     private List<Map.Entry<String, Double>> incomeCategories = new ArrayList<>();
     private List<Map.Entry<String, Double>> expenseCategories = new ArrayList<>();
@@ -70,6 +78,10 @@ public class PersonalCenterPanel extends JPanel {
     private static Map<String, Long> cacheTimestamps = new HashMap<>();
     private static final long CACHE_EXPIRY_MS = 5 * 60 * 1000;
 
+    /**
+     * Constructs a PersonalCenterPanel with a year selection combo box and a placeholder
+     * until the UI is fully loaded.
+     */
     public PersonalCenterPanel() {
         setLayout(new BorderLayout());
         setBackground(new Color(245, 245, 245));
@@ -142,6 +154,10 @@ public class PersonalCenterPanel extends JPanel {
         });
     }
 
+    /**
+     * Builds the main UI, arranging panels for financial overview, income and expense categories,
+     * payment and location summary, and trends in a 2x3 grid layout.
+     */
     private void buildUI() {
         System.out.println("Building UI for PersonalCenterPanel");
         Component[] components = getComponents();
@@ -152,16 +168,13 @@ public class PersonalCenterPanel extends JPanel {
             }
         }
 
-        // 使用 GridLayout 强制所有单元格大小相等
         JPanel mainContent = new JPanel(new GridLayout(2, 3, 10, 10));
         mainContent.setOpaque(false);
         mainContent.setBorder(new EmptyBorder(20, 20, 20, 20));
 
-        // 第一行，左：Financial Overview
         JPanel financialOverviewPanel = createFinancialOverviewPanel();
         mainContent.add(financialOverviewPanel);
 
-        // 第一行，中：Income Categories
         String username = UserSession.getCurrentUsername();
         String year = String.valueOf(yearComboBox.getSelectedItem());
         incomeChartPanel = createDonutChartPanel(username, false, year);
@@ -180,7 +193,6 @@ public class PersonalCenterPanel extends JPanel {
         incomeCategoriesPanel.add(selectedIncomeCategoryLabel, BorderLayout.SOUTH);
         mainContent.add(incomeCategoriesPanel);
 
-        // 第一行，右：Expense Categories
         expenseChartPanel = createDonutChartPanel(username, true, year);
         expenseCategoriesPanel = new JPanel(new BorderLayout());
         expenseCategoriesPanel.setOpaque(false);
@@ -197,11 +209,9 @@ public class PersonalCenterPanel extends JPanel {
         expenseCategoriesPanel.add(selectedExpenseCategoryLabel, BorderLayout.SOUTH);
         mainContent.add(expenseCategoriesPanel);
 
-        // 第二行，左：Payment & Location Summary
         JPanel paymentLocationPanel = createPaymentLocationPanel();
         mainContent.add(paymentLocationPanel);
 
-        // 第二行，中：占位符
         JLabel placeholder = new JLabel("Placeholder", SwingConstants.CENTER);
         placeholder.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         placeholder.setForeground(Color.DARK_GRAY);
@@ -210,7 +220,6 @@ public class PersonalCenterPanel extends JPanel {
         placeholderPanel.add(placeholder, BorderLayout.CENTER);
         mainContent.add(placeholderPanel);
 
-        // 第二行，右：Income & Expense Trends
         annualChartPanel = createTrendChartsPanel();
         mainContent.add(annualChartPanel);
 
@@ -219,13 +228,17 @@ public class PersonalCenterPanel extends JPanel {
         repaint();
     }
 
+    /**
+     * Updates the income and expense category charts for the specified user and year.
+     * 
+     * @param username the username of the current user
+     * @param year the selected year
+     */
     private void updateCharts(String username, String year) {
         System.out.println("Updating charts for user: " + username + ", year: " + year);
-        // 创建新的图表面板
         incomeChartPanel = createDonutChartPanel(username, false, year);
         expenseChartPanel = createDonutChartPanel(username, true, year);
 
-        // 更新 incomeCategoriesPanel 和 expenseCategoriesPanel 的内容
         incomeCategoriesPanel.removeAll();
         JLabel incomeTitle = new JLabel("Income Categories", SwingConstants.CENTER);
         incomeTitle.setFont(new Font("Segoe UI", Font.BOLD, 16));
@@ -250,12 +263,24 @@ public class PersonalCenterPanel extends JPanel {
         repaint();
     }
 
+    /**
+     * Checks if the cached transactions for a user are still valid.
+     * 
+     * @param username the username to check
+     * @return true if the cache is valid, false otherwise
+     */
     private static boolean isCacheValid(String username) {
         Long timestamp = cacheTimestamps.get(username);
         if (timestamp == null) return false;
         return (System.currentTimeMillis() - timestamp) < CACHE_EXPIRY_MS;
     }
 
+    /**
+     * Retrieves cached transactions for a user, refreshing the cache if expired.
+     * 
+     * @param username the username to retrieve transactions for
+     * @return the list of transactions
+     */
     private static List<Transaction> getCachedTransactions(String username) {
         if (isCacheValid(username)) {
             return transactionCache.getOrDefault(username, new ArrayList<>());
@@ -267,6 +292,13 @@ public class PersonalCenterPanel extends JPanel {
         return transactionCache.get(username);
     }
 
+    /**
+     * Filters transactions for a specific user and year.
+     * 
+     * @param username the username to filter transactions for
+     * @param year the year to filter by
+     * @return the filtered list of transactions
+     */
     private static List<Transaction> getFilteredTransactions(String username, String year) {
         List<Transaction> transactions = getCachedTransactions(username);
         List<Transaction> filtered = new ArrayList<>();
@@ -286,6 +318,12 @@ public class PersonalCenterPanel extends JPanel {
         return filtered;
     }
 
+    /**
+     * Calculates the total expenses by category from a list of transactions.
+     * 
+     * @param transactions the list of transactions to process
+     * @return a map of categories to their total expense amounts
+     */
     private static Map<String, Double> calculateExpenseCategoryTotals(List<Transaction> transactions) {
         Map<String, Double> categoryTotals = new HashMap<>();
         for (Transaction tx : transactions) {
@@ -297,6 +335,12 @@ public class PersonalCenterPanel extends JPanel {
         return categoryTotals;
     }
 
+    /**
+     * Calculates the total income by category from a list of transactions.
+     * 
+     * @param transactions the list of transactions to process
+     * @return a map of categories to their total income amounts
+     */
     private static Map<String, Double> calculateIncomeCategoryTotals(List<Transaction> transactions) {
         Map<String, Double> categoryTotals = new HashMap<>();
         for (Transaction tx : transactions) {
@@ -308,28 +352,35 @@ public class PersonalCenterPanel extends JPanel {
         return categoryTotals;
     }
 
+    /**
+     * Creates a panel displaying a donut chart for income or expense categories.
+     * 
+     * @param username the username to retrieve transactions for
+     * @param isExpense true for expense chart, false for income chart
+     * @param year the year to filter transactions by
+     * @return the donut chart panel
+     */
     private JPanel createDonutChartPanel(String username, boolean isExpense, String year) {
         JPanel panel = new JPanel() {
             private List<Map.Entry<String, Double>> categoryEntries = new ArrayList<>();
             private int currentDisplayIndex = 0;
             private Timer displayTimer;
             private double totalAmount = 0.0;
-    
+
             {
                 List<Transaction> transactions = getFilteredTransactions(username, year);
                 System.out.println("Filtered transactions for " + (isExpense ? "expense" : "income") + ": " + transactions.size());
                 Map<String, Double> categoryTotals = isExpense
                         ? calculateExpenseCategoryTotals(transactions)
                         : calculateIncomeCategoryTotals(transactions);
-    
+
                 totalAmount = categoryTotals.values().stream().mapToDouble(Double::doubleValue).sum();
                 categoryEntries.clear();
-                // 按金额降序排序，合并小类别
                 Map<String, Double> mergedTotals = mergeSmallCategories(categoryTotals, totalAmount);
                 categoryEntries.addAll(mergedTotals.entrySet().stream()
                         .sorted((e1, e2) -> Double.compare(e2.getValue(), e1.getValue()))
                         .collect(Collectors.toList()));
-    
+
                 displayTimer = new Timer(2000, e -> {
                     if (!categoryEntries.isEmpty()) {
                         currentDisplayIndex = (currentDisplayIndex + 1) % categoryEntries.size();
@@ -337,7 +388,7 @@ public class PersonalCenterPanel extends JPanel {
                     }
                 });
                 displayTimer.start();
-    
+
                 addMouseListener(new MouseAdapter() {
                     @Override
                     public void mouseClicked(MouseEvent e) {
@@ -346,15 +397,15 @@ public class PersonalCenterPanel extends JPanel {
                         int diameter = Math.min(getWidth(), getHeight()) - getMargin();
                         int radius = diameter / 2;
                         int innerRadius = radius / 2;
-    
+
                         double dx = e.getX() - centerX;
                         double dy = e.getY() - centerY;
                         double distance = Math.sqrt(dx * dx + dy * dy);
-    
+
                         if (distance >= innerRadius && distance <= radius) {
                             double angle = Math.toDegrees(Math.atan2(-dy, dx));
                             if (angle < 0) angle += 360;
-    
+
                             int startAngle = 0;
                             for (Map.Entry<String, Double> entry : categoryEntries) {
                                 double percentage = entry.getValue() / totalAmount;
@@ -362,7 +413,7 @@ public class PersonalCenterPanel extends JPanel {
                                 if (arcAngle == 0 && entry.getValue() > 0) {
                                     arcAngle = 1;
                                 }
-    
+
                                 if (angle >= startAngle && angle < startAngle + arcAngle) {
                                     String labelText = "%s: ¥%.2f (%.1f%%)".formatted(
                                             entry.getKey(), entry.getValue(), percentage * 100);
@@ -379,9 +430,8 @@ public class PersonalCenterPanel extends JPanel {
                     }
                 });
             }
-    
+
             private int getMargin() {
-                // 动态调整边距：5-10 个类别用 80，20+ 个类别用 120
                 int categoryCount = categoryEntries.size();
                 if (categoryCount > 15) {
                     return 120;
@@ -391,13 +441,13 @@ public class PersonalCenterPanel extends JPanel {
                     return 80;
                 }
             }
-    
+
             private Map<String, Double> mergeSmallCategories(Map<String, Double> categoryTotals, double totalAmount) {
                 Map<String, Double> merged = new HashMap<>();
                 double otherTotal = 0.0;
                 for (Map.Entry<String, Double> entry : categoryTotals.entrySet()) {
                     double percentage = entry.getValue() / totalAmount;
-                    if (percentage < 0.01) { // 金额占比 < 1% 归为 "Other"
+                    if (percentage < 0.01) {
                         otherTotal += entry.getValue();
                     } else {
                         merged.put(entry.getKey(), entry.getValue());
@@ -408,16 +458,16 @@ public class PersonalCenterPanel extends JPanel {
                 }
                 return merged;
             }
-    
+
             @Override
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
                 Graphics2D g2d = (Graphics2D) g.create();
                 g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-    
+
                 g2d.setColor(Color.WHITE);
                 g2d.fillRect(0, 0, getWidth(), getHeight());
-    
+
                 if (totalAmount <= 0) {
                     g2d.setFont(new Font("Segoe UI", Font.PLAIN, 12));
                     g2d.drawString("No valid " + (isExpense ? "expense" : "income") + " data to display.",
@@ -425,15 +475,14 @@ public class PersonalCenterPanel extends JPanel {
                     g2d.dispose();
                     return;
                 }
-    
+
                 int centerX = getWidth() / 2;
                 int centerY = getHeight() / 2;
                 int margin = getMargin();
                 int diameter = Math.min(getWidth(), getHeight()) - margin;
                 int radius = diameter / 2;
                 int innerRadius = radius / 2;
-    
-                // 绘制甜甜圈
+
                 int startAngle = 0;
                 int i = 0;
                 Color[] colors = {
@@ -441,14 +490,14 @@ public class PersonalCenterPanel extends JPanel {
                         new Color(240, 230, 140), new Color(221, 160, 221), new Color(173, 216, 230),
                         new Color(255, 218, 185), new Color(200, 162, 200)
                 };
-    
+
                 for (Map.Entry<String, Double> entry : categoryEntries) {
                     double percentage = entry.getValue() / totalAmount;
                     int arcAngle = (int) Math.round(percentage * 360);
                     if (arcAngle == 0 && entry.getValue() > 0) {
                         arcAngle = 1;
                     }
-    
+
                     g2d.setColor(colors[i % colors.length]);
                     g2d.fillArc(centerX - radius, centerY - radius, diameter, diameter, startAngle, arcAngle);
                     startAngle += arcAngle;
@@ -456,14 +505,13 @@ public class PersonalCenterPanel extends JPanel {
                 }
                 g2d.setColor(Color.WHITE);
                 g2d.fillArc(centerX - innerRadius, centerY - innerRadius, innerRadius * 2, innerRadius * 2, 0, 360);
-    
-                // 绘制标签（无引导线）
+
                 g2d.setFont(new Font("Segoe UI", Font.PLAIN, 12));
                 FontMetrics fm = g2d.getFontMetrics();
                 List<Rectangle> labelBounds = new ArrayList<>();
                 startAngle = 0;
-                int maxLabels = Math.min(categoryEntries.size(), 10); // 限制最多显示 10 个标签
-    
+                int maxLabels = Math.min(categoryEntries.size(), 10);
+
                 for (int j = 0; j < categoryEntries.size() && j < maxLabels; j++) {
                     Map.Entry<String, Double> entry = categoryEntries.get(j);
                     double percentage = entry.getValue() / totalAmount;
@@ -471,25 +519,22 @@ public class PersonalCenterPanel extends JPanel {
                     if (arcAngle == 0 && entry.getValue() > 0) {
                         arcAngle = 1;
                     }
-    
-                    // 仅显示弧角度 >= 5° 的标签
+
                     if (arcAngle < 5) {
                         startAngle += arcAngle;
                         continue;
                     }
-    
+
                     int labelAngle = startAngle + arcAngle / 2;
                     double labelAngleRad = Math.toRadians(labelAngle);
                     String labelText = "%s: ¥%.2f (%.1f%%)".formatted(entry.getKey(), entry.getValue(), percentage * 100);
                     int textWidth = fm.stringWidth(labelText);
                     int textHeight = fm.getHeight();
-    
-                    // 计算标签位置
+
                     int labelRadius = radius + 40;
                     int labelX = centerX + (int) (labelRadius * Math.cos(labelAngleRad));
                     int labelY = centerY - (int) (labelRadius * Math.sin(labelAngleRad));
-    
-                    // 调整标签位置
+
                     int adjustedX = labelX;
                     int adjustedY = labelY;
                     if (labelX + textWidth > getWidth()) {
@@ -502,14 +547,12 @@ public class PersonalCenterPanel extends JPanel {
                     } else if (labelY > getHeight()) {
                         adjustedY = getHeight() - 5;
                     }
-    
-                    // 检测重叠
+
                     Rectangle labelRect = new Rectangle(adjustedX - 5, adjustedY - textHeight, textWidth + 10, textHeight + 10);
                     boolean overlaps = false;
                     for (Rectangle existing : labelBounds) {
                         if (labelRect.intersects(existing)) {
                             overlaps = true;
-                            // 尝试向上偏移
                             int offsetY = adjustedY - textHeight - 10;
                             if (offsetY > textHeight + 5) {
                                 labelRect = new Rectangle(adjustedX - 5, offsetY - textHeight, textWidth + 10, textHeight + 10);
@@ -518,7 +561,6 @@ public class PersonalCenterPanel extends JPanel {
                                     adjustedY = offsetY;
                                 }
                             }
-                            // 尝试向下偏移
                             if (overlaps) {
                                 offsetY = adjustedY + textHeight + 10;
                                 if (offsetY < getHeight() - 5) {
@@ -532,39 +574,43 @@ public class PersonalCenterPanel extends JPanel {
                             break;
                         }
                     }
-    
+
                     if (!overlaps) {
-                        // 绘制标签（无引导线）
                         g2d.setColor(Color.BLACK);
                         g2d.drawString(labelText, adjustedX, adjustedY);
                         labelBounds.add(labelRect);
                     }
-    
+
                     startAngle += arcAngle;
                 }
-    
-                // 绘制中心显示的当前类别
+
                 if (!categoryEntries.isEmpty()) {
                     Map.Entry<String, Double> entry = categoryEntries.get(currentDisplayIndex);
                     double percentage = entry.getValue() / totalAmount;
                     String displayText = "%s: ¥%.2f (%.1f%%)".formatted(entry.getKey(), entry.getValue(), percentage * 100);
-    
+
                     g2d.setColor(Color.BLACK);
                     g2d.setFont(new Font("Segoe UI", Font.PLAIN, 12));
                     int textWidth = fm.stringWidth(displayText);
                     int textHeight = fm.getHeight();
                     int textX = centerX - textWidth / 2;
                     int textY = centerY + textHeight / 2;
-    
+
                     g2d.drawString(displayText, textX, textY);
                 }
-    
+
                 g2d.dispose();
             }
         };
         return panel;
     }
 
+    /**
+     * Creates a panel displaying a financial overview with yearly income, expense, balance,
+     * and account balance information.
+     * 
+     * @return the financial overview panel
+     */
     private JPanel createFinancialOverviewPanel() {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setOpaque(false);
@@ -615,6 +661,11 @@ public class PersonalCenterPanel extends JPanel {
         return panel;
     }
 
+    /**
+     * Creates a panel displaying a summary of payment methods and locations.
+     * 
+     * @return the payment and location summary panel
+     */
     private JPanel createPaymentLocationPanel() {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setOpaque(false);
@@ -638,6 +689,11 @@ public class PersonalCenterPanel extends JPanel {
         return panel;
     }
 
+    /**
+     * Creates a panel displaying annual income and expense trends with toggle buttons.
+     * 
+     * @return the trends panel
+     */
     private JPanel createTrendChartsPanel() {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setOpaque(false);
@@ -796,6 +852,11 @@ public class PersonalCenterPanel extends JPanel {
         return panel;
     }
 
+    /**
+     * Initializes the panel's data, setting up the UI and loading data for the selected year.
+     * 
+     * @param controller the controller to handle data loading
+     */
     public void initializeData(PersonCenterController controller) {
         SwingUtilities.invokeLater(() -> {
             System.out.println("Initializing data for PersonalCenterPanel, isUILoaded: " + isUILoaded);
@@ -834,6 +895,11 @@ public class PersonalCenterPanel extends JPanel {
         });
     }
 
+    /**
+     * Updates the financial summary labels with the provided data.
+     * 
+     * @param summary the financial summary data
+     */
     public void updateFinancialSummary(PersonFinancialService.FinancialSummary summary) {
         totalIncomeYearLabel.setText("Yearly Income: " + String.format("%.2f", summary.getTotalIncomeYear()));
         totalExpenseYearLabel.setText("Yearly Expense: " + String.format("%.2f", summary.getTotalExpenseYear()));
@@ -845,12 +911,22 @@ public class PersonalCenterPanel extends JPanel {
         repaint();
     }
 
+    /**
+     * Updates the payment and location summary text area with the provided summary.
+     * 
+     * @param summary the summary text
+     */
     public void updatePaymentLocationSummary(String summary) {
         paymentLocationSummary.setText(summary);
         isDataLoaded = true;
         repaint();
     }
 
+    /**
+     * Updates the annual chart data with the provided income and expense information.
+     * 
+     * @param data the annual chart data
+     */
     public void updateAnnualChartData(PersonChartDataService.AnnualChartData data) {
         this.annualIncome = data.getAnnualIncome();
         this.annualExpense = data.getAnnualExpense();
@@ -860,6 +936,11 @@ public class PersonalCenterPanel extends JPanel {
         annualChartPanel.repaint();
     }
 
+    /**
+     * Updates the category chart data with the provided income and expense categories.
+     * 
+     * @param data the category chart data
+     */
     public void updateCategoryChartData(PersonChartDataService.CategoryChartData data) {
         this.incomeCategories = data.getIncomeCategories();
         this.expenseCategories = data.getExpenseCategories();
@@ -868,6 +949,13 @@ public class PersonalCenterPanel extends JPanel {
         expenseChartPanel.repaint();
     }
 
+    /**
+     * Gets the expense chart panel, rebuilding the UI if necessary.
+     * 
+     * @param username the username to retrieve transactions for
+     * @param yearMonth the year and month to filter by
+     * @return the expense chart panel
+     */
     public JPanel getExpenseChartPanel(String username, String yearMonth) {
         if (expenseChartPanel == null) {
             System.out.println("expenseChartPanel is null, rebuilding UI");
@@ -876,6 +964,13 @@ public class PersonalCenterPanel extends JPanel {
         return expenseChartPanel;
     }
 
+    /**
+     * Gets the income chart panel, rebuilding the UI if necessary.
+     * 
+     * @param username the username to retrieve transactions for
+     * @param yearMonth the year and month to filter by
+     * @return the income chart panel
+     */
     public JPanel getIncomeChartPanel(String username, String yearMonth) {
         if (incomeChartPanel == null) {
             System.out.println("incomeChartPanel is null, rebuilding UI");
@@ -884,6 +979,11 @@ public class PersonalCenterPanel extends JPanel {
         return incomeChartPanel;
     }
 
+    /**
+     * Gets the year selection combo box.
+     * 
+     * @return the year combo box
+     */
     public JComboBox<Integer> getYearComboBox() {
         return yearComboBox;
     }

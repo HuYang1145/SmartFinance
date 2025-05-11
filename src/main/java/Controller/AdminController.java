@@ -16,23 +16,40 @@ import Repository.AccountRepository;
 import View.Administrator.AdminView;
 import View.LoginAndMain.LoginComponents;
 
-
+/**
+ * Manages administrator operations for the finance management system, including user account modification,
+ * customer inquiries, user deletion, and data import. Interacts with the AdminView for UI updates and
+ * AccountRepository for data operations.
+ *
+ * @author Group 19
+ * @version 1.0
+ */
 public class AdminController {
+    /** Repository for managing user account data. */
     private final AccountRepository accountRepository;
-    private AdminView view; // 初始为 null
+    /** Admin view for displaying UI components, initialized lazily. */
+    private AdminView view;
 
+    /**
+     * Constructs an AdminController with the specified account repository.
+     * Initializes required CSV files for accounts and transactions.
+     *
+     * @param accountRepository the repository for user account data
+     * @throws IllegalStateException if file initialization fails
+     */
     public AdminController(AccountRepository accountRepository) {
         this.accountRepository = accountRepository;
         try {
             ensureFileExists("accounts.csv", AccountRepository.EXPECTED_ACCOUNT_HEADER);
             ensureFileExists("transactions.csv", TransactionController.CSV_HEADER);
         } catch (IOException e) {
-            // 记录错误，但不创建 AdminView
             System.err.println("Error initializing files: " + e.getMessage());
         }
     }
 
-    // 延迟初始化 AdminView
+    /**
+     * Initializes the AdminView lazily if not already created.
+     */
     private void initializeView() {
         if (view == null) {
             view = new AdminView(
@@ -48,11 +65,20 @@ public class AdminController {
         }
     }
 
-    private void showDashboard() {
+    /**
+     * Displays the dashboard panel in the AdminView.
+     */
+    void showDashboard() {
         initializeView();
         view.cardLayout.show(view.contentPanel, "dashboard");
     }
 
+    /**
+     * Handles the modification of a customer account by prompting for admin credentials
+     * and customer username, then displaying a modification dialog.
+     *
+     * @param credentials an array containing [username, password] for admin verification
+     */
     private void handleModifyCustomer(String[] credentials) {
         initializeView();
         String username = credentials[0];
@@ -78,6 +104,12 @@ public class AdminController {
         }
     }
 
+    /**
+     * Confirms and processes the modification of a customer account based on dialog input.
+     *
+     * @param modifyView the dialog containing updated customer information
+     * @throws IllegalStateException if admin verification fails or data saving fails
+     */
     private void handleModifyConfirm(AdminView.ModifyCustomerDialog modifyView) {
         String username = modifyView.getUsername();
         String password = modifyView.getPassword();
@@ -130,6 +162,12 @@ public class AdminController {
         }
     }
 
+    /**
+     * Retrieves and displays the list of customer accounts in the AdminView.
+     *
+     * @param ignored unused parameter (reserved for future use)
+     * @throws IllegalStateException if account data cannot be loaded
+     */
     private void handleCustomerInquiry(List<User> ignored) {
         try {
             List<User> accounts = accountRepository.readFromCSV();
@@ -139,6 +177,12 @@ public class AdminController {
         }
     }
 
+    /**
+     * Deletes the specified user accounts from the repository.
+     *
+     * @param usernamesToDelete a set of usernames to be deleted
+     * @throws IllegalStateException if deletion fails
+     */
     private void handleDeleteUsers(Set<String> usernamesToDelete) {
         if (usernamesToDelete.isEmpty()) {
             LoginComponents.showCustomMessage(view, "No users selected for deletion.", "Information", JOptionPane.INFORMATION_MESSAGE);
@@ -156,6 +200,12 @@ public class AdminController {
         }
     }
 
+    /**
+     * Imports customer account data from a specified CSV file.
+     *
+     * @param file the CSV file containing account data
+     * @throws IllegalStateException if import fails
+     */
     private void handleImportAccounts(File file) {
         try {
             TransactionController.importTransactions(file, "accounts.csv");
@@ -168,6 +218,12 @@ public class AdminController {
         }
     }
 
+    /**
+     * Imports transaction records from a specified CSV file.
+     *
+     * @param file the CSV file containing transaction data
+     * @throws IllegalStateException if import fails
+     */
     private void handleImportTransactions(File file) {
         try {
             TransactionController.importTransactions(file, "transactions.csv");
@@ -177,10 +233,20 @@ public class AdminController {
         }
     }
 
+    /**
+     * Logs out the current admin user and closes the AdminView.
+     */
     private void handleLogout() {
         view.dispose();
     }
 
+    /**
+     * Ensures that the specified CSV file exists, creating it with the expected header if necessary.
+     *
+     * @param filePath        the path to the CSV file
+     * @param expectedHeader  the expected header line for the CSV file
+     * @throws IOException if file creation or writing fails
+     */
     private void ensureFileExists(String filePath, String expectedHeader) throws IOException {
         File file = new File(filePath);
         if (!file.exists()) {

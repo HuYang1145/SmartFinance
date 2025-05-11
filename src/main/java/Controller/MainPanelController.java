@@ -26,6 +26,15 @@ import View.HoroscopePanel.HoroscopePanel;
 import View.PersonalCenter.PersonalCenterPanel;
 import View.Transaction.TransactionSystemPlane;
 
+/**
+ * Controller class responsible for managing the main content panel and its associated sub-panels
+ * in a financial management application. It handles the initialization, loading, and display
+ * of various panels such as Personal Center, Transaction System, Bill Statistics, Budget Management,
+ * AI Assistant, and Spending Star Whispers using a CardLayout.
+ *
+ * @author 19
+ * @version 1.0
+ */
 public class MainPanelController {
     private final String username;
     private final JPanel contentPanel;
@@ -36,6 +45,15 @@ public class MainPanelController {
     private TransactionSystemController transactionSystemController;
     private AIController aiController;
 
+    /**
+     * Constructs a MainPanelController with the specified parameters.
+     *
+     * @param username              The username of the logged-in user.
+     * @param contentPanel          The main JPanel that holds different sub-panels.
+     * @param personCenterController Controller for the Personal Center panel.
+     * @param billController        Controller for the Bill Statistics panel.
+     * @param cardLayout            The CardLayout used to switch between panels.
+     */
     public MainPanelController(String username, JPanel contentPanel, PersonCenterController personCenterController, BillController billController, CardLayout cardLayout) {
         this.username = username;
         this.contentPanel = contentPanel;
@@ -45,6 +63,11 @@ public class MainPanelController {
         System.out.println("MainPanelController initialized for user: " + username);
     }
 
+    /**
+     * Initializes the content panels by adding placeholders or the Personal Center panel
+     * to the main content panel. The Personal Center panel is fully initialized, while
+     * others are represented by placeholders until loaded.
+     */
     public void initializeContentPanels() {
         String[] panelNames = {
                 "Personal Center",
@@ -85,6 +108,13 @@ public class MainPanelController {
         }
     }
 
+    /**
+     * Loads the specified panel dynamically based on its name. If the panel fails to load,
+     * a placeholder panel is returned.
+     *
+     * @param name The name of the panel to load.
+     * @return The loaded JPanel or a placeholder if loading fails.
+     */
     private JPanel loadPanel(String name) {
         try {
             switch (name) {
@@ -94,7 +124,7 @@ public class MainPanelController {
                 case "AI Assistant":
                     System.out.println("Loading AI Assistant panel");
                     AIPanel aiPanel = new AIPanel();
-                    aiController = new AIController(aiPanel,new AIService(new TransactionService(new TransactionRepository()),new TransactionController(),new DeepSeekService(),new UserRepository(),new ExchangeRateService()));
+                    aiController = new AIController(aiPanel, new AIService(new TransactionService(new TransactionRepository()), new TransactionController(), new DeepSeekService(), new UserRepository(), new ExchangeRateService()));
                     return aiPanel;
                 case "Transaction System":
                     System.out.println("Loading Transaction System panel");
@@ -147,6 +177,13 @@ public class MainPanelController {
         }
     }
 
+    /**
+     * Creates a placeholder panel with a centered label for panels that fail to load
+     * or are not yet implemented.
+     *
+     * @param name The name of the panel to display on the placeholder.
+     * @return A JPanel with a placeholder label.
+     */
     private JPanel createPlaceholderPanel(String name) {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBackground(Color.WHITE);
@@ -167,6 +204,13 @@ public class MainPanelController {
         return panel;
     }
 
+    /**
+     * Displays the specified panel in the content panel using the CardLayout.
+     * If the panel is not loaded, it will be dynamically loaded. If it is a placeholder,
+     * it will be replaced with the actual panel.
+     *
+     * @param name The name of the panel to display.
+     */
     public void showPanel(String name) {
         System.out.println("Showing panel: " + name);
         Component[] components = contentPanel.getComponents();

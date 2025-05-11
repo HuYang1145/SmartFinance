@@ -1,3 +1,4 @@
+
 package View.Transaction;
 
 import java.awt.Color;
@@ -6,32 +7,41 @@ import java.awt.Font;
 import java.awt.GradientPaint;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Insets;
 import java.awt.RenderingHints;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-
 import javax.swing.BorderFactory;
 import javax.swing.DefaultListCellRenderer;
-import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JTable;
 import javax.swing.SwingConstants;
-import javax.swing.border.Border;
 import javax.swing.plaf.basic.BasicComboBoxUI;
 import javax.swing.plaf.basic.BasicComboPopup;
 import javax.swing.table.DefaultTableCellRenderer;
 import View.LoginAndMain.LoginRoundedInputField.*;
 
+/**
+ * Provides custom Swing components for the transaction system interface, including gradient panels,
+ * colored table headers, and rounded combo boxes with consistent styling.
+ * 
+ * @author Group 19
+ * @version 1.0
+ */
 public class TransactionSystemComponents {
-    // Gradient Panels
+
+    /**
+     * A JPanel with a dark gradient background, transitioning from a light blue to a beige color.
+     */
     public static class DarkGradientPanel extends JPanel {
         private static final Color DARK_GRADIENT_START = new Color(0x84ACC9);
         private static final Color DARK_GRADIENT_END = new Color(0xFAF0D2);
 
+        /**
+         * Paints the panel with a diagonal gradient from DARK_GRADIENT_START to DARK_GRADIENT_END.
+         * 
+         * @param g the Graphics object to paint with
+         */
         @Override
         protected void paintComponent(Graphics g) {
             Graphics2D g2 = (Graphics2D) g;
@@ -42,10 +52,18 @@ public class TransactionSystemComponents {
         }
     }
 
+    /**
+     * A JPanel with a medium gradient background, transitioning from a light blue to a beige color.
+     */
     public static class MidGradientPanel extends JPanel {
         private static final Color MID_GRADIENT_START = new Color(0x84ACC9);
         private static final Color MID_GRADIENT_END = new Color(0xFAF0D2);
 
+        /**
+         * Paints the panel with a diagonal gradient from MID_GRADIENT_START to MID_GRADIENT_END.
+         * 
+         * @param g the Graphics object to paint with
+         */
         @Override
         protected void paintComponent(Graphics g) {
             Graphics2D g2 = (Graphics2D) g;
@@ -56,11 +74,18 @@ public class TransactionSystemComponents {
         }
     }
 
+    /**
+     * A JPanel with a blue gradient background, transitioning from a light blue to a beige color.
+     */
     public static class BlueGradientPanel extends JPanel {
         private static final Color LIGHT_GRADIENT_START = new Color(0x84ACC9);
-        private static final Color LIGHT_GRADIENT_END = new Color(0xFAF0D2) ;
+        private static final Color LIGHT_GRADIENT_END = new Color(0xFAF0D2);
 
-
+        /**
+         * Paints the panel with a diagonal gradient from LIGHT_GRADIENT_START to LIGHT_GRADIENT_END.
+         * 
+         * @param g the Graphics object to paint with
+         */
         @Override
         protected void paintComponent(Graphics g) {
             Graphics2D g2 = (Graphics2D) g;
@@ -71,10 +96,18 @@ public class TransactionSystemComponents {
         }
     }
 
+    /**
+     * A JPanel with a light gradient background, transitioning from a light blue to a beige color.
+     */
     public static class LightGradientPanel extends JPanel {
         private static final Color LIGHT_GRADIENT_START = new Color(0x84ACC9);
         private static final Color LIGHT_GRADIENT_END = new Color(0xFAF0D2);
 
+        /**
+         * Paints the panel with a diagonal gradient from LIGHT_GRADIENT_START to LIGHT_GRADIENT_END.
+         * 
+         * @param g the Graphics object to paint with
+         */
         @Override
         protected void paintComponent(Graphics g) {
             Graphics2D g2 = (Graphics2D) g;
@@ -85,10 +118,17 @@ public class TransactionSystemComponents {
         }
     }
 
-    // Colored Header Renderer for JTable
+    /**
+     * A custom table cell renderer for JTable headers with a colored background and centered text.
+     */
     public static class ColoredHeaderRenderer extends DefaultTableCellRenderer {
         private final Color bg;
 
+        /**
+         * Constructs a ColoredHeaderRenderer with the specified background color.
+         * 
+         * @param bg the background color for the header
+         */
         public ColoredHeaderRenderer(Color bg) {
             this.bg = bg;
             setHorizontalAlignment(SwingConstants.CENTER);
@@ -96,6 +136,17 @@ public class TransactionSystemComponents {
             setOpaque(true);
         }
 
+        /**
+         * Returns the component used for rendering a table header cell with the specified background color.
+         * 
+         * @param table the JTable that is asking the renderer to draw
+         * @param value the value of the cell
+         * @param isSelected true if the cell is selected
+         * @param hasFocus true if the cell has focus
+         * @param row the row index of the cell
+         * @param column the column index of the cell
+         * @return the component used for rendering
+         */
         @Override
         public Component getTableCellRendererComponent(JTable table,
                                                        Object value, boolean isSelected, boolean hasFocus, int row, int column) {
@@ -105,12 +156,19 @@ public class TransactionSystemComponents {
         }
     }
 
-    // Rounded ComboBox
+    /**
+     * A custom JComboBox with rounded corners and a consistent appearance for the transaction system.
+     */
     public static class RoundedComboBox<T> extends JComboBox<T> {
-        private int arcSize = 20; // 圆弧半径，需与 RoundedTextField 一致
-        private Color borderColor = Color.GRAY; // 边框颜色
-        private Color backgroundColor = Color.WHITE; // 背景颜色
+        private int arcSize = 20; // Arc radius, consistent with RoundedTextField
+        private Color borderColor = Color.GRAY; // Border color
+        private Color backgroundColor = Color.WHITE; // Background color
 
+        /**
+         * Constructs a RoundedComboBox with the specified items.
+         * 
+         * @param items the items to display in the combo box
+         */
         public RoundedComboBox(T[] items) {
             super(items);
             setOpaque(false);
@@ -119,8 +177,18 @@ public class TransactionSystemComponents {
             setForeground(Color.BLACK);
             setFont(new Font("Segoe UI", Font.PLAIN, 14));
             setUI(new RoundedComboBoxUI());
-            // 自定义下拉菜单渲染
+            // Custom renderer for dropdown menu
             setRenderer(new DefaultListCellRenderer() {
+                /**
+                 * Returns the component used for rendering a list cell in the combo box dropdown.
+                 * 
+                 * @param list the JList being rendered
+                 * @param value the value to render
+                 * @param index the index of the cell
+                 * @param isSelected true if the cell is selected
+                 * @param cellHasFocus true if the cell has focus
+                 * @return the component used for rendering
+                 */
                 @Override
                 public Component getListCellRendererComponent(
                     JList<?> list, Object value, int index,
@@ -141,6 +209,11 @@ public class TransactionSystemComponents {
             });
         }
 
+        /**
+         * Paints the component with a rounded white background.
+         * 
+         * @param g the Graphics object to paint with
+         */
         @Override
         protected void paintComponent(Graphics g) {
             Graphics2D g2 = (Graphics2D) g.create();
@@ -151,6 +224,11 @@ public class TransactionSystemComponents {
             g2.dispose();
         }
 
+        /**
+         * Paints the border with a rounded gray outline.
+         * 
+         * @param g the Graphics object to paint with
+         */
         @Override
         protected void paintBorder(Graphics g) {
             Graphics2D g2 = (Graphics2D) g.create();
@@ -160,10 +238,13 @@ public class TransactionSystemComponents {
             g2.dispose();
         }
 
-        // 自定义圆弧边框
-
-        // 自定义 UI 以处理下拉箭头
+        /**
+         * A custom UI for the RoundedComboBox to handle the arrow button and popup appearance.
+         */
         private class RoundedComboBoxUI extends BasicComboBoxUI {
+            /**
+             * Installs default properties, ensuring transparency for the combo box and arrow button.
+             */
             @Override
             protected void installDefaults() {
                 super.installDefaults();
@@ -173,6 +254,9 @@ public class TransactionSystemComponents {
                 arrowButton.setBackground(new Color(0, 0, 0, 0));
             }
 
+            /**
+             * Configures the arrow button to be transparent.
+             */
             @Override
             public void configureArrowButton() {
                 super.configureArrowButton();
@@ -181,9 +265,17 @@ public class TransactionSystemComponents {
                 arrowButton.setBackground(new Color(0, 0, 0, 0));
             }
 
+            /**
+             * Creates a custom popup with a rounded border for the combo box dropdown.
+             * 
+             * @return the custom ComboPopup
+             */
             @Override
             protected javax.swing.plaf.basic.ComboPopup createPopup() {
                 BasicComboPopup popup = new BasicComboPopup(comboBox) {
+                    /**
+                     * Configures the popup with a rounded border and transparent background.
+                     */
                     @Override
                     protected void configurePopup() {
                         super.configurePopup();

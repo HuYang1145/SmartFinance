@@ -1,3 +1,11 @@
+/**
+ * A navigation item panel used in the sidebar of the Smart Finance Application.
+ * Displays a clickable item with an icon and text, supporting selection states and gradient visual effects.
+ * Handles navigation by switching content panels in either the login or main dashboard interfaces.
+ *
+ * @author Group 19
+ * @version 1.0
+ */
 package View.LoginAndMain;
 
 import java.awt.*;
@@ -26,46 +34,63 @@ public class NavItemPanel extends JPanel {
     private List<NavItemPanel> navItems;
     private MainPanelController contentPanelManager;
 
+    /**
+     * A label with gradient text for displaying the application logo or navigation titles.
+     */
     static class GradientLabel extends JLabel {
         private Color c1 = new Color(0x84ACC9);
         private Color c2 = new Color(0xA1DDA3);
 
+        /**
+         * Constructs a GradientLabel with the specified text.
+         *
+         * @param text the text to display
+         */
         public GradientLabel(String text) {
             super(text);
             setOpaque(false);
         }
 
+        /**
+         * Paints the label with a horizontal gradient text effect.
+         *
+         * @param g the Graphics context
+         */
         @Override
         protected void paintComponent(Graphics g) {
             Graphics2D g2 = (Graphics2D) g.create();
-            g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
-                    RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+            g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 
             FontMetrics fm = g2.getFontMetrics(getFont());
             int textWidth = fm.stringWidth(getText());
             int textHeight = fm.getHeight();
 
-            // 构造水平渐变
-            GradientPaint gp = new GradientPaint(
-                    0, 0, c1,
-                    textWidth, 0, c2
-            );
+            // Apply horizontal gradient
+            GradientPaint gp = new GradientPaint(0, 0, c1, textWidth, 0, c2);
             g2.setPaint(gp);
             g2.setFont(getFont());
 
-            // 文本基线
+            // Text baseline
             int x = 0;
             int y = fm.getAscent();
 
             g2.drawString(getText(), x, y);
             g2.dispose();
         }
-
     }
+
+    /**
+     * A circular icon label with gradient fill and centered text, used for navigation item icons.
+     */
     public static class CircleIcon extends JLabel {
         private Color color1 = new Color(0x84ACC9);
         private Color color2 = new Color(0xA1DDA3);
 
+        /**
+         * Constructs a CircleIcon with the specified text.
+         *
+         * @param text the text to display in the center of the icon
+         */
         public CircleIcon(String text) {
             super(text, SwingConstants.CENTER);
             setPreferredSize(new java.awt.Dimension(30, 30));
@@ -74,6 +99,11 @@ public class NavItemPanel extends JPanel {
             setOpaque(false);
         }
 
+        /**
+         * Paints the icon as a gradient-filled circle with centered text.
+         *
+         * @param g the Graphics context
+         */
         @Override
         protected void paintComponent(Graphics g) {
             Graphics2D g2 = (Graphics2D) g.create();
@@ -89,7 +119,15 @@ public class NavItemPanel extends JPanel {
         }
     }
 
+    /**
+     * A panel with a gradient background for branding purposes.
+     */
     public static class BrandGradientPanel extends JPanel {
+        /**
+         * Paints the panel with a gradient background.
+         *
+         * @param g the Graphics context
+         */
         @Override
         protected void paintComponent(Graphics g) {
             Graphics2D g2 = (Graphics2D) g;
@@ -100,7 +138,15 @@ public class NavItemPanel extends JPanel {
         }
     }
 
-    // 主构造函数，带 MainPanelController，用于 MainPlane
+    /**
+     * Constructs a NavItemPanel for the main dashboard with a content panel manager.
+     *
+     * @param name                the name of the navigation item
+     * @param navItems            the list of all navigation items for selection management
+     * @param cardLayout          the card layout for switching content panels
+     * @param contentPanel        the panel containing card content
+     * @param contentPanelManager the controller for managing content panel transitions
+     */
     public NavItemPanel(String name, List<NavItemPanel> navItems, CardLayout cardLayout, JPanel contentPanel, MainPanelController contentPanelManager) {
         this.name = name;
         this.navItems = navItems;
@@ -115,12 +161,22 @@ public class NavItemPanel extends JPanel {
         }
     }
 
-    // 重载构造函数，不带 MainPanelController，用于 Login
+    /**
+     * Constructs a NavItemPanel for the login interface without a content panel manager.
+     *
+     * @param name         the name of the navigation item
+     * @param navItems     the list of all navigation items for selection management
+     * @param cardLayout   the card layout for switching content panels
+     * @param contentPanel the panel containing card content
+     */
     public NavItemPanel(String name, List<NavItemPanel> navItems, CardLayout cardLayout, JPanel contentPanel) {
         this(name, navItems, cardLayout, contentPanel, null);
         System.out.println("Creating NavItemPanel (without Manager): " + name + ", cardLayout=" + cardLayout + ", contentPanel=" + contentPanel);
     }
 
+    /**
+     * Initializes the navigation item panel with icon, text, and mouse event handlers.
+     */
     private void initialize() {
         setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
         setOpaque(false);
@@ -154,11 +210,11 @@ public class NavItemPanel extends JPanel {
                 System.out.println("NavItemPanel clicked: " + name + ", isEnabled: " + isEnabled() + ", isVisible: " + isVisible() + ", bounds: " + getBounds());
                 if (!name.equals("Logout") && !name.startsWith("Welcome, ")) {
                     if (contentPanelManager != null) {
-                        // MainPlane 使用 MainPanelController
+                        // MainPlane uses MainPanelController
                         System.out.println("Switching to panel (via Manager): " + name);
                         contentPanelManager.showPanel(name);
                     } else if (cardLayout != null && contentPanel != null) {
-                        // Login 使用 cardLayout
+                        // Login uses cardLayout
                         System.out.println("Switching to panel (direct): " + name);
                         cardLayout.show(contentPanel, name);
                     } else {
@@ -191,10 +247,20 @@ public class NavItemPanel extends JPanel {
         setFocusable(true);
     }
 
+    /**
+     * Gets the name of the navigation item.
+     *
+     * @return the name of the item
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * Sets the text to display in the icon label.
+     *
+     * @param s the text to set
+     */
     public void setIconText(String s) {
         iconLabel.setText(s);
         iconLabel.setFont(new Font("Segoe UI", Font.BOLD, 14));
@@ -202,6 +268,11 @@ public class NavItemPanel extends JPanel {
         iconLabel.setOpaque(false);
     }
 
+    /**
+     * Sets the selected state of the navigation item, updating its appearance.
+     *
+     * @param sel true to select the item, false to deselect
+     */
     public void setSelected(boolean sel) {
         selected = sel;
         if (sel) {
@@ -215,6 +286,11 @@ public class NavItemPanel extends JPanel {
         repaint();
     }
 
+    /**
+     * Paints the panel with a gradient background when selected.
+     *
+     * @param g the Graphics context
+     */
     @Override
     protected void paintComponent(Graphics g) {
         if (selected) {
@@ -231,6 +307,9 @@ public class NavItemPanel extends JPanel {
         super.paintComponent(g);
     }
 
+    /**
+     * Repaints the panel and its icon and text labels.
+     */
     @Override
     public void repaint() {
         super.repaint();

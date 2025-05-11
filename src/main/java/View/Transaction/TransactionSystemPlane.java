@@ -1,17 +1,16 @@
+
 package View.Transaction;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.event.ActionListener;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -20,9 +19,6 @@ import java.util.List;
 import javax.swing.*;
 import javax.swing.plaf.basic.BasicScrollBarUI;
 import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.DefaultTableModel;
-import javax.swing.table.JTableHeader;
-
 import Model.User;
 import Model.UserSession;
 import View.LoginAndMain.GradientComponents;
@@ -36,6 +32,14 @@ import Controller.TransactionController;
 import Model.Transaction;
 import View.LoginAndMain.LoginRoundedInputField;
 
+/**
+ * A JPanel that serves as the main interface for the transaction system, providing modules for
+ * real-time exchange rate monitoring, currency conversion, historical exchange rate trends,
+ * transaction input, and transaction history display.
+ * 
+ * @author Group 19
+ * @version 1.0
+ */
 public class TransactionSystemPlane extends JPanel {
     private final String username;
     private final String[] currencies = {"USD", "EUR", "GBP", "JPY", "AUD", "CAD", "CHF", "HKD", "SGD", "NZD", "CNY"};
@@ -52,24 +56,30 @@ public class TransactionSystemPlane extends JPanel {
     private ActionListener conversionActionListener;
     private ActionListener historicalTrendActionListener;
 
+    /**
+     * Constructs a TransactionSystemPlane for the specified user.
+     * 
+     * @param username the username of the current user
+     */
     public TransactionSystemPlane(String username) {
         this.username = username;
         initializePanel();
     }
 
+    /**
+     * Initializes the panel with a BorderLayout, setting up the left and right panels
+     * using a JSplitPane for layout.
+     */
     private void initializePanel() {
-        // 1. 整个面板改用 BorderLayout
-        setLayout(new BorderLayout(0,0));
-        setBorder(BorderFactory.createEmptyBorder(15,15,15,15));
-        setBackground(new Color(245,245,245));
+        setLayout(new BorderLayout(0, 0));
+        setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
+        setBackground(new Color(245, 245, 245));
 
-        // 2. 左右两侧面板
         JSplitPane left = createLeftPanel();
         JPanel right = createRightPanel();
 
-        // 3. 用 SplitPane 分割，左 2/3、右 1/3
         JSplitPane split = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, left, right);
-        split.setResizeWeight(0.67);      // 左侧占 67%
+        split.setResizeWeight(0.67);
         split.setDividerSize(4);
         split.setContinuousLayout(true);
         split.setBorder(null);
@@ -77,30 +87,34 @@ public class TransactionSystemPlane extends JPanel {
 
         add(split, BorderLayout.CENTER);
 
-        // 界面可见后再定位分隔条比例
         SwingUtilities.invokeLater(() -> split.setDividerLocation(0.67));
     }
 
-    // 左侧：交易历史 + 操作按钮
+    /**
+     * Creates the left panel, containing the transaction history and input panels,
+     * arranged vertically using a JSplitPane.
+     * 
+     * @return the left panel as a JSplitPane
+     */
     private JSplitPane createLeftPanel() {
         JPanel history = createTransactionHistoryPanel();
-        JPanel input   = createTransactionInputPanel();
+        JPanel input = createTransactionInputPanel();
 
-        JSplitPane vsplit = new JSplitPane(
-                JSplitPane.VERTICAL_SPLIT,
-                history,
-                input
-        );
-        vsplit.setResizeWeight(0.8);     // 上半部分（历史）占 50%
+        JSplitPane vsplit = new JSplitPane(JSplitPane.VERTICAL_SPLIT, history, input);
+        vsplit.setResizeWeight(0.8);
         vsplit.setDividerSize(4);
         vsplit.setBorder(null);
         return vsplit;
     }
 
-
-    // 右侧：汇率、转换、趋势，垂直排列
+    /**
+     * Creates the right panel, containing the exchange rate, currency conversion,
+     * and historical trend panels, arranged vertically in a GridLayout.
+     * 
+     * @return the right panel as a JPanel
+     */
     private JPanel createRightPanel() {
-        JPanel p = new JPanel(new GridLayout(3,1,0,0));
+        JPanel p = new JPanel(new GridLayout(3, 1, 0, 0));
         p.setOpaque(false);
         p.add(createExchangeRatePanel());
         p.add(createCurrencyConversionPanel());
@@ -108,7 +122,12 @@ public class TransactionSystemPlane extends JPanel {
         return p;
     }
 
-    // Module 1: Real-Time Exchange Rate Monitoring
+    /**
+     * Creates the panel for real-time exchange rate monitoring, displaying a table
+     * of currency pairs and their rates, along with a countdown for the next refresh.
+     * 
+     * @return the exchange rate panel
+     */
     private JPanel createExchangeRatePanel() {
         JPanel panel = new TransactionSystemComponents.BlueGradientPanel();
         panel.setLayout(new BorderLayout(10, 10));
@@ -201,7 +220,12 @@ public class TransactionSystemPlane extends JPanel {
         return panel;
     }
 
-    // Module 2: Currency Conversion
+    /**
+     * Creates the panel for currency conversion, allowing users to input an amount
+     * in CNY and select a target currency for conversion.
+     * 
+     * @return the currency conversion panel
+     */
     private JPanel createCurrencyConversionPanel() {
         JPanel panel = new TransactionSystemComponents.BlueGradientPanel();
         panel.setLayout(new BorderLayout(10, 10));
@@ -258,7 +282,12 @@ public class TransactionSystemPlane extends JPanel {
         return panel;
     }
 
-    // Module 3: Selected Currency Historical Exchange Rate Trend
+    /**
+     * Creates the panel for displaying the historical exchange rate trend of a selected currency
+     * using a time series chart.
+     * 
+     * @return the historical trend panel
+     */
     private JPanel createHistoricalTrendPanel() {
         JPanel panel = new TransactionSystemComponents.BlueGradientPanel();
         panel.setLayout(new BorderLayout(10, 10));
@@ -269,20 +298,18 @@ public class TransactionSystemPlane extends JPanel {
         title.setForeground(Color.BLACK);
         panel.add(title, BorderLayout.NORTH);
 
-        // 1. 创建时间序列
         TimeSeries series = new TimeSeries("Rate");
 
-        // 2. 自动生成最近6个月的模拟数据
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM");
             Calendar cal = Calendar.getInstance();
-            double baseRate = 6.90; // 设定基准汇率
+            double baseRate = 6.90;
 
             for (int i = 5; i >= 0; i--) {
                 Calendar temp = (Calendar) cal.clone();
-                temp.add(Calendar.MONTH, -i);  // 往前推i个月
+                temp.add(Calendar.MONTH, -i);
                 Date date = temp.getTime();
-                double rate = baseRate + Math.random() * 0.2 - 0.1; // 小幅随机波动（±0.1）
+                double rate = baseRate + Math.random() * 0.2 - 0.1;
                 series.add(new org.jfree.data.time.Month(date), rate);
             }
         } catch (Exception e) {
@@ -291,13 +318,11 @@ public class TransactionSystemPlane extends JPanel {
 
         TimeSeriesCollection dataset = new TimeSeriesCollection(series);
 
-        // 3. 创建 Chart
         JFreeChart chart = org.jfree.chart.ChartFactory.createTimeSeriesChart(
                 null, "Month", "Rate",
                 dataset, false, true, false
         );
 
-        // 4. 美化 Chart 样式
         DateAxis dateAxis = (DateAxis) chart.getXYPlot().getDomainAxis();
         dateAxis.setDateFormatOverride(new java.text.SimpleDateFormat("yyyy-MM"));
         dateAxis.setLabelFont(new Font("Segoe UI", Font.PLAIN, 12));
@@ -310,7 +335,7 @@ public class TransactionSystemPlane extends JPanel {
         chart.getXYPlot().setDomainGridlinePaint(new Color(200, 200, 200));
         chart.getXYPlot().setRangeGridlinePaint(new Color(200, 200, 200));
 
-        chart.getXYPlot().getRenderer().setSeriesPaint(0, new Color(255, 165, 0)); // 橙色曲线
+        chart.getXYPlot().getRenderer().setSeriesPaint(0, new Color(255, 165, 0));
         chart.getXYPlot().getRenderer().setSeriesStroke(0, new java.awt.BasicStroke(2.0f));
 
         ChartPanel chartPanel = new ChartPanel(chart);
@@ -322,21 +347,26 @@ public class TransactionSystemPlane extends JPanel {
         return panel;
     }
 
+    /**
+     * Customizes the scrollbar of a JScrollPane to have a transparent track and a semi-transparent thumb.
+     * 
+     * @param scrollPane the JScrollPane to customize
+     */
     private void customizeScrollBar(JScrollPane scrollPane) {
         JScrollBar vbar = scrollPane.getVerticalScrollBar();
         vbar.setOpaque(false);
         vbar.setUI(new BasicScrollBarUI() {
             @Override
             protected void configureScrollBarColors() {
-                this.thumbColor = new Color(255, 255, 255, 120); // 白色半透明滑块
-                this.trackColor = new Color(0, 0, 0, 0); // 透明轨道
+                this.thumbColor = new Color(255, 255, 255, 120);
+                this.trackColor = new Color(0, 0, 0, 0);
             }
-    
+
             @Override
             protected JButton createDecreaseButton(int orientation) {
                 return createZeroButton();
             }
-    
+
             @Override
             protected JButton createIncreaseButton(int orientation) {
                 return createZeroButton();
@@ -351,7 +381,13 @@ public class TransactionSystemPlane extends JPanel {
             }
         });
     }
-    // Module 4: Transaction Input (Income/Expense)
+
+    /**
+     * Creates the panel for inputting new transactions, including fields for transaction details
+     * and buttons for confirmation or cancellation.
+     * 
+     * @return the transaction input panel
+     */
     private JPanel createTransactionInputPanel() {
         JPanel panel = new TransactionSystemComponents.LightGradientPanel();
         panel.setLayout(new BorderLayout(10, 10));
@@ -368,7 +404,6 @@ public class TransactionSystemPlane extends JPanel {
         JPanel content = new JPanel(new BorderLayout(20, 0));
         content.setOpaque(false);
 
-        // 左侧：表单（不含 Password）
         JScrollPane formScroll = new JScrollPane(buildFormPanel(false));
         formScroll.setBorder(null);
         formScroll.setOpaque(false);
@@ -378,7 +413,6 @@ public class TransactionSystemPlane extends JPanel {
         customizeScrollBar(formScroll);
         content.add(formScroll, BorderLayout.CENTER);
 
-        // 右侧：Password输入框 + 确认/取消按钮
         JPanel btnBox = new JPanel();
         btnBox.setOpaque(false);
         btnBox.setLayout(new BoxLayout(btnBox, BoxLayout.Y_AXIS));
@@ -405,14 +439,12 @@ public class TransactionSystemPlane extends JPanel {
 
         panel.add(content, BorderLayout.CENTER);
 
-        // Confirm按钮
         confirm.addActionListener(e -> {
             if (transactionActionListener != null) {
                 transactionActionListener.actionPerformed(e);
             }
         });
 
-// Cancel按钮
         cancel.addActionListener(e -> {
             transactionAmountField.setText("");
             transactionTimeField.setText(new SimpleDateFormat("yyyy/MM/dd HH:mm").format(new Date()));
@@ -431,20 +463,23 @@ public class TransactionSystemPlane extends JPanel {
         return panel;
     }
 
-
-    // 把你原来那一大块 GridBagLayout 代码提炼到这里
+    /**
+     * Builds the form panel for transaction input, containing fields for transaction details.
+     * 
+     * @param includePassword whether to include a password field (not used in this implementation)
+     * @return the form panel
+     */
     private JPanel buildFormPanel(boolean includePassword) {
         JPanel form = new JPanel(new GridBagLayout());
         form.setOpaque(false);
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(8, 8, 8, 8);
         gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.anchor = GridBagConstraints.LINE_START; // 左对齐
-        gbc.weightx = 1.0;  // 让输入框撑满
+        gbc.anchor = GridBagConstraints.LINE_START;
+        gbc.weightx = 1.0;
 
         int y = 0;
 
-        // Operation
         gbc.gridx = 0; gbc.gridy = y;
         form.add(createWhiteLabel("Operation:"), gbc);
         gbc.gridx = 1;
@@ -452,7 +487,6 @@ public class TransactionSystemPlane extends JPanel {
                 new String[]{"Income", "Expense"}), gbc);
         y++;
 
-        // Amount
         gbc.gridx = 0; gbc.gridy = y;
         form.add(createWhiteLabel("Amount (¥):"), gbc);
         gbc.gridx = 1;
@@ -460,7 +494,6 @@ public class TransactionSystemPlane extends JPanel {
                 "Enter amount (e.g., 100.50)"), gbc);
         y++;
 
-        // Time
         gbc.gridx = 0; gbc.gridy = y;
         form.add(createWhiteLabel("Time (yyyy/MM/dd HH:mm):"), gbc);
         gbc.gridx = 1;
@@ -468,7 +501,6 @@ public class TransactionSystemPlane extends JPanel {
                 new SimpleDateFormat("yyyy/MM/dd HH:mm").format(new Date())), gbc);
         y++;
 
-        // Merchant
         gbc.gridx = 0; gbc.gridy = y;
         form.add(createWhiteLabel("Merchant (English):"), gbc);
         gbc.gridx = 1;
@@ -476,7 +508,6 @@ public class TransactionSystemPlane extends JPanel {
                 "Enter merchant (e.g., Amazon)"), gbc);
         y++;
 
-        // Type
         gbc.gridx = 0; gbc.gridy = y;
         form.add(createWhiteLabel("Type:"), gbc);
         gbc.gridx = 1;
@@ -486,7 +517,6 @@ public class TransactionSystemPlane extends JPanel {
                         "Entertainment", "Travel", "Gift"}), gbc);
         y++;
 
-        // Remark
         gbc.gridx = 0; gbc.gridy = y;
         form.add(createWhiteLabel("Remark (Optional):"), gbc);
         gbc.gridx = 1;
@@ -494,7 +524,6 @@ public class TransactionSystemPlane extends JPanel {
                 "Enter remark (e.g., Grocery)"), gbc);
         y++;
 
-        // Category
         gbc.gridx = 0; gbc.gridy = y;
         form.add(createWhiteLabel("Category (Purpose):"), gbc);
         gbc.gridx = 1;
@@ -502,7 +531,6 @@ public class TransactionSystemPlane extends JPanel {
                 "Enter category (e.g., Household)"), gbc);
         y++;
 
-        // Payment Method
         gbc.gridx = 0; gbc.gridy = y;
         form.add(createWhiteLabel("Payment Method:"), gbc);
         gbc.gridx = 1;
@@ -510,7 +538,6 @@ public class TransactionSystemPlane extends JPanel {
                 "Enter payment method (e.g., Credit Card)"), gbc);
         y++;
 
-        // Location
         gbc.gridx = 0; gbc.gridy = y;
         form.add(createWhiteLabel("Location:"), gbc);
         gbc.gridx = 1;
@@ -518,7 +545,6 @@ public class TransactionSystemPlane extends JPanel {
                 new String[]{"Online", "Offline"}), gbc);
         y++;
 
-        // Tag
         gbc.gridx = 0; gbc.gridy = y;
         form.add(createWhiteLabel("Tag (Optional):"), gbc);
         gbc.gridx = 1;
@@ -526,7 +552,6 @@ public class TransactionSystemPlane extends JPanel {
                 "Enter tag (e.g., Urgent)"), gbc);
         y++;
 
-        // Attachment
         gbc.gridx = 0; gbc.gridy = y;
         form.add(createWhiteLabel("Attachment (Optional):"), gbc);
         gbc.gridx = 1;
@@ -534,17 +559,21 @@ public class TransactionSystemPlane extends JPanel {
                 "Enter attachment path (e.g., receipt.pdf)"), gbc);
         y++;
 
-        // Recurrence
         gbc.gridx = 0; gbc.gridy = y;
         form.add(createWhiteLabel("Recurrence (Optional):"), gbc);
         gbc.gridx = 1;
         form.add(recurrenceField = new LoginRoundedInputField.RoundedTextField(
                 "Enter recurrence (e.g., Monthly)"), gbc);
 
-        // ➡️ 不加 Password（因为 Password 移到右边了）
         return form;
     }
 
+    /**
+     * Creates a JLabel with the specified text, styled with a bold font and dark color.
+     * 
+     * @param text the text for the label
+     * @return the styled JLabel
+     */
     private JLabel createWhiteLabel(String text) {
         JLabel label = new JLabel(text);
         label.setForeground(new Color(0x2C3C49));
@@ -552,15 +581,17 @@ public class TransactionSystemPlane extends JPanel {
         return label;
     }
 
-
-    // Module 5: Transaction History (Detailed)
+    /**
+     * Creates the panel for displaying the transaction history, showing the user's balance
+     * and a list of transactions for the current month.
+     * 
+     * @return the transaction history panel
+     */
     private JPanel createTransactionHistoryPanel() {
-        // 整体容器：白底
         JPanel container = new JPanel(new BorderLayout());
         container.setBorder(BorderFactory.createEmptyBorder(0, 30, 0, 10));
         container.setBackground(Color.WHITE);
 
-        // 1. 渐变色头部：显示余额
         TransactionSystemComponents.DarkGradientPanel header = new TransactionSystemComponents.DarkGradientPanel();
         header.setPreferredSize(new Dimension(0, 120));
         header.setLayout(null);
@@ -588,20 +619,17 @@ public class TransactionSystemPlane extends JPanel {
             }
         }
 
-        // 3. 用 JList + 自定义渲染器
         JList<Transaction> list = new JList<>(model);
         list.setCellRenderer(new ListCellRenderer<Transaction>() {
             @Override
             public Component getListCellRendererComponent(JList<? extends Transaction> list,
                                                           Transaction t, int idx,
                                                           boolean isSel, boolean cellHasFocus) {
-                // 每一行都是一个 BorderLayout 容器
                 JPanel row = new JPanel(new BorderLayout());
                 row.setBackground(Color.WHITE);
                 row.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, new Color(230,230,230)));
                 row.setPreferredSize(new Dimension(0, 80));
 
-                // 左：操作 + 时间（垂直排）
                 JPanel left = new JPanel();
                 left.setLayout(new BoxLayout(left, BoxLayout.Y_AXIS));
                 left.setOpaque(false);
@@ -614,7 +642,6 @@ public class TransactionSystemPlane extends JPanel {
                 left.add(ti);
                 row.add(left, BorderLayout.WEST);
 
-                // 右：金额，红/绿色
                 String opText = t.getOperation().toLowerCase();
                 String amountText;
                 if (opText.contains("income") || opText.contains("receive")) {
@@ -626,12 +653,11 @@ public class TransactionSystemPlane extends JPanel {
                 amt.setFont(new Font("Segoe UI", Font.BOLD, 14));
 
                 if (opText.contains("income") || opText.contains("receive")) {
-                    amt.setForeground(new Color(0,150,0));  // 绿色
+                    amt.setForeground(new Color(0,150,0));
                 } else {
-                    amt.setForeground(new Color(200,0,0));  // 红色
+                    amt.setForeground(new Color(200,0,0));
                 }
                 row.add(amt, BorderLayout.EAST);
-
 
                 if (isSel) {
                     row.setBackground(new Color(230,240,255));
@@ -640,7 +666,6 @@ public class TransactionSystemPlane extends JPanel {
             }
         });
 
-        // 4. 装到 JScrollPane，白底滚动区 + 自定义滚动条
         JScrollPane scroll = new JScrollPane(list);
         scroll.setBorder(BorderFactory.createEmptyBorder());
         scroll.getViewport().setBackground(new Color(0xFAF0D2));
@@ -662,7 +687,11 @@ public class TransactionSystemPlane extends JPanel {
         return container;
     }
 
-    // Module 6: Placeholder Panel
+    /**
+     * Creates a placeholder panel for future use.
+     * 
+     * @return the placeholder panel
+     */
     private JPanel createPlaceholderPanel() {
         JPanel panel = new TransactionSystemComponents.LightGradientPanel();
         panel.setLayout(new BorderLayout(10, 10));
@@ -676,106 +705,228 @@ public class TransactionSystemPlane extends JPanel {
         return panel;
     }
 
-    // Getters for UI components
+    /**
+     * Gets the JTable displaying exchange rates.
+     * 
+     * @return the exchange rate table
+     */
     public JTable getRateTable() {
         return rateTable;
     }
 
+    /**
+     * Gets the JLabel displaying the currency conversion result.
+     * 
+     * @return the conversion result label
+     */
     public JLabel getConversionResultLabel() {
         return conversionResultLabel;
     }
 
+    /**
+     * Gets the JComboBox for selecting the target currency.
+     * 
+     * @return the currency combo box
+     */
     public JComboBox<String> getCurrencyComboBox() {
         return currencyComboBox;
     }
 
+    /**
+     * Gets the JTable displaying transactions (not used in this implementation).
+     * 
+     * @return the transaction table
+     */
     public JTable getTransactionTable() {
         return transactionTable;
     }
 
+    /**
+     * Gets the JLabel displaying the countdown for the next exchange rate refresh.
+     * 
+     * @return the countdown label
+     */
     public JLabel getCountdownLabel() {
         return countdownLabel;
     }
 
+    /**
+     * Gets the text field for entering the amount to convert.
+     * 
+     * @return the amount field
+     */
     public LoginRoundedInputField.RoundedTextField getAmountField() {
         return amountField;
     }
 
+    /**
+     * Gets the JComboBox for selecting the transaction operation (Income/Expense).
+     * 
+     * @return the operation combo box
+     */
     public JComboBox<String> getOperationComboBox() {
         return operationComboBox;
     }
 
+    /**
+     * Gets the text field for entering the transaction amount.
+     * 
+     * @return the transaction amount field
+     */
     public LoginRoundedInputField.RoundedTextField getTransactionAmountField() {
         return transactionAmountField;
     }
 
+    /**
+     * Gets the text field for entering the transaction timestamp.
+     * 
+     * @return the transaction time field
+     */
     public LoginRoundedInputField.RoundedTextField getTransactionTimeField() {
         return transactionTimeField;
     }
 
+    /**
+     * Gets the text field for entering the merchant name.
+     * 
+     * @return the merchant field
+     */
     public LoginRoundedInputField.RoundedTextField getMerchantField() {
         return merchantField;
     }
 
+    /**
+     * Gets the JComboBox for selecting the transaction type.
+     * 
+     * @return the type combo box
+     */
     public JComboBox<String> getTypeComboBox() {
         return typeComboBox;
     }
 
+    /**
+     * Gets the text field for entering optional remarks.
+     * 
+     * @return the remark field
+     */
     public LoginRoundedInputField.RoundedTextField getRemarkField() {
         return remarkField;
     }
 
+    /**
+     * Gets the text field for entering the transaction category.
+     * 
+     * @return the category field
+     */
     public LoginRoundedInputField.RoundedTextField getCategoryField() {
         return categoryField;
     }
 
+    /**
+     * Gets the text field for entering the payment method.
+     * 
+     * @return the payment method field
+     */
     public LoginRoundedInputField.RoundedTextField getPaymentMethodField() {
         return paymentMethodField;
     }
 
+    /**
+     * Gets the JComboBox for selecting the transaction location (Online/Offline).
+     * 
+     * @return the location combo box
+     */
     public JComboBox<String> getLocationComboBox() {
         return locationComboBox;
     }
 
+    /**
+     * Gets the text field for entering optional tags.
+     * 
+     * @return the tag field
+     */
     public LoginRoundedInputField.RoundedTextField getTagField() {
         return tagField;
     }
 
+    /**
+     * Gets the text field for entering optional attachment paths.
+     * 
+     * @return the attachment field
+     */
     public LoginRoundedInputField.RoundedTextField getAttachmentField() {
         return attachmentField;
     }
 
+    /**
+     * Gets the text field for entering optional recurrence details.
+     * 
+     * @return the recurrence field
+     */
     public LoginRoundedInputField.RoundedTextField getRecurrenceField() {
         return recurrenceField;
     }
 
+    /**
+     * Gets the password field for entering the user's password.
+     * 
+     * @return the password field
+     */
     public JPasswordField getPasswordField() {
         return passwordField;
     }
 
-    // Setters for action listeners
+    /**
+     * Sets the ActionListener for transaction-related actions.
+     * 
+     * @param listener the ActionListener to set
+     */
     public void setTransactionActionListener(ActionListener listener) {
         this.transactionActionListener = listener;
     }
 
+    /**
+     * Sets the ActionListener for currency conversion actions.
+     * 
+     * @param listener the ActionListener to set
+     */
     public void setConversionActionListener(ActionListener listener) {
         this.conversionActionListener = listener;
     }
 
+    /**
+     * Sets the ActionListener for historical trend actions.
+     * 
+     * @param listener the ActionListener to set
+     */
     public void setHistoricalTrendActionListener(ActionListener listener) {
         this.historicalTrendActionListener = listener;
     }
 
-    // Methods to update UI components (called by controller)
+    /**
+     * Displays an error message in a dialog.
+     * 
+     * @param message the error message to display
+     */
     public void showError(String message) {
         JOptionPane.showMessageDialog(this, message, "Error", JOptionPane.ERROR_MESSAGE);
     }
 
+    /**
+     * Displays a success message in a dialog.
+     * 
+     * @param message the success message to display
+     */
     public void showSuccess(String message) {
         JOptionPane.showMessageDialog(this, message, "Success", JOptionPane.INFORMATION_MESSAGE);
     }
 
+    /**
+     * Updates the transaction list (not used in this implementation).
+     * 
+     * @param transactions the list of transactions to display
+     */
     public void updateTransactionList(List<Transaction> transactions) {
-        // 已移除此方法，交易历史直接在 createTransactionHistoryPanel 中加载
+        // Implementation removed; transaction history loaded in createTransactionHistoryPanel
     }
 }

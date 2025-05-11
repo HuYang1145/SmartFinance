@@ -1,3 +1,11 @@
+/**
+ * A panel for displaying an AI chat interface in the Smart Finance Application.
+ * Provides a chat area for messages, an input field for user messages, and a send button.
+ * Supports custom message bubbles with user and AI avatars, and handles scrolling and loading states.
+ *
+ * @author Group 19
+ * @version 1.0
+ */
 package View.AI;
 
 import java.awt.BorderLayout;
@@ -37,10 +45,22 @@ public class AIPanel extends JPanel {
     private JButton sendBtn;
     private AIViewListener listener;
 
+    /**
+     * Interface for handling send message events in the AI chat panel.
+     */
     public interface AIViewListener {
+        /**
+         * Called when the user sends a message.
+         *
+         * @param message the message content sent by the user
+         */
         void onSendMessage(String message);
     }
 
+    /**
+     * Constructs an AIPanel with a chat area, input field, and send button.
+     * Initializes components and layouts for the AI chat interface.
+     */
     public AIPanel() {
         setLayout(new BorderLayout());
         setBackground(Color.WHITE);
@@ -48,25 +68,48 @@ public class AIPanel extends JPanel {
         layoutComponents();
     }
 
+    /**
+     * Sets the listener for handling send message events.
+     *
+     * @param listener the AIViewListener to handle user messages
+     */
     public void setListener(AIViewListener listener) {
         this.listener = listener;
     }
 
+    /**
+     * Adds a chat message to the chat area as a custom bubble.
+     *
+     * @param message the chat message to display
+     */
     public void addMessage(ChatMessage message) {
         addCustomBubble(message.getContent(), message.isUserSent());
         scrollToBottom();
     }
 
+    /**
+     * Sets the loading state of the panel, enabling or disabling input and send button.
+     *
+     * @param isLoading true to set the panel to loading state, false otherwise
+     */
     public void setLoadingState(boolean isLoading) {
         inputField.setEnabled(!isLoading);
         sendBtn.setEnabled(!isLoading);
         sendBtn.setText(isLoading ? "Processing..." : "Send");
     }
 
+    /**
+     * Displays an error message in a dialog.
+     *
+     * @param message the error message to display
+     */
     public void showError(String message) {
         JOptionPane.showMessageDialog(this, message, "Error", JOptionPane.ERROR_MESSAGE);
     }
 
+    /**
+     * Initializes the components of the chat interface, including chat area, scroll pane, input field, and send button.
+     */
     private void initComponents() {
         chatArea = new JPanel();
         chatArea.setLayout(new BoxLayout(chatArea, BoxLayout.Y_AXIS));
@@ -92,6 +135,9 @@ public class AIPanel extends JPanel {
         inputField.addActionListener(e -> sendMessage());
     }
 
+    /**
+     * Lays out the components of the chat interface, including header, chat area, and input bar.
+     */
     private void layoutComponents() {
         JPanel header = new JPanel() {
             @Override
@@ -99,7 +145,7 @@ public class AIPanel extends JPanel {
                 super.paintComponent(g);
                 Graphics2D g2 = (Graphics2D) g;
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                GradientPaint gp = new GradientPaint(0, 0,Color.decode("#84ACC9"), getWidth(), 0, Color.decode("#A1DDA3"));
+                GradientPaint gp = new GradientPaint(0, 0, Color.decode("#84ACC9"), getWidth(), 0, Color.decode("#A1DDA3"));
                 g2.setPaint(gp);
                 g2.fillRect(0, 0, getWidth(), getHeight());
             }
@@ -138,6 +184,9 @@ public class AIPanel extends JPanel {
         add(card, BorderLayout.CENTER);
     }
 
+    /**
+     * Sends the user's input message to the listener and clears the input field.
+     */
     private void sendMessage() {
         String text = inputField.getText().trim();
         if (text.isEmpty()) return;
@@ -147,6 +196,12 @@ public class AIPanel extends JPanel {
         inputField.setText("");
     }
 
+    /**
+     * Adds a custom message bubble to the chat area with an avatar indicating user or AI.
+     *
+     * @param msg    the message content
+     * @param isUser true if the message is from the user, false if from the AI
+     */
     private void addCustomBubble(String msg, boolean isUser) {
         JPanel line = new JPanel();
         line.setLayout(new BoxLayout(line, BoxLayout.X_AXIS));
@@ -158,7 +213,7 @@ public class AIPanel extends JPanel {
             protected void paintComponent(Graphics g) {
                 Graphics2D g2 = (Graphics2D) g.create();
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                Color c = isUser ? Color.decode("#A1DDA3") :Color.decode("#84ACC9");
+                Color c = isUser ? Color.decode("#A1DDA3") : Color.decode("#84ACC9");
                 g2.setColor(c);
                 g2.fillOval(0, 0, getWidth(), getHeight());
                 g2.setColor(Color.WHITE);
@@ -234,6 +289,9 @@ public class AIPanel extends JPanel {
         chatArea.repaint();
     }
 
+    /**
+     * Scrolls the chat area to the bottom to show the latest messages.
+     */
     private void scrollToBottom() {
         JScrollBar verticalScrollBar = scrollPane.getVerticalScrollBar();
         SwingUtilities.invokeLater(() -> {

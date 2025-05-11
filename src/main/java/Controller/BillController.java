@@ -16,25 +16,57 @@ import Service.BudgetService;
 import View.Bill.ExpenseDialogView;
 import View.Bill.IncomeDialogView;
 
+/**
+ * Manages bill-related operations for the finance management system, including transaction filtering,
+ * category calculations, and processing income/expense transactions. Uses caching to optimize
+ * transaction retrieval and integrates with the account repository for user data.
+ *
+ * @author Group 19
+ * @version 1.0
+ */
 public class BillController {
+    /** Repository for managing user account data. */
     private final AccountRepository accountRepository;
+    /** Cache for storing user transactions. */
     private static Map<String, List<Transaction>> transactionCache = new HashMap<>();
+    /** Timestamps for cache validity tracking. */
     private static Map<String, Long> cacheTimestamps = new HashMap<>();
+    /** Cache expiry duration in milliseconds (5 minutes). */
     private static final long CACHE_EXPIRY_MS = 5 * 60 * 1000;
+    /** Date format for parsing transaction timestamps. */
     private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy/MM/dd HH:mm");
+    /** Code for unclassified transaction types. */
     private static final String UNCLASSIFIED_TYPE_CODE = "u";
+    /** Placeholder for income transactions. */
     private static final String INCOME_PLACEHOLDER = "I";
 
+    /**
+     * Constructs a BillController with the specified account repository.
+     *
+     * @param accountRepository the repository for user account data
+     */
     public BillController(AccountRepository accountRepository) {
         this.accountRepository = accountRepository;
     }
 
+    /**
+     * Checks if the transaction cache for a user is still valid.
+     *
+     * @param username the username of the user
+     * @return true if the cache is valid, false otherwise
+     */
     private boolean isCacheValid(String username) {
         Long timestamp = cacheTimestamps.get(username);
         if (timestamp == null) return false;
         return (System.currentTimeMillis() - timestamp) < CACHE_EXPIRY_MS;
     }
 
+    /**
+     * Retrieves cached transactions for a user, refreshing the cache if expired.
+     *
+     * @param username the username of the user
+     * @return a list of transactions for the user
+     */
     public List<Transaction> getCachedTransactions(String username) {
         if (isCacheValid(username)) {
             return transactionCache.getOrDefault(username, new ArrayList<>());
@@ -46,6 +78,14 @@ public class BillController {
         return transactionCache.get(username);
     }
 
+    /**
+     * Filters transactions for a user within the specified date range.
+     *
+     * @param username       the username of the user
+     * @param startYearMonth the start date in format "YYYY/MM"
+     * @param endYearMonth   the end date in format "YYYY/MM"
+     * @return a list of transactions within the date range
+     */
     public List<Transaction> getFilteredTransactions(String username, String startYearMonth, String endYearMonth) {
         List<Transaction> transactions = getCachedTransactions(username);
         List<Transaction> filtered = new ArrayList<>();
@@ -72,6 +112,13 @@ public class BillController {
         return filtered;
     }
 
+    /**
+     * Calculates total expense amounts by category field for the given transactions.
+     *
+     * @param transactions  the list of transactions to process
+     * @param categoryField the field to categorize expenses (e.g., "category", "type")
+     * @return a map of category names to total expense amounts
+     */
     public Map<String, Double> calculateExpenseCategoryTotals(List<Transaction> transactions, String categoryField) {
         Map<String, Double> categoryTotals = new HashMap<>();
         for (Transaction tx : transactions) {
@@ -83,6 +130,13 @@ public class BillController {
         return categoryTotals;
     }
 
+    /**
+     * Calculates total income amounts by category field for the given transactions.
+     *
+     * @param transactions  the list of transactions to process
+     * @param categoryField the field to categorize incomes (e.g., "category", "type")
+     * @return a map of category names to total income amounts
+     */
     public Map<String, Double> calculateIncomeCategoryTotals(List<Transaction> transactions, String categoryField) {
         Map<String, Double> categoryTotals = new HashMap<>();
         for (Transaction tx : transactions) {
@@ -94,6 +148,13 @@ public class BillController {
         return categoryTotals;
     }
 
+    /**
+     * Retrieves the value of a specified field from a transaction, returning "Unclassified" if empty.
+     *
+     * @param t     the transaction to process
+     * @param field the field to retrieve (e.g., "category", "type")
+     * @return the field value or "Unclassified" if not set
+     */
     private String getFieldValue(Transaction t, String field) {
         switch (field) {
             case "category": return t.getCategory() != null && !t.getCategory().trim().isEmpty() ? t.getCategory().trim() : "Unclassified";
@@ -107,6 +168,11 @@ public class BillController {
         }
     }
 
+    /**
+     * Processes an expense transaction from the expense dialog view, validating input and updating user balance.
+     *
+     * @param view the expense dialog view containing input fields
+     */
     public void processExpense(ExpenseDialogView view) {
         String currentUsername = UserSession.getCurrentUsername();
         if (currentUsername == null) {
@@ -222,6 +288,11 @@ public class BillController {
         view.clearPassword();
     }
 
+    /**
+     * Processes an income transaction from the income dialog view, validating input and updating user balance.
+     *
+     * @param view the income dialog view containing input fields
+     */
     public void processIncome(IncomeDialogView view) {
         String currentUsername = UserSession.getCurrentUsername();
         if (currentUsername == null) {

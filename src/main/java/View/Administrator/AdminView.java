@@ -1,3 +1,10 @@
+/**
+ * Represents the administrator interface for managing user accounts and transactions.
+ * Provides a dashboard, account management panel, and sidebar for navigation and actions.
+ *
+ * @author Group 19
+ * @version 1.0
+ */
 package View.Administrator;
 
 import java.awt.BorderLayout;
@@ -51,6 +58,18 @@ public class AdminView extends JDialog {
     private DefaultTableModel tableModel;
     private final JPanel sidebarPanel;
 
+    /**
+     * Constructs an AdminView dialog with specified actions for navigation and account management.
+     *
+     * @param dashboardAction         action to show the dashboard
+     * @param adminInfoAction         action to display admin information
+     * @param modifyCustomerAction    action to modify customer information
+     * @param customerInquiryAction   action to query customer information
+     * @param deleteUsersAction       action to delete selected users
+     * @param importAccountsAction    action to import customer accounts from a file
+     * @param importTransactionsAction action to import transaction records from a file
+     * @param logoutAction            action to log out the administrator
+     */
     public AdminView(Runnable dashboardAction, Runnable adminInfoAction, Consumer<String[]> modifyCustomerAction,
                     Consumer<List<User>> customerInquiryAction, Consumer<Set<String>> deleteUsersAction,
                     Consumer<File> importAccountsAction, Consumer<File> importTransactionsAction, Runnable logoutAction) {
@@ -112,6 +131,11 @@ public class AdminView extends JDialog {
         setVisible(true);
     }
 
+    /**
+     * Creates the dashboard panel with a welcome message.
+     *
+     * @return the configured dashboard panel
+     */
     private JPanel createDashboardPanel() {
         JPanel panel = new JPanel(null);
         panel.setBackground(new Color(245, 245, 245));
@@ -131,6 +155,12 @@ public class AdminView extends JDialog {
         return panel;
     }
 
+    /**
+     * Sets up the account management panel with a table and buttons for querying and deleting users.
+     *
+     * @param customerInquiryAction action to query customer information
+     * @param deleteUsersAction    action to delete selected users
+     */
     private void setupAccountPanel(Consumer<List<User>> customerInquiryAction, Consumer<Set<String>> deleteUsersAction) {
         String[] columnNames = {"Select", "Username", "Phone", "Email", "Gender", "Address", "Creation Time", "Account Status", "Account Type", "Balance"};
         tableModel = new DefaultTableModel(columnNames, 0) {
@@ -200,6 +230,14 @@ public class AdminView extends JDialog {
         accountPanel.add(buttonPanel, BorderLayout.SOUTH);
     }
 
+    /**
+     * Creates a styled sidebar button with hover effects and an associated action.
+     *
+     * @param text   the button text
+     * @param size   the preferred size of the button
+     * @param action the action to perform when the button is clicked
+     * @return the configured JButton
+     */
     private JButton createSidebarButton(String text, Dimension size, Runnable action) {
         JButton button = new JButton(text);
         button.setPreferredSize(size);
@@ -235,6 +273,11 @@ public class AdminView extends JDialog {
         return button;
     }
 
+    /**
+     * Displays a dialog for administrator verification before modifying customer information.
+     *
+     * @param modifyCustomerAction the action to perform with the provided credentials
+     */
     private void showAdminVerificationDialog(Consumer<String[]> modifyCustomerAction) {
         JDialog dialog = new JDialog(this, "Administrator Verification", true);
         dialog.setSize(350, 180);
@@ -276,6 +319,11 @@ public class AdminView extends JDialog {
         dialog.setVisible(true);
     }
 
+    /**
+     * Opens a file chooser to import customer accounts and invokes the provided action.
+     *
+     * @param importAccountsAction the action to perform with the selected file
+     */
     private void importAccounts(Consumer<File> importAccountsAction) {
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setDialogTitle("Select customer accounts file to import (10-column format)");
@@ -287,6 +335,11 @@ public class AdminView extends JDialog {
         }
     }
 
+    /**
+     * Opens a file chooser to import transaction records and invokes the provided action.
+     *
+     * @param importTransactionsAction the action to perform with the selected file
+     */
     private void importTransactions(Consumer<File> importTransactionsAction) {
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setDialogTitle("Select transaction records file to import (5-column format)");
@@ -298,6 +351,11 @@ public class AdminView extends JDialog {
         }
     }
 
+    /**
+     * Updates the account table with the provided list of user accounts.
+     *
+     * @param accounts the list of user accounts to display
+     */
     public void updateAccountTable(List<User> accounts) {
         tableModel.setRowCount(0);
         if (accounts == null || accounts.isEmpty()) {
@@ -321,6 +379,11 @@ public class AdminView extends JDialog {
         }
     }
 
+    /**
+     * Checks if the user list panel is currently visible.
+     *
+     * @return true if the account panel is visible, false otherwise
+     */
     public boolean isUserListVisible() {
         for (Component comp : contentPanel.getComponents()) {
             if (comp.isVisible() && comp == accountPanel) {
@@ -330,7 +393,13 @@ public class AdminView extends JDialog {
         return false;
     }
 
+    /**
+     * Dialog for displaying administrator personal information.
+     */
     public class AdminInfoDialog extends JDialog {
+        /**
+         * Constructs an AdminInfoDialog to display the current administrator's details.
+         */
         public AdminInfoDialog() {
             super(AdminView.this, "Administrator Personal Information", true);
             setSize(400, 300);
@@ -368,6 +437,9 @@ public class AdminView extends JDialog {
         }
     }
 
+    /**
+     * Dialog for modifying customer account information.
+     */
     public class ModifyCustomerDialog extends JDialog {
         private JTextField tfUsername, tfPhone, tfEmail, tfAddress;
         private JPasswordField pfPassword;
@@ -375,6 +447,12 @@ public class AdminView extends JDialog {
         private JPasswordField pfAdminPassword;
         private Consumer<ModifyCustomerDialog> confirmCallback;
 
+        /**
+         * Constructs a ModifyCustomerDialog for editing a user's account details.
+         *
+         * @param account         the user account to modify
+         * @param confirmCallback the callback to handle confirmation
+         */
         public ModifyCustomerDialog(User account, Consumer<ModifyCustomerDialog> confirmCallback) {
             super(AdminView.this, "Modify Customer Information", true);
             this.confirmCallback = confirmCallback;
@@ -447,38 +525,83 @@ public class AdminView extends JDialog {
             setVisible(true);
         }
 
+        /**
+         * Gets the username from the dialog.
+         *
+         * @return the username
+         */
         public String getUsername() {
             return tfUsername.getText();
         }
 
+        /**
+         * Gets the password from the dialog.
+         *
+         * @return the password
+         */
         public String getPassword() {
             return new String(pfPassword.getPassword());
         }
 
+        /**
+         * Gets the phone number from the dialog.
+         *
+         * @return the phone number
+         */
         public String getPhone() {
             return tfPhone.getText();
         }
 
+        /**
+         * Gets the email from the dialog.
+         *
+         * @return the email
+         */
         public String getEmail() {
             return tfEmail.getText();
         }
 
+        /**
+         * Gets the selected gender from the dialog.
+         *
+         * @return the gender
+         */
         public String getGender() {
             return (String) cbGender.getSelectedItem();
         }
 
+        /**
+         * Gets the address from the dialog.
+         *
+         * @return the address
+         */
         public String getAddress() {
             return tfAddress.getText();
         }
 
+        /**
+         * Gets the selected account status from the dialog.
+         *
+         * @return the account status
+         */
         public String getAccountStatus() {
             return (String) cbAccountStatus.getSelectedItem();
         }
 
+        /**
+         * Gets the admin password from the dialog.
+         *
+         * @return the admin password
+         */
         public String getAdminPassword() {
             return new String(pfAdminPassword.getPassword());
         }
 
+        /**
+         * Sets the dialog fields with the provided account information.
+         *
+         * @param account the user account to display
+         */
         public void setAccountInfo(User account) {
             tfUsername.setText(account.getUsername());
             pfPassword.setText(account.getPassword());
@@ -489,15 +612,27 @@ public class AdminView extends JDialog {
             cbAccountStatus.setSelectedItem(account.getAccountStatus().toString());
         }
 
+        /**
+         * Closes the dialog.
+         */
         public void close() {
             dispose();
         }
     }
 
+    /**
+     * Displays the admin information dialog.
+     */
     public void showAdminInfoDialog() {
         new AdminInfoDialog();
     }
 
+    /**
+     * Displays the modify customer dialog for the specified account.
+     *
+     * @param account         the user account to modify
+     * @param confirmCallback the callback to handle confirmation
+     */
     public void showModifyCustomerDialog(User account, Consumer<ModifyCustomerDialog> confirmCallback) {
         new ModifyCustomerDialog(account, confirmCallback);
     }

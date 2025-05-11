@@ -12,14 +12,28 @@ import java.util.stream.Collectors;
 import Model.Transaction;
 import Model.User;
 
-
+/**
+ * Repository class for managing transaction data in the Smart Finance Application.
+ * This class provides methods to read and query transactions from a CSV file,
+ * supporting operations such as retrieving transactions by username, user, or time period.
+ *
+ * @author Group 19
+ * @version 1.0
+ */
 public class TransactionRepository {
+    /** The date-time formatter used for parsing transaction timestamps. */
+    private static final DateTimeFormatter DATE_FORMATTER = Service.BudgetService.DATE_FORMATTER;
 
-private static final DateTimeFormatter DATE_FORMATTER = Service.BudgetService.DATE_FORMATTER;
-private static final String CSV_FILE = "transactions.csv";
+    /** The path to the CSV file storing transaction data. */
+    private static final String CSV_FILE = "transactions.csv";
 
+    /**
+     * Retrieves all transactions associated with a specific username from the CSV file.
+     *
+     * @param username The username whose transactions are to be retrieved.
+     * @return A list of {@link Transaction} objects for the specified user, or an empty list if an error occurs.
+     */
     public List<Transaction> findTransactionsByUsername(String username) {
-        //return TransactionCache.getCachedTransactions(username);
         List<Transaction> transactions = new ArrayList<>();
         try (BufferedReader br = new BufferedReader(new FileReader(CSV_FILE))) {
             String line = br.readLine(); // Skip header
@@ -38,8 +52,12 @@ private static final String CSV_FILE = "transactions.csv";
         return transactions;
     }
 
+    /**
+     * Retrieves all transactions from the CSV file, regardless of the user.
+     *
+     * @return A list of all {@link Transaction} objects, or an empty list if an error occurs.
+     */
     public List<Transaction> findAllTransactions() {
-        //return TransactionCache.getCachedTransactions(null); 
         List<Transaction> transactions = new ArrayList<>();
         try (BufferedReader br = new BufferedReader(new FileReader(CSV_FILE))) {
             String line = br.readLine(); // Skip header
@@ -57,11 +75,25 @@ private static final String CSV_FILE = "transactions.csv";
         }
         return transactions;
     }
-    
+
+    /**
+     * Retrieves all transactions associated with a specific user.
+     *
+     * @param user The {@link User} whose transactions are to be retrieved.
+     * @return A list of {@link Transaction} objects for the user, or an empty list if the user is null.
+     */
     public List<Transaction> findTransactionsByUser(User user) {
         if (user == null) return new ArrayList<>();
         return findTransactionsByUsername(user.getUsername());
     }
+
+    /**
+     * Retrieves expense transactions for a specific user within a given week.
+     *
+     * @param username    The username whose expense transactions are to be retrieved.
+     * @param startOfWeek The start date-time of the week for filtering transactions.
+     * @return A list of {@link Transaction} objects representing expenses within the specified week.
+     */
     public List<Transaction> findWeeklyExpenses(String username, LocalDateTime startOfWeek) {
         List<Transaction> transactions = findTransactionsByUsername(username);
         LocalDateTime endOfWeek = startOfWeek.plusDays(7);
@@ -78,6 +110,13 @@ private static final String CSV_FILE = "transactions.csv";
                 })
                 .collect(Collectors.toList());
     }
+
+    /**
+     * Reads all transactions for a specific user from the CSV file.
+     *
+     * @param username The username whose transactions are to be read.
+     * @return A list of {@link Transaction} objects for the user, or an empty list if an error occurs.
+     */
     public List<Transaction> readTransactions(String username) {
         List<Transaction> transactions = new ArrayList<>();
         try (BufferedReader br = new BufferedReader(new FileReader("transactions.csv"))) {
@@ -108,6 +147,11 @@ private static final String CSV_FILE = "transactions.csv";
         return transactions;
     }
 
+    /**
+     * Reads all transactions from the CSV file, regardless of the user.
+     *
+     * @return A list of all {@link Transaction} objects, or an empty list if an error occurs.
+     */
     public List<Transaction> readAllTransactions() {
         List<Transaction> transactions = new ArrayList<>();
         try (BufferedReader br = new BufferedReader(new FileReader("transactions.csv"))) {
@@ -137,5 +181,4 @@ private static final String CSV_FILE = "transactions.csv";
         }
         return transactions;
     }
-
 }

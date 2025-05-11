@@ -1,3 +1,10 @@
+/**
+ * Provides financial analysis services for a user, including annual financial summaries and payment location summaries.
+ * Processes transaction data to generate insights into income, expenses, and spending patterns.
+ *
+ * @author Group 19
+ * @version 1.0
+ */
 package Service;
 
 import java.util.HashMap;
@@ -7,16 +14,26 @@ import java.util.Map;
 import Model.Transaction;
 import Repository.TransactionRepository;
 
-
 public class PersonFinancialService {
 
     private final TransactionRepository transactionRepository;
 
-    
+    /**
+     * Constructs a PersonFinancialService instance with the specified transaction repository.
+     *
+     * @param transactionRepository the repository for accessing transaction data
+     */
     public PersonFinancialService(TransactionRepository transactionRepository) {
         this.transactionRepository = transactionRepository;
     }
 
+    /**
+     * Calculates a financial summary for a user, including total income, expenses, balance, and year-over-year changes.
+     *
+     * @param username     the username of the user
+     * @param selectedYear the year for which to calculate the summary
+     * @return a FinancialSummary object containing financial metrics
+     */
     public FinancialSummary calculateFinancialSummary(String username, int selectedYear) {
         List<Transaction> transactions = transactionRepository.readTransactions(username);
         double totalIncomeYear = 0, totalExpenseYear = 0;
@@ -53,6 +70,13 @@ public class PersonFinancialService {
         return new FinancialSummary(totalIncomeYear, totalExpenseYear, accountBalance, incomeChangeYear, expenseChangeYear);
     }
 
+    /**
+     * Generates a summary of payment methods and locations for a user's expenses in the specified year.
+     *
+     * @param username     the username of the user
+     * @param selectedYear the year for which to generate the summary
+     * @return a formatted string summarizing payment methods, locations, and transaction details
+     */
     public String generatePaymentLocationSummary(String username, int selectedYear) {
         List<Transaction> transactions = transactionRepository.readTransactions(username);
         Map<String, Double> paymentMethods = new HashMap<>();
@@ -96,7 +120,9 @@ public class PersonFinancialService {
         );
     }
 
-    // Inner class to hold financial summary data
+    /**
+     * Represents a financial summary, including total income, expenses, balance, and year-over-year changes.
+     */
     public static class FinancialSummary {
         private final double totalIncomeYear;
         private final double totalExpenseYear;
@@ -104,6 +130,15 @@ public class PersonFinancialService {
         private final double incomeChangeYear;
         private final double expenseChangeYear;
 
+        /**
+         * Constructs a FinancialSummary instance with the specified financial metrics.
+         *
+         * @param totalIncomeYear    the total income for the selected year
+         * @param totalExpenseYear   the total expenses for the selected year
+         * @param accountBalance     the overall account balance
+         * @param incomeChangeYear   the percentage change in income from the previous year
+         * @param expenseChangeYear  the percentage change in expenses from the previous year
+         */
         public FinancialSummary(double totalIncomeYear, double totalExpenseYear, double accountBalance,
                                 double incomeChangeYear, double expenseChangeYear) {
             this.totalIncomeYear = totalIncomeYear;
@@ -113,26 +148,56 @@ public class PersonFinancialService {
             this.expenseChangeYear = expenseChangeYear;
         }
 
+        /**
+         * Gets the total income for the selected year.
+         *
+         * @return the total income
+         */
         public double getTotalIncomeYear() {
             return totalIncomeYear;
         }
 
+        /**
+         * Gets the total expenses for the selected year.
+         *
+         * @return the total expenses
+         */
         public double getTotalExpenseYear() {
             return totalExpenseYear;
         }
 
+        /**
+         * Gets the overall account balance.
+         *
+         * @return the account balance
+         */
         public double getAccountBalance() {
             return accountBalance;
         }
 
+        /**
+         * Gets the percentage change in income from the previous year.
+         *
+         * @return the income change percentage
+         */
         public double getIncomeChangeYear() {
             return incomeChangeYear;
         }
 
+        /**
+         * Gets the percentage change in expenses from the previous year.
+         *
+         * @return the expense change percentage
+         */
         public double getExpenseChangeYear() {
             return expenseChangeYear;
         }
 
+        /**
+         * Calculates the net balance for the selected year (income minus expenses).
+         *
+         * @return the net balance for the year
+         */
         public double getTotalBalanceYear() {
             return totalIncomeYear - totalExpenseYear;
         }

@@ -1,3 +1,11 @@
+/**
+ * Represents the main user dashboard interface for the Smart Finance Application.
+ * Provides a sidebar with navigation items and a card-based content area for various user functionalities,
+ * such as personal center, transactions, bill statistics, budget management, AI assistant, and horoscope reports.
+ *
+ * @author Group 19
+ * @version 1.0
+ */
 package View.LoginAndMain;
 
 import java.awt.BorderLayout;
@@ -39,6 +47,13 @@ public class MainPlane extends JFrame {
     private MainPanelController contentPanelManager;
     private JPanel sidebar;
 
+    /**
+     * Constructs a MainPlane frame for the logged-in user's dashboard.
+     * Initializes the UI and verifies the user session.
+     *
+     * @param personCenterController the controller for managing personal center functionalities
+     * @param billController         the controller for managing bill-related operations
+     */
     public MainPlane(PersonCenterController personCenterController, BillController billController) {
         this.personCenterController = personCenterController;
         this.billController = billController;
@@ -52,6 +67,9 @@ public class MainPlane extends JFrame {
         initializeUI();
     }
 
+    /**
+     * Initializes the user interface, setting up the sidebar, content panel, and card layout.
+     */
     private void initializeUI() {
         setTitle("Smart Finance - Personal Dashboard");
         setSize(1920, 1080);
@@ -86,6 +104,11 @@ public class MainPlane extends JFrame {
         setVisible(true);
     }
 
+    /**
+     * Creates the sidebar with navigation items and a search field for filtering options.
+     *
+     * @return the configured sidebar panel
+     */
     private JPanel createSidebar() {
         JPanel sb = new JPanel();
         sb.setLayout(new BoxLayout(sb, BoxLayout.Y_AXIS));
@@ -201,6 +224,12 @@ public class MainPlane extends JFrame {
         return sb;
     }
 
+    /**
+     * Styles the search field with a placeholder and rounded border.
+     *
+     * @param tf          the text field to style
+     * @param placeholder the placeholder text to display
+     */
     private void styleSearchField(JTextField tf, String placeholder) {
         tf.setMaximumSize(new Dimension(Integer.MAX_VALUE, 34));
         tf.setFont(new Font("Segoe UI", Font.PLAIN, 14));

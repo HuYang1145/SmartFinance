@@ -1,3 +1,10 @@
+/**
+ * A dialog view for displaying the user's account balance in the Smart Finance Application.
+ * Provides a simple interface with a label to show the balance or an error message and a close button.
+ *
+ * @author Group 19
+ * @version 1.0
+ */
 package View.Administrator;
 
 import java.awt.Dialog;
@@ -10,18 +17,15 @@ import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 
-/**
- * A dialog view for displaying the user's account balance.
- */
 public class BalanceDialogView extends JDialog {
 
     private final JLabel balanceLabel;
     private final JButton closeButton;
 
     /**
-     * Constructs a balance view dialog.
+     * Constructs a BalanceDialogView dialog for displaying the user's account balance.
      *
-     * @param owner The parent dialog.
+     * @param owner the parent dialog that owns this dialog
      */
     public BalanceDialogView(Dialog owner) {
         super(owner, "View Balance", true);
@@ -46,25 +50,25 @@ public class BalanceDialogView extends JDialog {
     }
 
     /**
-     * Sets the text to display in the balance label.
+     * Sets the text to display in the balance label, such as the account balance or an error message.
      *
-     * @param text The text to display (balance or error message).
+     * @param text the text to display
      */
     public void setBalanceText(String text) {
         balanceLabel.setText(text);
     }
 
     /**
-     * Gets the Close button for attaching event listeners.
+     * Retrieves the close button for attaching event listeners.
      *
-     * @return The Close button.
+     * @return the close button
      */
     public JButton getCloseButton() {
         return closeButton;
     }
 
     /**
-     * Closes the dialog.
+     * Closes the dialog by hiding and disposing of it.
      */
     public void close() {
         setVisible(false);

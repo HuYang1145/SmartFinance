@@ -14,19 +14,37 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import Model.User;
 
+/**
+ * Repository class for managing user accounts in the Smart Finance Application.
+ * This class provides methods to read, save, and query user data stored in a CSV file,
+ * ensuring thread-safe operations using a read-write lock.
+ *
+ * @author Group 19
+ * @version 1.0
+ */
 public class AccountRepository {
+    /** The file path for the CSV file storing user account data. */
     private final String accountsFilePath;
+
+    /** A read-write lock for thread-safe access to the CSV file. */
     private final ReadWriteLock lock = new ReentrantReadWriteLock();
+
+    /** The expected header for the accounts CSV file. */
     public static final String EXPECTED_ACCOUNT_HEADER = "username,password,phone,email,gender,address,creationTime,accountStatus,accountType,balance";
 
-    // 构造函数，初始化文件路径
+    /**
+     * Constructs an AccountRepository with the specified file path.
+     *
+     * @param accountsFilePath The path to the CSV file storing user account data.
+     * @throws IllegalArgumentException if the file path is null or empty.
+     */
     public AccountRepository(String accountsFilePath) {
         if (accountsFilePath == null || accountsFilePath.trim().isEmpty()) {
             throw new IllegalArgumentException("Accounts file path cannot be null or empty");
         }
         this.accountsFilePath = accountsFilePath;
 
-        // 调试：检查文件是否存在
+        // Debug: Check file existence
         File file = new File(accountsFilePath);
         System.out.println("Accounts file path: " + accountsFilePath);
         System.out.println("File exists: " + file.exists());
@@ -34,6 +52,12 @@ public class AccountRepository {
         System.out.println("Current working directory: " + System.getProperty("user.dir"));
     }
 
+    /**
+     * Finds a user by their username.
+     *
+     * @param username The username to search for.
+     * @return The {@link User} object with the specified username, or null if not found.
+     */
     public User findByUsername(String username) {
         List<User> users = readFromCSV();
         return users.stream()
@@ -42,12 +66,22 @@ public class AccountRepository {
                 .orElse(null);
     }
 
+    /**
+     * Saves a single user to the CSV file in append mode.
+     *
+     * @param user The {@link User} object to save.
+     */
     public void save(User user) {
         List<User> users = new ArrayList<>();
         users.add(user);
         saveToCSV(users, true);
     }
 
+    /**
+     * Reads all user accounts from the CSV file.
+     *
+     * @return A list of {@link User} objects, or an empty list if an error occurs.
+     */
     public List<User> readFromCSV() {
         List<User> users = new ArrayList<>();
         lock.readLock().lock();
@@ -79,6 +113,13 @@ public class AccountRepository {
         return users;
     }
 
+    /**
+     * Saves a list of users to the CSV file, with an option to append or overwrite.
+     *
+     * @param users  The list of {@link User} objects to save.
+     * @param append {@code true} to append to the file, {@code false} to overwrite it.
+     * @return {@code true} if the save operation was successful, {@code false} otherwise.
+     */
     public boolean saveToCSV(List<User> users, boolean append) {
         lock.writeLock().lock();
         try (FileWriter fw = new FileWriter(accountsFilePath, append);
