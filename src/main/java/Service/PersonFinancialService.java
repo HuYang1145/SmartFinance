@@ -110,12 +110,12 @@ public class PersonFinancialService {
             .map(entry -> String.format("%s (%.1f%%)", entry.getKey(), (entry.getValue() / finalTotalExpense) * 100))
             .orElse("No location data");
 
-        return String.format("""
-            Summary:
-            - Most transactions were made via %s.
-            - Primary transaction locations were %s.
-            - Total transactions: %d
-            - Highest single transaction: ¥%.2f (%s)""",
+        return String.format(
+            "Summary:\n" +
+        "- Most transactions were made via %s.\n" +
+        "- Primary transaction locations were %s.\n" +
+        "- Total transactions: %d\n" +
+        "- Highest single transaction: ¥%.2f (%s)",
             primaryPayment, primaryLocation, transactionCount, maxSingleTransaction, maxTransactionCategory
         );
     }

@@ -1,0 +1,16 @@
+Controller
+Main
+Model
+Repository
+Service
+utils
+View.Administrator
+View.AI
+View.Bill
+View.Bill.BillComponents
+View.BudgetAdvisor
+View.HoroscopePanel
+View.LoginAndMain
+View.PersonalCenter
+View.PersonalCenter.PersonalCenterComponents
+View.Transaction
