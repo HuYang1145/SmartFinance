@@ -1,87 +1,131 @@
-## Anomaly Detection and Alert Feature for Transactions
+# 运行命令  
+请在命令行输入**java -jar target/group19-1.0.0.jar**运行程序  
 
-*   This feature aims to enhance account security and user awareness by automatically detecting potentially anomalous transaction patterns upon user login. If the system identifies suspicious activity based on predefined rules, it proactively alerts the user via warning messages.
-
-*   **Development Lead:**
-    *   **Zang Lu (臧璐):** Responsible for implementing the anomaly detection logic and related components.
-
-*   **Core Functionality:**
-    *   **Trigger Point:** Detection executes automatically within the `AccountManagementController` immediately after a successful user login.
-    *   **Data Analysis:** The system analyzes the transaction history loaded into the user's `AccountModel`.
-    *   **Rule Engine (`TransactionChecker.java`):** A dedicated class, `TransactionChecker`, contains the logic to evaluate transactions against several rules:
-        *   **Absolute Large Amount:** Detects single transactions (income or expense) exceeding a predefined absolute threshold (e.g., ¥3000 CNY).
-        *   **Relative Large Expense:** Identifies single expense transactions significantly higher than the user's average expense amount (e.g., over 3 times the average).
-        *   **High-Frequency Large Expense:** Flags situations where multiple large expenses (above a specific threshold, e.g., ¥1000 CNY) occur on the same day (e.g., 4 or more times).
-        *   **Monthly Spending Anomaly:** Detects single expense transactions significantly exceeding the user's typical monthly spending pattern (e.g., more than 200% of the calculated average monthly expense).
-    *   **Alert Mechanism:**
-        *   If the `TransactionChecker` detects one or more anomalies, the `AccountManagementController` receives a list specifying the types of anomalies found.
-        *   For each detected anomaly, a user-friendly warning message (customized based on the specific rule triggered) is displayed to the user via a `JOptionPane` popup. This ensures immediate notification upon login.
-        *   Warnings are displayed using `SwingUtilities.invokeLater` to ensure they pop up correctly even if the login window closes quickly.
-        *   Warning messages include the user's account details (username, balance) for context and verification.
-
-*   **Key Classes Involved:**
-    *   `AccountManagementController.java`: Orchestrates the login process, initiates anomaly detection, and displays warning dialogs to the user.
-    *   `TransactionChecker.java`: Encapsulates the rules and logic for identifying anomalous transactions, defining thresholds, anomaly type identifiers, and potentially calculating necessary averages (like average monthly expense).
-    *   `AccountModel.java` (and subclasses): Holds user account details and the list of `TransactionModel` objects required for analysis.
-    *   `TransactionModel.java`: Represents a single transaction record used by the detector.
-    *   `TransactionService.java`: Responsible for loading transaction data from `transactions.csv`.
-    *   `UserSession.java`: Provides access to the currently logged-in user's account information.
-
-*   **Related Contributions by Zang Lu:**
-    *   While the core detection logic resides in `TransactionChecker` and is invoked by `AccountManagementController`, work on the following components provides the necessary foundation and data support for this feature:
-        *   `BudgetAdvisor.java` & `user_budget.csv`: Understanding normal budget patterns and user goals helps define what constitutes an "anomalous" deviation.
-        *   `transactions.csv` Data Provision: Accurate transaction data is fundamental for the detection mechanism to function correctly.
-        *   `PersonalUI.java` & `BudgetGoalDialog.java`: These UI components (potentially displaying budget status or allowing goal setting) form part of the user's financial management workflow where transaction awareness is crucial.
-
-*   **User Experience:**
-    *   Upon logging in, if any transaction patterns match the predefined rules, the user will see one or more pop-up warning messages briefly describing the nature of the anomaly detected (e.g., "Warning: A recent transaction amount was unusually large..."). This prompts the user to review their recent activity more closely. If no anomalies are found, the login process continues uninterrupted.
-
-*   **Feature Benefits:**
-    *   **Proactive Security:** Alerts users early to potentially unauthorized or unusual activity.
-    *   **Spending Awareness:** Helps users monitor significant deviations from their typical spending habits.
-    *   **Enhanced Trust:** Provides an additional layer of automated oversight for the user's financial data.
-
+# Folder Structure
+## AI模型文件
+通过网盘分享的文件：dist.zip
+链接: https://pan.baidu.com/s/1M3x8FVq7p5cE0sdAx2x9UA 提取码: pgpp
+下载解压后放入coursework目录下，与src同级。
+## AI Model File
+Shared file via cloud disk: dist.zip
+Link: https://pan.baidu.com/s/1M3x8FVq7p5cE0sdAx2x9UA
+Extraction code: pgpp
+After downloading and decompressing, place it in the coursework directory at the same level as src.
 ---
 
-## 异常交易检测与提醒功能
 
-*   此功能旨在通过在用户登录时自动检测潜在的异常交易模式，来增强账户安全性并提高用户意识。如果系统根据预定义的规则识别出可疑活动，它将主动通过警告消息提醒用户。
 
-*   **开发负责人:**
-    *   **臧璐**: 负责实现异常交易检测逻辑及相关组件。
+## 任务分配
+## Task Allocation
 
-*   **核心功能:**
-    *   **触发时机:** 在用户成功登录后，检测会在 `AccountManagementController` 中立即自动执行。
-    *   **数据分析:** 系统分析加载到用户 `AccountModel` 中的交易历史记录。
-    *   **规则引擎 (`TransactionChecker.java`):** 一个专门的类 `TransactionChecker` 包含了根据多项规则评估交易的逻辑：
-        *   **绝对大额:** 检测单笔交易（收入或支出）是否超过预定义的绝对阈值（例如：人民币 3000 元）。
-        *   **相对大额支出:** 识别出显著高于用户平均支出金额（例如：超过平均值的 3 倍）的单笔支出。
-        *   **高频大额支出:** 标记在同一天内发生多次大额支出（超过特定阈值，例如：人民币 1000 元）的情况（例如：达到或超过 4 次）。
-        *   **月度消费异常:** 检测显著超出用户常规月度支出模式的单笔支出交易（例如：超过计算出的月平均支出的 200%）。
-    *   **提醒机制:**
-        *   如果 `TransactionChecker` 检测到一个或多个异常情况，`AccountManagementController` 会收到一个包含具体检测到的异常类型的列表。
-        *   针对每种检测到的异常，系统会使用 `JOptionPane` 弹窗向用户显示一个用户友好的警告消息（根据触发的具体规则定制）。这确保用户在登录时能立即得到通知。
-        *   警告信息通过 `SwingUtilities.invokeLater` 显示，以确保即使登录窗口迅速关闭，它们也能正确弹出。
-        *   警告消息包括用户的账户信息（用户名、账户余额），以便用户能够确认是否需要采取措施。
+* **陈静怡**：
+* 实现金融建议功能，该功能能够读取用户过去收支情况给出智能定制预算建议，并有多种建议模式系统智能选择。
+    * 创立`user_budget.csv`，以记录用户自定义预算金额。
+    * 编写`BudgetGoalDialog.java`，为个人用户提供管理预算目标的界面。
+    * 编写`BudgetAdvisor.java`，包含预算建议的核心业务逻辑，读取`transactions.csv`，建立分配预算模式。
+* `PersonalUI.java`部分功能建立及更改，增加了Financial Suggestion部分的相关界面。
+* `transactions.csv`部分数据提供，完善用户金融情况更加丰富。
 
-*   **涉及的关键类:**
-    *   `AccountManagementController.java`: 协调登录过程，启动异常检测，并向用户显示警告对话框。
-    *   `TransactionChecker.java`: 封装了用于识别异常交易的规则和逻辑，定义了阈值、异常类型标识符，并可能包含计算所需平均值（如月平均支出）的方法。
-    *   `AccountModel.java` (及其子类): 持有用户账户详情和进行分析所需的 `TransactionModel` 对象列表。
-    *   `TransactionModel.java`: 代表由检测器使用的单条交易记录。
-    *   `TransactionService.java`: 负责从 `transactions.csv` 加载交易数据。
-    *   `UserSession.java`: 提供当前登录用户的账户信息。
+* **Chen Jingyi**:
+* Implement the financial advice function, which can read the user's past income and expenditure to provide intelligent customized budget suggestions, and the system can intelligently select from multiple suggestion modes.
+* Create `user_budget.csv` to record the user-defined budget amounts.
+* Write `BudgetGoalDialog.java` to provide an interface for individual users to manage their budget goals.
+* Write `BudgetAdvisor.java`, which contains the core business logic of budget advice, reads `transactions.csv`, and establishes budget allocation modes.
+* Establish and modify some functions of `PersonalUI.java`, adding the relevant interface for the Financial Suggestion section.
+* Provide some data for `transactions.csv` to enrich the user's financial situation.* Write `BudgetAdvisor.java`, which contains the core business logic of budget advice, reads `transactions.csv`, and establishes budget allocation modes.
 
-*   **臧璐的相关贡献:**
-    *   虽然核心检测逻辑位于 `TransactionChecker` 中并由 `AccountManagementController` 调用，但在以下组件上的工作为此功能提供了必要的基础和数据支持：
-        *   `BudgetAdvisor.java` & `user_budget.csv`: 理解正常的预算模式和用户目标有助于定义什么构成“异常”偏差。
-        *   `transactions.csv` 数据提供: 提供准确的交易数据是检测机制正常运作的基础。
-        *   `PersonalUI.java` & `BudgetGoalDialog.java`: 这些UI组件（可能用于显示预算状态或允许设置目标）构成了用户财务管理工作流程的一部分，其中交易意识至关重要。
 
-*   **用户体验:**
-    *   用户登录时，如果系统检测到任何符合预定义规则的交易模式，用户将看到一个或多个弹窗警告消息，简要描述检测到的异常性质（例如：“警告：最近有一笔交易金额异常大…”）。这将提示用户更仔细地检查他们最近的活动。如果未发现异常，登录过程将不受干扰地继续。
 
-*   **功能优势:**
-    *   **主动安全:** 及早提醒用户潜在的未授权或异常活动。
-    *   **消费意识:** 帮助用户监控与其典型消费习惯的显著偏差。
-    *   **增强信任:** 为用户的财务数据提供额外的自动化监督层。
+* **罗雅琦**：
+* 训练专属于此项目的ai 对话用户意图识别模型自己编写预测脚本，部署为exe 文件
+    * 将此模型与`deepseek API`结合使用，共同服务于ai 对话功能
+    * 编写 `IntentResult.java`,`AIPanel.java`实现ai 对话功能，该功能可以根据用户输入识别用户意图，调用不同功能或调用deepseek api 回答用户问题。
+* 编写 `AdminUI`， `AccountManagementUI`， `PersonalUI`， `Deposit`， `Pay`， `Withdrawal`， `ViewBalance`部分功能建立及更改，编写主要ui ，添加多种图片与图标美化用户交互界面。
+* 提供UI需要的图标与图片
+
+* **Luo Yaqi**：
+* Develop a prediction script for the AI dialogue user intent recognition model specifically for this project and deploy it as an executable file.
+    * Integrate this model with the `deepseek API` to jointly serve the AI dialogue function.
+    * Implement the AI dialogue function by writing `IntentResult.java` and `AIPanel.java`. This function can recognize user intents based on user input, call different functions or invoke the `deepseek API` to answer user questions.
+* Establish and modify the functions of `AdminUI`, `AccountManagementUI`, `PersonalUI`, `Deposit`, `Pay`, `Withdrawal`, and `ViewBalance`, and write the main UI. Add various images and icons to beautify the user interaction interface.
+* Provide the icons and images needed for the UI.
+
+
+
+* **范耘豪**：
+* 开发了生成周期性报告的新功能。该功能包括：
+    * 允许用户设置自定义报告周期（以天为单位）。
+    * 使用折线图清晰显示选定周期内的收入和支出金额。
+    * 创建了 `ReportCycleSettingsPanel.java`, `ReportOptionsPanel.java`, `ReportViewPanel.java` 文件，用于实现报告的设置和视图界面。
+    * 创建了 `TransactionService.java` 文件，用于处理交易相关服务。
+    * 创建了 `IncomeDialog.java` 和 `ExpenseDialog.java` 文件，用于处理收入和支出的对话框界面。
+* 原型对齐修改：更新了几个关键组件以符合提供的原型设计。这些修改包括：
+    * 改进和调整了个人用户界面 (`PersonalUI.java`)。
+    * 优化了登录界面。
+    * 修改了提款功能。
+    * 确保了应用程序的外观和核心交互与原型规范一致。
+* 更新了管理员模块 (`AdminUI.java`) 中读取 `transactions.csv` 文件的方法，以确保能正确解析文件修改后格式的数据。修改了 `AdminUI.java` 和 `transactions.csv` 文件。
+* 在 `main` 分支中执行了常规的代码集成和维护任务。这项持续的工作确保了发顺利正常进行。
+
+* **Fan Yunhao**:
+* Developed a new feature for generating periodic reports. This feature includes:
+    * Allowing users to set custom report periods (in days).
+    * Using line charts to clearly display the income and expenditure amounts within the selected period.
+    * Created `ReportCycleSettingsPanel.java`, `ReportOptionsPanel.java`, and `ReportViewPanel.java` files to implement the settings and view interfaces for the reports.
+    * Created `TransactionService.java` file to handle transaction-related services.
+    * Created `IncomeDialog.java` and `ExpenseDialog.java` files to handle the dialog interfaces for income and expenses.
+* Prototype alignment modification: Updated several key components to conform to the provided prototype design. These modifications include:
+    * Improving and adjusting the personal user interface (`PersonalUI.java`).
+    * Optimizing the login interface.
+    * Modifying the withdrawal function.
+    * Ensuring that the appearance and core interactions of the application are consistent with the prototype specifications.
+* Updated the method for reading the `transactions.csv` file in the administrator module (`AdminUI.java`) to ensure that it can correctly parse the data in the modified format. Modified `AdminUI.java` and `transactions.csv` files.
+* Performed regular code integration and maintenance tasks in the `main` branch. This ongoing work ensures the smooth and normal progress of the release.
+
+
+
+* **胡杨**：
+* 写管理员系统的所有功能，写用户个人信息查询，转入转出转账，查看余额
+    * `PersonalCenterPanel.java`个人中心资金账户数据的直观显示以及数据的统计整理
+    * `PersonalMainPlane.java`，主界面
+    * `IncomeExpenseChart.java`提供多个种类的账单查询选择
+    * 所有与`Admin`的java代码：管理员系统
+
+* **Hu Yang**:
+* Describe all the functions of the administrator system, including user personal information query, transfer-in, transfer-out and transfer, and balance viewing.
+    * `PersonalCenterPanel.java` provides intuitive display of personal center fund account data and data statistics and organization.
+    * `PersonalMainPlane.java`, main interface.
+    * `IncomeExpenseChart.java` offers multiple types of bill query options.
+    * All Java codes related to `Admin`: administrator system.
+
+
+
+* **臧璐**：
+* 实现检测异常交易功能，如用户的以往交易有风险，登录时会增加一道非阻塞性的风险提示，帮助用户及时关注大额资金变动。
+    * 创立`TransactionChecker.java`，定义检查逻辑。
+    * 编写`AccountManagementUI.java`，在登录时触发检查并显示提醒。
+    * 创立`TransactionModel.java`，定义交易数据结构。
+    * 编写`AccountModel.java`，将交易与账户关联。
+* 编写 `transactions.csv` 作为异常交易数据源，编写`UserRegistrationCSVExporter.java` 来读取账户信息。
+
+* **Zang Lu**:
+* Implement the function for detecting abnormal transactions. If there is a risk in the user's previous transactions, a non-blocking risk prompt will be added during login to help users promptly notice any significant changes in their funds.
+    * Create `TransactionChecker.java` to define the checking logic.
+    * Write `AccountManagementUI.java` to trigger the check and display the reminder when logging in.
+    * Create `TransactionModel.java` to define the data structure for transactions.
+    * Write `AccountModel.java` to associate transactions with accounts.
+* Write `transactions.csv` as the data source for abnormal transactions and write `UserRegistrationCSVExporter.java` to read account information.
+
+
+
+* **郑宇宁**：
+* 实现账单分类功能，该功能能够查看账户的支出分类，并用饼状图展示
+    * 编写`IncomeExpenseChart.java`，生成支出的分类。
+* `PersonalUI.java`部分功能建立，增加了部分相关界面。
+* `transaction.csv`，`accounts.csv`的部分完善。
+
+* **Zheng Yuning**:
+* Achieve the bill classification function, which enables viewing the expenditure classification of the account and presenting it through a pie chart.
+    * Write `IncomeExpenseChart.java` to generate the classification of expenditures.
+* Complete the functions in `PersonalUI.java`, adding some related interfaces.
+* Improve the parts of `transaction.csv` and `accounts.csv`.

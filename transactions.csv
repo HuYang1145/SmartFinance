@@ -245,3 +245,83 @@ RapidFireRita,Expense,1300.00,2025/05/10 16:45,Expedia,Travel,"Vacation Package 
 RapidFireRita,Expense,50.00,2025/05/11 12:00,Grocery Store,Food,"Snacks","Food-Groceries","Debit Card","In-store","Essential","Receipt.jpg","Non-recurring"
 2,Income,1000.00,2025/04/23 01:08,I,I,,u,,,,,
 2,Expense,100.00,2025/04/23 01:08,Luckin,Food,,u,,,,,
+2,Expense,15000.00,2025/04/01,Luxury Store,Shopping,"High-end apparel",Shopping-Apparel,Credit Card,In-store,shopping,"[Attachment: Receipt]",Non-recurring
+2,Expense,25000.00,2025/04/05,Car Dealer,Investment,"Car down payment",Investment-Vehicle,Bank Transfer,Offline,investment,"[Attachment: Contract]",Non-recurring
+2,Expense,12000.00,2025/04/10,Travel Agency,Travel,"Holiday package booking",Travel-Package,Credit Card,Online,Travel,"[Attachment: Booking]",Non-recurring
+2,Expense,18000.00,2025/04/15,Jewelry Shop,Shopping,"Special gift purchase",Shopping-Jewelry,Credit Card,In-store,shopping,"[Attachment: Receipt]",Non-recurring
+2,Expense,30000.00,2025/04/20,Art Gallery,Investment,"Art piece acquisition",Investment-Art,Bank Transfer,Offline,investment,"[Attachment: Certificate]",Non-recurring
+2,Expense,11000.00,2025/04/25,Electronics Store,Shopping,"High-end computer",Shopping-Electronics,Credit Card,Online,Electronics,"[Attachment: Receipt]",Non-recurring
+2,Expense,20000.00,2025/04/28,Property Agency,Investment,"Property related fee",Investment-Real Estate,Bank Transfer,Offline,investment,"[Attachment: Invoice]",Non-recurring
+2,Expense,13500.00,2025/05/03,Furniture Store,Shopping,"Living room furniture",Shopping-Furniture,Credit Card,In-store,shopping,"[Attachment: Receipt]",Non-recurring
+2,Expense,16000.00,2025/05/07,Cruise Line,Travel,"Cruise vacation booking",Travel-Cruise,Credit Card,Online,Travel,"[Attachment: Booking]",Non-recurring
+2,Expense,22000.00,2025/05/12,Auction House,Investment,"Collectible item",Investment-Collectibles,Bank Transfer,Online,investment,"[Attachment: Invoice]",Non-recurring
+2,Expense,10500.00,2025/05/16,Gym Equipment Shop,Fitness,"Home gym equipment",Health-Fitness,Credit Card,Online,Fitness,"[Attachment: Receipt]",Non-recurring
+2,Expense,19000.00,2025/05/20,Training Institute,Investment,"Professional course fee",Investment-Education,Bank Transfer,Online,investment,"[Attachment: Invoice]",Non-recurring
+2,Expense,14000.00,2025/05/24,Watch Retailer,Shopping,"Luxury watch purchase",Shopping-Jewelry,Credit Card,In-store,shopping,"[Attachment: Receipt]",Non-recurring
+2,Expense,28000.00,2025/05/28,Car Service,Travel,"Major car repair",Travel-Vehicle,Credit Card,Offline,Travel,"[Attachment: Invoice]",Non-recurring
+2,Expense,11500.00,2025/05/30,Tech Gadget Store,Shopping,"High-performance laptop",Shopping-Electronics,Credit Card,Online,Electronics,"[Attachment: Receipt]",Non-recurring
+2,Expense,17000.00,2025/04/02,Home Improvement,Investment,"Partial renovation cost",Investment-Real Estate,Bank Transfer,Offline,investment,"[Attachment: Invoice]",Non-recurring
+2,Expense,10200.00,2025/04/06,Event Organizer,Other,"Event planning service",Life-Event,Credit Card,Online,Other,"[Attachment: Contract]",Non-recurring
+2,Expense,21000.00,2025/04/11,Medical Clinic,Health,"Minor medical procedure",Health-Medical,Credit Card,Offline,Health,"[Attachment: Invoice]",Non-recurring
+2,Expense,12500.00,2025/04/16,Online University,Investment,"Online degree payment",Investment-Education,Credit Card,Online,investment,"[Attachment: Receipt]",Non-recurring
+2,Expense,18500.00,2025/04/21,Legal Services,Professional Fee,"Legal case fee",Professional-Services,Bank Transfer,Offline,Other,"[Attachment: Invoice]",Non-recurring
+2,Expense,18500.00,2025/04/03,11:20,Luxury Boutique,Shopping,"High-end clothing",Shopping-Apparel,Credit Card,In-store,shopping,Non-recurring
+2,Expense,32000.00,2025/04/08,Brokerage Firm,Investment,"Stock purchase",Investment-Stocks,Bank Transfer,Online,investment,"[Attachment: Statement]",Non-recurring
+2,Expense,14500.00,2025/04/13,Airline Company,Travel,"Business class ticket",Travel-Air,Credit Card,Online,Travel,"[Attachment: E-ticket]",Non-recurring
+2,Expense,21000.00,2025/04/18,Antique Shop,Shopping,"Antique furniture",Shopping-Furniture,Bank Transfer,Offline,shopping,"[Attachment: Certificate]",Non-recurring
+2,Expense,40000.00,2025/04/23,Real Estate Agency,Investment,"Property deposit",Investment-Real Estate,Bank Transfer,Offline,investment,"[Attachment: Receipt]",Non-recurring
+2,Expense,16000.00,2025/04/27,Electronics Megastore,Shopping,"Home theater system",Shopping-Electronics,Credit Card,Online,Electronics,"[Attachment: Receipt]",Non-recurring
+2,Expense,28000.00,2025/05/01,Car Dealership,Travel,"Motorcycle purchase",Travel-Vehicle,Bank Transfer,Offline,Travel,"[Attachment: Contract]",Non-recurring
+2,Expense,11800.00,2025/05/06,High-End Restaurant,Food,"Special event dinner",Food-Dining,Credit Card,In-store,food,"[Attachment: Receipt]",Non-recurring
+2,Expense,19500.00,2025/05/10,Art Auction,Investment,"Limited edition print",Investment-Art,Bank Transfer,Online,investment,"[Attachment: Invoice]",Non-recurring
+2,Expense,13000.00,2025/05/15,Fitness Center,Fitness,"Annual membership fee",Health-Fitness,Credit Card,Offline,Fitness,"[Attachment: Receipt]",Recurring
+2,Expense,26000.00,2025/05/19,Training Academy,Investment,"Certification program",Investment-Education,Bank Transfer,Online,investment,"[Attachment: Invoice]",Non-recurring
+2,Expense,10500.00,2025/05/24,Jeweler,Shopping,"Accessory purchase",Shopping-Jewelry,Credit Card,In-store,shopping,"[Attachment: Receipt]",Non-recurring
+2,Expense,17500.00,2025/05/27,Travel Agency,Travel,"Extended trip package",Travel-Package,Credit Card,Online,Travel,"[Attachment: Booking]",Non-recurring
+2,Expense,35000.00,2025/05/29,Collectible Store,Investment,"Rare coin set",Investment-Collectibles,Bank Transfer,Offline,investment,"[Attachment: Certificate]",Non-recurring
+2,Expense,12200.00,2025/04/04,Home Appliances,Shopping,"New refrigerator",Shopping-Appliances,Credit Card,Offline,shopping,"[Attachment: Receipt]",Non-recurring
+2,Expense,15500.00,2025/04/09,Consulting Firm,Professional Fee,"Business consultation",Professional-Services,Bank Transfer,Online,Other,"[Attachment: Invoice]",Non-recurring
+2,Expense,23000.00,2025/04/14,Medical Specialist,Health,"Consultation and tests",Health-Medical,Credit Card,Offline,Health,"[Attachment: Invoice]",Non-recurring
+2,Expense,10800.00,2025/04/19,Online University,Investment,"Semester tuition",Investment-Education,Credit Card,Online,investment,"[Attachment: Receipt]",Non-recurring
+2,Expense,29000.00,2025/04/24,Car Repair Shop,Travel,"Major engine work",Travel-Vehicle,Bank Transfer,Offline,Travel,"[Attachment: Invoice]",Non-recurring
+2,Expense,14000.00,2025/04/28,Law Firm,Professional Fee,"Legal advice",Professional-Services,Credit Card,Offline,Other,"[Attachment: Invoice]",Non-recurring
+2,Expense,25.00,2025/05/05,Cafe A,Food,"Morning coffee 1",Food-Cafe,WeChat Pay,In-store,food,"[Attachment: Receipt]",Non-recurring
+2,Expense,30.00,2025/05/05,Cafe A,Food,"Morning coffee 2",Food-Cafe,WeChat Pay,In-store,food,"[Attachment: Receipt]",Non-recurring
+2,Expense,25.00,2025/05/05,Cafe A,Food,"Morning coffee 3",Food-Cafe,WeChat Pay,In-store,food,"[Attachment: Receipt]",Non-recurring
+2,Expense,10.00,2025/05/06,Bus Company,Transport,"Bus fare 1",Transport-Public,Cash,Offline,Transport,"[Attachment: None]",Non-recurring
+2,Expense,10.00,2025/05/06,Bus Company,Transport,"Bus fare 2",Transport-Public,Cash,Offline,Transport,"[Attachment: None]",Non-recurring
+2,Expense,10.00,2025/05/06,Bus Company,Transport,"Bus fare 3",Transport-Public,Cash,Offline,Transport,"[Attachment: None]",Non-recurring
+2,Expense,10.00,2025/05/06,Bus Company,Transport,"Bus fare 4",Transport-Public,Cash,Offline,Transport,"[Attachment: None]",Non-recurring
+2,Expense,40.00,2025/05/07,Snack Kiosk B,Food,"Lunch item 1",Food-Snacks,Alipay,In-store,food,"[Attachment: Receipt]",Non-recurring
+2,Expense,35.00,2025/05/07,Snack Kiosk B,Food,"Lunch item 2",Food-Snacks,Alipay,In-store,food,"[Attachment: Receipt]",Non-recurring
+2,Expense,40.00,2025/05/07,Snack Kiosk B,Food,"Lunch item 3",Food-Snacks,Alipay,In-store,food,"[Attachment: Receipt]",Non-recurring
+2,Expense,65.00,2025/05/08,Local Mini Mart C,Shopping,"Grocery item A",Shopping-Groceries,WeChat Pay,In-store,shopping,"[Attachment: Receipt]",Non-recurring
+2,Expense,60.00,2025/05/08,Local Mini Mart C,Shopping,"Grocery item B",Shopping-Groceries,WeChat Pay,In-store,shopping,"[Attachment: Receipt]",Non-recurring
+2,Expense,65.00,2025/05/08,Local Mini Mart C,Shopping,"Grocery item C",Shopping-Groceries,WeChat Pay,In-store,shopping,"[Attachment: Receipt]",Non-recurring
+2,Expense,18.00,2025/05/09,Vending Machine D,Food,"Drink 1",Food-Drinks,Cash,Offline,food,"[Attachment: None]",Non-recurring
+2,Expense,18.00,2025/05/09,Vending Machine D,Food,"Drink 2",Food-Drinks,Cash,Offline,food,"[Attachment: None]",Non-recurring
+2,Expense,18.00,2025/05/09,Vending Machine D,Food,"Drink 3",Food-Drinks,Cash,Offline,food,"[Attachment: None]",Non-recurring
+2,Expense,30.00,2025/05/10,Office Pantry E,Food,"Snack 1",Food-Cafe,WeChat Pay,In-store,food,"[Attachment: Receipt]",Non-recurring
+2,Expense,30.00,2025/05/10,Office Pantry E,Food,"Snack 2",Food-Cafe,WeChat Pay,In-store,food,"[Attachment: Receipt]",Non-recurring
+2,Expense,35.00,2025/05/10,Office Pantry E,Food,"Snack 3",Food-Cafe,WeChat Pay,In-store,food,"[Attachment: Receipt]",Non-recurring
+2,Expense,12.00,2025/05/11,Campus Bus,Transport,"Bus fare 1",Transport-Public,Cash,Offline,Transport,"[Attachment: None]",Non-recurring
+2,Expense,160.00,2025/04/12,Online Shop F,Shopping,"Late night purchase",Shopping-Online,Credit Card,Online,shopping,"[Attachment: Invoice]",Non-recurring
+2,Expense,55.00,2025/04/14,Streaming G,Entertainment,"Subscription fee",Entertainment-Subscription,Credit Card,Online,Entertainment,"[Attachment: Receipt]",Recurring
+2,Expense,220.00,2025/04/16,E-learning H,Investment,"Module payment",Investment-Education,Alipay,Online,investment,"[Attachment: Invoice]",Non-recurring
+2,Expense,85.00,2025/04/19,Gaming I,Entertainment,"In-game item",Entertainment-Gaming,WeChat Pay,Online,Entertainment,"[Attachment: Receipt]",Non-recurring
+2,Expense,130.00,2025/04/21,Software J,Other,"Software license",Professional-Services,Credit Card,Online,Other,"[Attachment: Invoice]",Non-recurring
+2,Expense,105.00,2025/04/24,Cloud K,Other,"Monthly fee",Technology-Services,Credit Card,Online,Other,"[Attachment: Receipt]",Recurring
+2,Expense,75.00,2025/04/26,Online Bookstore L,Shopping,"Digital book",Shopping-Books/Media,Alipay,Online,shopping,"[Attachment: Receipt]",Non-recurring
+2,Expense,95.00,2025/04/28,App Store M,Shopping,"App purchase",Shopping-Apps,WeChat Pay,Online,shopping,"[Attachment: Receipt]",Non-recurring
+2,Expense,190.00,2025/05/01,Online Service N,Professional Fee,"Service fee",Professional-Services,Credit Card,Online,Other,"[Attachment: Invoice]",Non-recurring
+2,Expense,65.00,2025/05/03,E-learning O,Investment,"Tutorial fee",Investment-Education,Credit Card,Online,investment,"[Attachment: Receipt]",Recurring
+2,Expense,140.00,2025/05/05,Online Market P,Shopping,"Gadget",Shopping-Online,Alipay,Online,Electronics,"[Attachment: Invoice]",Non-recurring
+2,Expense,45.00,2025/05/07,Music Streaming Q,Entertainment,"Subscription fee",Entertainment-Subscription,Credit Card,Online,Entertainment,"[Attachment: Receipt]",Recurring
+2,Expense,170.00,2025/05/09,Online Community R,Other,"Premium subscription",Technology-Services,WeChat Pay,Online,Other,"[Attachment: Receipt]",Recurring
+2,Expense,115.00,2025/05/12,Online Course S,Investment,"Course payment",Investment-Education,Credit Card,Online,investment,"[Attachment: Invoice]",Non-recurring
+2,Expense,200.00,2025/05/14,Online Electronics T,Shopping,"Computer accessory",Shopping-Online,Alipay,Online,Electronics,"[Attachment: Invoice]",Non-recurring
+2,Expense,80.00,2025/05/16,Game Platform U,Entertainment,"Game currency",Entertainment-Gaming,WeChat Pay,Online,Entertainment,"[Attachment: Receipt]",Non-recurring
+2,Expense,160.00,2025/05/19,Software License V,Other,"Annual license",Professional-Services,Credit Card,Online,Other,"[Attachment: Invoice]",Recurring
+2,Expense,100.00,2025/05/21,Online Fitness W,Health,"Coaching session",Health-Fitness,Alipay,Online,Fitness,"[Attachment: Receipt]",Non-recurring
+2,Expense,130.00,2025/05/24,Online Magazine X,Shopping,"Digital subscription",Shopping-Books/Media,Credit Card,Online,shopping,"[Attachment: Receipt]",Recurring
+2,Expense,190.00,2025/05/26,Online Store Y,Shopping,"Household item",Shopping-Online,WeChat Pay,Online,shopping,"[Attachment: Invoice]",Non-recurring
