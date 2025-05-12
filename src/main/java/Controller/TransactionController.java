@@ -204,7 +204,7 @@ public class TransactionController {
         String username  = user.getUsername();
         String operation = entities.get("operation");
         String amtStr    = entities.get("amount");
-        String time      = entities.get("timestamp");
+        String time      = entities.get("time");
         if (username == null || operation == null || amtStr == null || time == null) {
             throw new IllegalArgumentException("缺少必需字段");
         }

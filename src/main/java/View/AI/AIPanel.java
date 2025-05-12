@@ -29,6 +29,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 
 import Model.ChatMessage;
+import View.LoginAndMain.GradientComponents;
 
 public class AIPanel extends JPanel {
     private JPanel chatArea;
@@ -236,6 +237,9 @@ public class AIPanel extends JPanel {
 
     private void scrollToBottom() {
         JScrollBar verticalScrollBar = scrollPane.getVerticalScrollBar();
+        // 先把样式改一遍
+        GradientComponents.styleScrollBar(verticalScrollBar);
+        // 再滚到底
         SwingUtilities.invokeLater(() -> {
             verticalScrollBar.setValue(verticalScrollBar.getMaximum());
             SwingUtilities.invokeLater(() -> verticalScrollBar.setValue(verticalScrollBar.getMaximum()));

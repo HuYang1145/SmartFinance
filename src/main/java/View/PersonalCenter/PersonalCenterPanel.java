@@ -45,8 +45,7 @@ import Model.Transaction;
 import Model.UserSession;
 import Service.PersonChartDataService;
 import Service.PersonFinancialService;
-import View.PersonalCenter.PersonalCenterComponents.GradientBorder;
-import View.PersonalCenter.PersonalCenterComponents.GradientPanel;
+import View.LoginAndMain.GradientComponents.*;
 
 public class PersonalCenterPanel extends JPanel {
     private JLabel totalIncomeYearLabel, totalExpenseYearLabel, totalBalanceYearLabel;

@@ -2,13 +2,14 @@ package View.LoginAndMain;
 
 import javax.swing.*;
 import javax.swing.border.AbstractBorder;
+import javax.swing.plaf.basic.BasicScrollBarUI;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.geom.RoundRectangle2D;
 
 public class GradientComponents {
-    static class GradientBorder extends AbstractBorder {
+    public static class GradientBorder extends AbstractBorder {
         private int thickness, radius;
 
         public GradientBorder(int thickness, int radius) {
@@ -155,6 +156,23 @@ public class GradientComponents {
         }
     }
 
+
+    public static void styleScrollBar(JScrollBar bar) {
+        bar.setUI(new BasicScrollBarUI() {
+            @Override
+            protected void configureScrollBarColors() {
+                // 拖拽块颜色
+                this.thumbColor = Color.white;
+                // 滑道背景色，如果想保持默认可以不用这行
+                this.trackColor = Color.ORANGE;
+            }
+            // 如果你想让滚动箭头也有颜色，可以覆盖下面两个方法
+            @Override
+            protected void paintDecreaseHighlight(Graphics g) { }
+            @Override
+            protected void paintIncreaseHighlight(Graphics g) { }
+        });
+    }
     public static class DeepBlueGradientPanel extends JPanel {
         private final Color startColor = Color.decode("#84ACC9");
         private final Color endColor = Color.decode("#A1DDA3");

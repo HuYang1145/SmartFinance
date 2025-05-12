@@ -4,18 +4,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-
-import Controller.TransactionController;
-import Model.EntityResultModel;
-import com.google.gson.Gson;
-
-import Model.AIResponse;
-import Model.IntentResultModel;
-import Model.User;
-import Model.SessionContext;
-import Repository.UserRepository;
-import utils.TransactionUtils;
-
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.List;
@@ -24,167 +13,199 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import com.google.gson.Gson;
+
+import Controller.TransactionController;
+import Model.AIResponse;
+import Model.PredictResult;
+import Model.SessionContext;
+import Model.User;
+import Repository.UserRepository;
+import utils.TransactionUtils;
+import Service.DeepSeekService;
+import Service.ExchangeRateService;
+import Service.TransactionService;
+
+/**
+ * 普通 Java 类版本的 AIService，无需 Spring Boot 框架
+ */
 public class AIService {
     private static final Gson GSON = new Gson();
     private final TransactionService transactionService;
     private final DeepSeekService deepSeekService;
     private final UserRepository userRepository;
-    private final String predictExePath;
-    private final Map<String, SessionContext> sessions = new ConcurrentHashMap<>();
     private final TransactionController transactionController;
     private final TransactionUtils txUtils;
+    private final String baseDir;
+    private final ConcurrentHashMap<String, SessionContext> sessions = new ConcurrentHashMap<>();
+    private static final String OUTPUT_NAME = "predict";
 
-    public AIService(TransactionService transactionService,TransactionController transactionController, DeepSeekService deepSeekService, UserRepository userRepository,ExchangeRateService rateService) {
+
+
+    /**
+     * 构造器中手动传入所需依赖，无需依赖注入框架
+     */
+    public AIService(
+            TransactionService transactionService,
+            TransactionController transactionController,
+            DeepSeekService deepSeekService,
+            UserRepository userRepository,
+            ExchangeRateService rateService
+    ) {
         this.transactionService = transactionService;
         this.transactionController = transactionController;
         this.deepSeekService = deepSeekService;
         this.userRepository = userRepository;
         this.txUtils = new TransactionUtils(rateService);
-        this.predictExePath = System.getProperty("user.dir") + File.separator + "dist" + File.separator + "predict" + File.separator + "predict.exe";
+        this.baseDir = System.getProperty("user.dir");
     }
 
+    /**
+     * 主业务入口：识别意图并执行相应操作
+     */
     public AIResponse predictReply(String userInput) {
         User user = userRepository.getCurrentUser();
         if (user == null) {
             return new AIResponse(null, "Please log in first.");
         }
-        String userKey = user.getUsername();            // 或者 sessionId
-        SessionContext ctx = sessions.get(userKey);      // 看看有没有正在补全的会话
+        String userKey = user.getUsername();
+        SessionContext ctx = sessions.get(userKey);
 
         try {
-            // —— 如果有未完成的对话，就继续补全槽位 ——
+            // 继续未完成的对话
             if (ctx != null) {
-                // —— 如果正在确认 ——
+                PredictResult exitPr = callPredict(userInput);
                 if (!ctx.getMissingSlots().isEmpty()) {
-                    // 正在补全槽位
-                    EntityResultModel er = recognizeEntitiesWithPy(userInput);
+                    PredictResult pr = callPredict(userInput);
                     String slot = ctx.getMissingSlots().get(0);
-                    String val ;
-                    if (slot.equals("merchant")) {
-                        val = userInput;  // 仅 merchant 使用原始文本
-                    }else if (slot.equals("type")) {
-                        val = er.getCategory();
-                        if (val == null || val.isBlank()) {
-                            val = userInput.trim();  // fallback
-                        }
-                    }else {
-                        val = switch (slot) {
-                            case "amount" -> er.getAmount();
-                            case "timestamp" -> er.getTime();
-                            default -> null;
-                        };
+                    String val = pr.getEntities().get(slot);
+                    if ("merchant".equals(slot)|| "category".equals(slot)) {
+                        val = userInput;
                     }
                     if (val != null && !val.isBlank()) {
-                        if (slot.equals("amount")) {
+                        if ("amount".equals(slot)) {
                             double amt = txUtils.normalizeAmount(val);
                             ctx.getSlots().put("amount", String.format("%.2f", amt));
-                        } else if (slot.equals("timestamp")) {
-                            ctx.getSlots().put("timestamp", TransactionUtils.normalizeTime(val));
+                        } else if ("time".equals(slot)) {
+                            ctx.getSlots().put("time", TransactionUtils.normalizeTime(val));
                         } else {
                             ctx.getSlots().put(slot, val);
                         }
-                        ctx.getMissingSlots().remove(0);
+                        List<String> temp = new ArrayList<>(ctx.getMissingSlots());
+                        temp.remove(0);
+                        ctx.setMissingSlots(temp);
                     } else {
-                        return new AIResponse("AI didn't recognize " + slot + ", please tell me again.",null );
+                        return new AIResponse("AI didn't recognize " + slot + ", please tell me again.", null);
                     }
-
                     if (!ctx.getMissingSlots().isEmpty()) {
-                        return new AIResponse("Please tell me " + ctx.getMissingSlots().get(0) + ".",null);
+                        return new AIResponse("Please tell me " + ctx.getMissingSlots().get(0) + ".", null);
                     }
-
-                    // 槽位已补全，进入确认流程
                     ctx.setConfirmed(false);
                     String preview = ctx.getSlots().entrySet().stream()
                             .map(e -> e.getKey() + ": " + e.getValue())
                             .collect(Collectors.joining("\n"));
-                    return new AIResponse("Please confirm the transaction:\n" + preview + "\nReply 'yes' to confirm, or tell me what to change in the format 'change ** to **.", null);
+                    return new AIResponse(
+                            "Please confirm the transaction:\n" + preview + "\nReply 'yes' to confirm, or tell me what to change.",
+                            null
+                    );
                 }
-
-                // —— 等待用户确认 ——
                 if (!ctx.isConfirmed()) {
-                    if (userInput.trim().equalsIgnoreCase("yes") || userInput.trim().equalsIgnoreCase("confirm")) {
+                    if ("yes".equalsIgnoreCase(userInput.trim()) || "confirm".equalsIgnoreCase(userInput.trim())) {
                         ctx.setConfirmed(true);
                     } else {
                         tryModifySlot(ctx, userInput);
                         String preview = ctx.getSlots().entrySet().stream()
                                 .map(e -> e.getKey() + ": " + e.getValue())
                                 .collect(Collectors.joining("\n"));
-                        return new AIResponse("Updated transaction:\n" + preview + "\nReply 'yes' to confirm, or tell me what to change.", null);
+                        return new AIResponse(
+                                "Updated transaction:\n" + preview + "\nReply 'yes' to confirm, or tell me what to change.",
+                                null
+                        );
                     }
                 }
-
-                // —— 用户确认后，写入交易记录 ——
-                ctx.getSlots().put("operation", ctx.getIntent().equals("RecordExpense") ? "Expense" : "Income");
+                ctx.getSlots().put("operation",
+                        ctx.getIntent().equals("RecordExpense") ? "Expense" : "Income");
                 transactionController.addTransactionFromEntities(user, ctx.getSlots());
                 sessions.remove(userKey);
                 return new AIResponse(
-                        (ctx.getIntent().equals("RecordExpense") ? "Recorded expense: ¥" : "Recorded income: ¥") + ctx.getSlots().get("amount"),
+                        (ctx.getIntent().equals("RecordExpense") ? "Recorded expense: ¥" : "Recorded income: ¥") +
+                                ctx.getSlots().get("amount"),
                         null
                 );
             }
 
+            // 初次处理
+            PredictResult pr = callPredict(userInput);
+            String intent = pr.getIntent();
+            Map<String, String> slots = pr.getEntities();
 
-            // —— 初次识别意图 ——
-            IntentResultModel intentResult = recognizeIntent(userInput);
-            String intent = intentResult.getIntent();
-
-            if ("RecordExpense".equals(intent) || "RecordIncome".equals(intent)) {
-                EntityResultModel er = recognizeEntitiesWithPy(userInput);
-                Map<String, String> slots = new HashMap<>();
-
-                if (er.getAmount() != null) {
-                    double amt = txUtils.normalizeAmount(er.getAmount());
-                    slots.put("amount", String.format("%.2f", amt));
+            switch (intent) {
+                case "RecordExpense":
+                case "RecordIncome": {
+                    if (slots.containsKey("amount")) {
+                        double amt = txUtils.normalizeAmount(slots.get("amount"));
+                        slots.put("amount", String.format("%.2f", amt));
+                    }
+                    if (slots.containsKey("time")) {
+                        slots.put("time", TransactionUtils.normalizeTime(slots.get("time")));
+                    }
+                    if(slots.containsKey("category")){
+                        slots.put("category", slots.get("category"));
+                    }
+                    List<String> required = List.of("amount", "time", "category", "merchant");
+                    List<String> missing = required.stream()
+                            .filter(k -> !slots.containsKey(k) || slots.get(k).isBlank())
+                            .toList();
+                    if (missing.isEmpty()) {
+                        slots.put("operation", intent.equals("RecordExpense") ? "Expense" : "Income");
+                        transactionController.addTransactionFromEntities(user, slots);
+                        return new AIResponse(
+                                (intent.equals("RecordExpense") ? "Recorded expense: ¥" : "Recorded income: ¥") +
+                                        slots.get("amount"),
+                                null
+                        );
+                    }
+                    SessionContext newCtx = new SessionContext();
+                    newCtx.setIntent(intent);
+                    newCtx.setSlots(slots);
+                    newCtx.setMissingSlots(missing);
+                    sessions.put(userKey, newCtx);
+                    return new AIResponse("Please tell me " + missing.get(0) + ".", null);
                 }
-                if (er.getTime() != null) {
-                    slots.put("timestamp", TransactionUtils.normalizeTime(er.getTime()));
+                case "QueryBalance": {
+                    double bal = transactionService.getBalance(user);
+                    return new AIResponse("Your balance is: ¥" + String.format("%.2f", bal), null);
                 }
-                if (er.getCategory() != null) {
-                    slots.put("type", er.getCategory());
+                case "QuerySuggestion": {
+                    String summary = transactionService.buildTransactionSummary(user);
+                    if (summary.isEmpty()) {
+                        return new AIResponse(null, "No transactions loaded.");
+                    }
+                    String suggestions = deepSeekService.callDeepSeekApi(
+                            summary,
+                            "Analyze these transactions and give 2-3 brief, actionable suggestions."
+                    );
+                    return new AIResponse("Suggestions:\n" + suggestions, null);
                 }
-
-                List<String> required = List.of("amount", "timestamp", "type", "merchant");
-                List<String> missing = required.stream()
-                        .filter(k -> slots.get(k) == null || slots.get(k).isBlank())
-                        .collect(Collectors.toList());
-
-                if (missing.isEmpty()) {
-                    slots.put("operation", intent.equals("RecordExpense") ? "Expense" : "Income");
-                    transactionController.addTransactionFromEntities(user, slots);
+                case "QuerySpendTime": {
+                    double spent = transactionService.getCurrentMonthExpense(user);
+                    return new AIResponse("You spent ¥" + String.format("%.2f", spent) + " this month.", null);
+                }
+                case "Greeting":{
+                    return new AIResponse("HI!  can tell you your balance, monthly spending, or record expense/income.", null);
+                }
+                case "Thanking":{
+                    return new AIResponse("My honor.",null);
+                }
+                case "Farewell":{
+                    return new AIResponse("Bye,have a nice day!",null);
+                }
+                default:
                     return new AIResponse(
-                            (intent.equals("RecordExpense") ? "Recorded expense: ¥" : "Recorded income: ¥") + slots.get("amount"),
+                            "I can tell you your balance, monthly spending, or record expense/income.",
                             null
                     );
-                }
-
-                SessionContext newCtx = new SessionContext();
-                newCtx.setIntent(intent);
-                newCtx.setSlots(slots);
-                newCtx.setMissingSlots(missing);
-                sessions.put(userKey, newCtx);
-
-                return new AIResponse("Please tell me " + missing.get(0) + ".", null);
             }
-            if("QueryBalance".equals(intent)) {
-                double balance = transactionService.getBalance(user);
-                return new AIResponse("Your balance is: ¥" + String.format("%.2f", balance), null);
-            }
-            if("QuerySuggestion".equals(intent)) {
-                String summary = transactionService.buildTransactionSummary(user);
-                if (summary.isEmpty()) {
-                    return new AIResponse(null, "No transactions loaded.");
-                }
-                String suggestions = deepSeekService.callDeepSeekApi(summary, "Analyze these transactions and give 2-3 brief, actionable suggestions.");
-                return new AIResponse("Suggestions:\n" + suggestions, null);
-            }
-            if("QuerySpendTime".equals(intent)) {
-                double spent = transactionService.getCurrentMonthExpense(user);
-                return new AIResponse("You spent ¥" + String.format("%.2f", spent) + " this month.", null);
-            }
-            return new AIResponse(
-                "I can tell you your balance, monthly spending, or record expense/income.",
-                null
-        );
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -192,69 +213,54 @@ public class AIService {
         }
     }
 
+    /**
+     * 统一调用 Python 脚本，返回合并后的意图+实体
+     */
+    private PredictResult callPredict(String input) throws Exception {
+        // 可执行文件路径（你可以根据打包结构调整）
+        String exePath = baseDir + File.separator + "dist" + File.separator +"predict"+File.separator+ "predict.exe";
 
-    private IntentResultModel recognizeIntent(String input) throws Exception {
-        ProcessBuilder pb = new ProcessBuilder(predictExePath, input);
-        pb.redirectErrorStream(true);
+        // 构造进程调用命令，只传文本参数
+        ProcessBuilder pb = new ProcessBuilder(
+                exePath,
+                "-t", input
+        );
+
+        // 设置工作目录为 exe 所在目录（防止部分依赖找不到）
+        pb.directory(new File(baseDir + File.separator + "dist"));
+        pb.redirectErrorStream(true); // stderr 合并进 stdout
+
         Process proc = pb.start();
 
-        StringBuilder output = new StringBuilder();
+        // 捕获输出
+        StringBuilder fullOutput = new StringBuilder();
+        String jsonLine = null;
         try (BufferedReader reader = new BufferedReader(
                 new InputStreamReader(proc.getInputStream(), StandardCharsets.UTF_8))) {
             String line;
             while ((line = reader.readLine()) != null) {
-                if (line.trim().startsWith("{") && line.trim().endsWith("}")) {
-                    output.setLength(0);  // 清除前面的 debug 输出
-                    output.append(line.trim()); // 只保留 JSON
+                fullOutput.append(line).append(System.lineSeparator());
+                line = line.trim();
+                if (line.startsWith("{") && line.endsWith("}")) {
+                    jsonLine = line;
                 }
             }
         }
-        int exitCode = proc.waitFor();
-        if (exitCode != 0 || output.length() == 0) {
-            throw new RuntimeException("predict.exe failed with exit code: " + exitCode);
-        }
-
-        try {
-            return GSON.fromJson(output.toString(), IntentResultModel.class);
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to parse predict.exe output: " + output);
-        }
-    }
-    private EntityResultModel recognizeEntitiesWithPy(String input) throws Exception {
-        String baseDir = System.getProperty("user.dir");  // 项目根路径
-
-        String python = "D:/python/envs/nlp/python.exe";
-        String script = baseDir + "/ner/predict_ner.py";
-        String modelDir = baseDir + "/ner/ner_model";
-
-        // 构造命令：python predict.py --model_dir ner_model --text "..."
-        ProcessBuilder pb = new ProcessBuilder(
-                python,
-                script,
-                "--model_dir", modelDir,
-                "--text", input
-        );
-        pb.redirectErrorStream(true);
-        Process proc = pb.start();
-
-        // 读取输出 JSON
-        StringBuilder output = new StringBuilder();
-        try (BufferedReader reader = new BufferedReader(
-                new InputStreamReader(proc.getInputStream(), StandardCharsets.UTF_8))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                output.append(line);
-            }
-        }
 
         int exitCode = proc.waitFor();
-        if (exitCode != 0 || output.length() == 0) {
-            throw new RuntimeException("python predict.py 返回错误，exit=" + exitCode + " out=" + output);
+
+        if (exitCode != 0 || jsonLine == null) {
+            System.err.println("⚠️ [predict.exe 输出内容]：");
+            System.err.println(fullOutput.toString());
+            throw new RuntimeException("predict.exe 调用失败，exit=" + exitCode);
         }
 
-        // 使用 GSON 解析成你的实体模型
-        return GSON.fromJson(output.toString(), EntityResultModel.class);
+        // 反序列化为 Java 对象
+        return GSON.fromJson(jsonLine, PredictResult.class);
     }
+
+
+
     private void tryModifySlot(SessionContext ctx, String userInput) {
         String input = userInput.trim().toLowerCase();
         Map<String, String> slots = ctx.getSlots();
@@ -272,14 +278,14 @@ public class AIService {
         m = Pattern.compile("^(?:change|set) (?:time|date) to (.+)$").matcher(input);
         if (m.find()) {
             String rawTime = m.group(1).trim();
-            slots.put("timestamp", TransactionUtils.normalizeTime(rawTime));
+            slots.put("time", TransactionUtils.normalizeTime(rawTime));
             return;
         }
 
-        // 3. 修改类别：change/set type to <text>
-        m = Pattern.compile("^(?:change|set) type to (.+)$").matcher(input);
+        // 3. 修改类别：change/set category to <text>
+        m = Pattern.compile("^(?:change|set) category to (.+)$").matcher(input);
         if (m.find()) {
-            slots.put("type", m.group(1).trim());
+            slots.put("category", m.group(1).trim());
             return;
         }
 

@@ -26,35 +26,42 @@ public class TransactionUtils {
      */
     public double normalizeAmount(String rawAmt) {
         if (rawAmt == null || rawAmt.isBlank()) {
-            throw new IllegalArgumentException("Amount is empty");
+            return 0.0; // 或 return -1 作为非法金额标记也可以
         }
-        Pattern p = Pattern.compile("([0-9]+(?:\\.[0-9]+)?)(?:\\s*)([a-zA-Z$¥]*)");
-        Matcher m = p.matcher(rawAmt.trim());
-        if (!m.matches()) {
-            throw new IllegalArgumentException("Amount format not recognised: " + rawAmt);
-        }
-        double value = Double.parseDouble(m.group(1));
-        String unit = m.group(2).toUpperCase();
 
-        // 1. 美元
-        if (unit.contains("DOLLAR") || unit.equals("USD") || unit.equals("$")) {
-            Double usd2cny = rateService.getExchangeRates().get("USD");
-            if (usd2cny == null) throw new RuntimeException("USD exchange rate not available");
-            return value * usd2cny;
+        try {
+            String norm = rawAmt.trim().toUpperCase().replace("CHY", "CNY"); // 修正常见错误
+            Pattern p = Pattern.compile("([0-9]+(?:\\.[0-9]+)?)(?:\\s*)([A-Z$¥]*)");
+            Matcher m = p.matcher(norm);
+            if (!m.matches()) {
+                return Double.parseDouble(norm.replaceAll("[^0-9.]", "")); // fallback: 去除单位直接解析数值
+            }
+
+            double value = Double.parseDouble(m.group(1));
+            String unit = m.group(2);
+
+            if (unit.contains("DOLLAR") || unit.equals("USD") || unit.equals("$")) {
+                Double usd = rateService.getExchangeRates().get("USD");
+                if (usd != null) return value * usd;
+            }
+            if (unit.contains("EUR") || unit.equals("€")) {
+                Double eur = rateService.getExchangeRates().get("EUR");
+                if (eur != null) return value * eur;
+            }
+            if (!unit.isEmpty()) {
+                Double rate = rateService.getExchangeRates().get(unit);
+                if (rate != null) return value * rate;
+            }
+
+            // 默认：无法识别或无汇率，就视为人民币原值
+            return value;
+
+        } catch (Exception e) {
+            System.err.println("[Amount Warning] Failed to normalize amount: " + rawAmt + ", reason: " + e.getMessage());
+            return 0.0; // fallback：报错时返回 0，或者 return original value if preferred
         }
-        // 2. 欧元
-        if (unit.contains("EUR") || unit.equals("€")) {
-            Double eur2cny = rateService.getExchangeRates().get("EUR");
-            if (eur2cny == null) throw new RuntimeException("EUR exchange rate not available");
-            return value * eur2cny;
-        }
-        // 3. 其他已支持货币
-        if (!unit.isEmpty() && rateService.getExchangeRates().containsKey(unit)) {
-            return value * rateService.getExchangeRates().get(unit);
-        }
-        // 4. 默认当人民币
-        return value;
     }
+
     /**
      * 把 "today"/"yesterday"/"last month" 等相对时间转成 "yyyy/MM/dd HH:mm" 格式。
      * 如果已经是具体日期（如 "2025/05/01 14:30"），就尝试 parse 并返回格式化后的。
