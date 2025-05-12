@@ -37,6 +37,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 
 import Model.ChatMessage;
+import View.LoginAndMain.GradientComponents;
 
 public class AIPanel extends JPanel {
     private JPanel chatArea;
@@ -292,8 +293,9 @@ public class AIPanel extends JPanel {
     /**
      * Scrolls the chat area to the bottom to show the latest messages.
      */
-    private void scrollToBottom() {
+     private void scrollToBottom() {
         JScrollBar verticalScrollBar = scrollPane.getVerticalScrollBar();
+        GradientComponents.styleScrollBar(verticalScrollBar);
         SwingUtilities.invokeLater(() -> {
             verticalScrollBar.setValue(verticalScrollBar.getMaximum());
             SwingUtilities.invokeLater(() -> verticalScrollBar.setValue(verticalScrollBar.getMaximum()));
