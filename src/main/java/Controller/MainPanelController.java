@@ -19,6 +19,7 @@ import Service.AIService;
 import Service.DeepSeekService;
 import Service.ExchangeRateService;
 import Service.TransactionService;
+import Service.BudgetService;
 import View.AI.AIPanel;
 import View.Bill.BillPanel;
 import View.BudgetAdvisor.BudgetManagementPanel;
@@ -31,6 +32,7 @@ import View.Transaction.TransactionSystemPlane;
  * in a financial management application. It handles the initialization, loading, and display
  * of various panels such as Personal Center, Transaction System, Bill Statistics, Budget Management,
  * AI Assistant, and Spending Star Whispers using a CardLayout.
+ * Manages dependencies for sub-controllers and services.
  *
  * @author 19
  * @version 1.0
@@ -41,24 +43,33 @@ public class MainPanelController {
     private final PersonCenterController personCenterController;
     private final BillController billController;
     private final CardLayout cardLayout;
+    private final BudgetService budgetService; // Added dependency
+    private final TransactionService transactionService; // Added dependency
+
     private PersonalCenterPanel personalCenterPanel;
     private TransactionSystemController transactionSystemController;
     private AIController aiController;
 
     /**
-     * Constructs a MainPanelController with the specified parameters.
+     * Constructs a MainPanelController with the specified parameters and dependencies.
      *
      * @param username              The username of the logged-in user.
      * @param contentPanel          The main JPanel that holds different sub-panels.
      * @param personCenterController Controller for the Personal Center panel.
      * @param billController        Controller for the Bill Statistics panel.
+     * @param budgetService         Service for budget calculations.
+     * @param transactionService    Service for transaction logic and checks.
      * @param cardLayout            The CardLayout used to switch between panels.
      */
-    public MainPanelController(String username, JPanel contentPanel, PersonCenterController personCenterController, BillController billController, CardLayout cardLayout) {
+    public MainPanelController(String username, JPanel contentPanel, PersonCenterController personCenterController,
+                               BillController billController, BudgetService budgetService, TransactionService transactionService,
+                               CardLayout cardLayout) {
         this.username = username;
         this.contentPanel = contentPanel;
         this.personCenterController = personCenterController;
         this.billController = billController;
+        this.budgetService = budgetService;
+        this.transactionService = transactionService;
         this.cardLayout = cardLayout;
         System.out.println("MainPanelController initialized for user: " + username);
     }
@@ -87,12 +98,14 @@ public class MainPanelController {
                 SwingWorker<Void, Void> worker = new SwingWorker<>() {
                     @Override
                     protected Void doInBackground() throws Exception {
+                        // Data loading logic is now within PersonCenterController.initializeData
                         return null;
                     }
 
                     @Override
                     protected void done() {
                         System.out.println("Initializing data for Personal Center");
+                        // Pass the controller itself to the view for data loading actions
                         personalCenterPanel.initializeData(personCenterController);
                     }
                 };
@@ -120,36 +133,46 @@ public class MainPanelController {
             switch (name) {
                 case "Personal Center":
                     System.out.println("Loading Personal Center panel from loadPanel");
-                    return personalCenterPanel;
+                    return personalCenterPanel; // Return the already created instance
                 case "AI Assistant":
                     System.out.println("Loading AI Assistant panel");
                     AIPanel aiPanel = new AIPanel();
-                    aiController = new AIController(aiPanel, new AIService(new TransactionService(new TransactionRepository()), new TransactionController(), new DeepSeekService(), new UserRepository(), new ExchangeRateService()));
+                    // AIService needs TransactionService and its dependencies (TransactionRepository, BudgetService)
+                    // And other services (DeepSeekService, UserRepository, ExchangeRateService)
+                    // We can pass the shared transactionService and budgetService here
+                    AIService aiService = new AIService(transactionService, new TransactionController(), new DeepSeekService(), new UserRepository(), new ExchangeRateService());
+                    aiController = new AIController(aiPanel, aiService);
                     return aiPanel;
                 case "Transaction System":
                     System.out.println("Loading Transaction System panel");
                     TransactionSystemPlane transactionSystemPlane = new TransactionSystemPlane(username);
+                    // TransactionSystemController needs BudgetService and TransactionService
                     transactionSystemController = new TransactionSystemController(
-                            transactionSystemPlane, new ExchangeRateService(), new TransactionController(), username
+                            transactionSystemPlane, new ExchangeRateService(), new TransactionController(),
+                            transactionService, budgetService, username // Pass dependencies
                     );
                     return transactionSystemPlane;
                 case "Bill Statistics":
                     System.out.println("Loading Bill Statistics panel");
+                    // BillController needs AccountRepository (already a field in MainPanelController)
                     BillPanel billPanel = new BillPanel(username, personCenterController, billController);
+                    // Initialize chart on a background thread
                     SwingWorker<Void, Void> worker = new SwingWorker<>() {
                         @Override
                         protected Void doInBackground() throws Exception {
-                            return null;
+                            // Chart initialization might involve reading files/calculations, do off EDT
+                            return null; // Initialization is called in done() on EDT
                         }
 
                         @Override
                         protected void done() {
                             try {
                                 System.out.println("Initializing BillPanel chart");
-                                billPanel.initializeChart();
+                                billPanel.initializeChart(); // This method calls updateChart() on EDT
                             } catch (Exception e) {
                                 System.err.println("Failed to initialize BillPanel chart: " + e.getMessage());
                                 e.printStackTrace();
+                                JOptionPane.showMessageDialog(billPanel, "Failed to load Bill Chart: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
                             }
                         }
                     };
@@ -157,14 +180,17 @@ public class MainPanelController {
                     return billPanel;
                 case "Budget Management":
                     System.out.println("Loading Budget Management panel");
-                    BudgetManagementPanel budgetPanel = new BudgetManagementPanel(username);
+                    // BudgetManagementPanel now accepts BudgetService
+                    BudgetManagementPanel budgetPanel = new BudgetManagementPanel(username, budgetService); // Pass shared BudgetService
                     if (!budgetPanel.isInitialized()) {
-                        throw new IllegalStateException("Budget Management panel failed to initialize due to invalid username.");
+                        throw new IllegalStateException("Budget Management panel failed to initialize due to invalid username or dependency.");
                     }
+                    // Loading data is handled internally by BudgetManagementPanel's controller
                     return budgetPanel;
                 case "Spending Star Whispers":
                     System.out.println("Loading Spending Star Whispers panel");
-                    return new HoroscopePanel(username);
+                    // HoroscopePanel needs its own controller and service
+                    return new HoroscopePanel(username); // HoroscopePanel internally creates controller/service
                 default:
                     System.err.println("Warning: Unhandled panel name in loadPanel: " + name);
                     return createPlaceholderPanel(name);
@@ -216,6 +242,7 @@ public class MainPanelController {
         Component[] components = contentPanel.getComponents();
         Component targetPanel = null;
 
+        // Find the existing component with the target name
         for (Component comp : components) {
             if (name.equals(comp.getName())) {
                 targetPanel = comp;
@@ -223,20 +250,39 @@ public class MainPanelController {
             }
         }
 
-        if (targetPanel == null) {
-            System.out.println("Panel not found, loading: " + name);
-            JPanel panel = loadPanel(name);
-            panel.setName(name);
-            contentPanel.add(panel, name);
-        } else if (targetPanel instanceof JLabel) {
+        // If the target panel is a placeholder (JLabel), remove it and load the actual panel
+        if (targetPanel instanceof JLabel) {
             System.out.println("Replacing placeholder for: " + name);
             contentPanel.remove(targetPanel);
-            JPanel panel = loadPanel(name);
-            panel.setName(name);
-            contentPanel.add(panel, name);
+            JPanel panel = loadPanel(name); // loadPanel ensures the panel is created or returns existing
+            if (panel != null) {
+                 panel.setName(name); // Set name on the loaded panel
+                 contentPanel.add(panel, name);
+            } else {
+                 // Handle case where loadPanel might return null or fail, although current loadPanel creates placeholders on failure
+                 System.err.println("Failed to load panel " + name + " after removing placeholder.");
+                 // Optionally re-add a placeholder or show an error panel
+                 contentPanel.add(createPlaceholderPanel(name), name);
+            }
+        } else if (targetPanel == null) {
+             // If the panel wasn't found at all, load it
+             System.out.println("Panel not found, loading: " + name);
+             JPanel panel = loadPanel(name);
+             if (panel != null) {
+                panel.setName(name);
+                contentPanel.add(panel, name);
+             } else {
+                System.err.println("Failed to load panel " + name + ".");
+                contentPanel.add(createPlaceholderPanel(name), name);
+             }
         } else {
-            System.out.println("Panel already loaded: " + name);
+            System.out.println("Panel already loaded and is not a placeholder: " + name);
+            // The panel already exists and is not a placeholder, just show it.
+            // No action needed here as cardLayout.show handles it.
         }
+
+        // Ensure the panel is added to the layout manager before showing
+        // This should already be handled by contentPanel.add()
 
         cardLayout.show(contentPanel, name);
         contentPanel.revalidate();

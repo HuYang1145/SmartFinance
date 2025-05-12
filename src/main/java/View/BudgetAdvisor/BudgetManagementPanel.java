@@ -31,7 +31,7 @@ import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 
 import Model.BudgetDataContainer;
-import Service.BudgetService.BudgetRecommendation;
+import Service.BudgetService;
 
 public class BudgetManagementPanel extends JPanel {
     private final Controller.BudgetManagementController controller;
@@ -47,7 +47,13 @@ public class BudgetManagementPanel extends JPanel {
     private static final Color BUTTON_FOREGROUND_COLOR = Color.BLACK;
     private static final Font TITLE_FONT = new Font("Segoe UI", Font.BOLD, 16);
 
-    public BudgetManagementPanel(String username) {
+    /**
+     * Constructs a BudgetManagementPanel for the given user, using the provided BudgetService.
+     *
+     * @param username      The username of the current user.
+     * @param budgetService The BudgetService instance to use.
+     */
+    public BudgetManagementPanel(String username, BudgetService budgetService) { // Modified constructor
         if (username == null || username.trim().isEmpty()) {
             setLayout(new BorderLayout());
             add(new JLabel("User not logged in.", SwingConstants.CENTER), BorderLayout.CENTER);
@@ -55,7 +61,8 @@ public class BudgetManagementPanel extends JPanel {
             this.isInitialized = false;
             return;
         }
-        this.controller = new Controller.BudgetManagementController(username, this, new Service.BudgetService(new Repository.TransactionRepository()));
+        // Use the provided budgetService when creating the controller
+        this.controller = new Controller.BudgetManagementController(username, this, budgetService);
         this.isInitialized = true;
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         setBackground(new Color(204, 229, 255));
@@ -65,6 +72,7 @@ public class BudgetManagementPanel extends JPanel {
             controller.loadBudgetData();
         }
     }
+
 
     private void initComponents() {
         budgetValueLabel = new JLabel("Loading...");
@@ -267,16 +275,18 @@ public class BudgetManagementPanel extends JPanel {
     public void updateBudgetData(BudgetDataContainer data) {
         if (!isInitialized) return;
 
-        BudgetRecommendation recommendation = data.getRecommendation();
+        BudgetService.BudgetRecommendation recommendation = data.getRecommendation();
         double currentMonthExpense = data.getCurrentMonthExpense();
         double currentMonthIncome = data.getCurrentMonthIncome();
         String topCategory = data.getTopCategory();
         List<String> largeConsumptions = data.getLargeConsumptions();
         Double customBudget = data.getCustomBudget();
 
-        double budgetToUse = (customBudget != null) ? customBudget : recommendation.getSuggestedBudget();
+        double budgetToUse = (customBudget != null && customBudget >= 0) ? customBudget : recommendation.getSuggestedBudget(); // Ensure custom budget is non-negative
+        // Handle case where budgetToUse might be greater than income
+        savingGoalValueLabel.setText(String.format("¥%.2f", Math.max(0, currentMonthIncome - budgetToUse))); // Saving goal should not be negative
         budgetValueLabel.setText(String.format("¥%.2f", budgetToUse));
-        savingGoalValueLabel.setText(String.format("¥%.2f", currentMonthIncome - budgetToUse));
+
         modeValueLabel.setText(recommendation.getMode().getDisplayName());
         reasonValueLabel.setText(recommendation.getReason());
         customBudgetInputField.setText(customBudget != null ? String.format("%.2f", customBudget) : "");
@@ -293,14 +303,18 @@ public class BudgetManagementPanel extends JPanel {
         if (!isInitialized) return;
 
         String text = isLoading ? "Loading..." : "";
-        budgetValueLabel.setText(text);
-        savingGoalValueLabel.setText(text);
-        modeValueLabel.setText(text);
-        reasonValueLabel.setText(text);
-        topSpendingCategoryLabel.setText(isLoading ? "N/A" : topSpendingCategoryLabel.getText());
-        expenditureValueLabel.setText(text);
-        budgetStatusLabel.setText(text);
-        largeConsumptionTextArea.setText(isLoading ? "Loading..." : largeConsumptionTextArea.getText());
+        // Only update labels if they are currently displaying a value or are placeholders,
+        // not if they already have loaded data. This prevents flicker.
+        if (budgetValueLabel.getText().equals("Loading...") || !isLoading) budgetValueLabel.setText(text);
+        if (savingGoalValueLabel.getText().equals("Loading...") || !isLoading) savingGoalValueLabel.setText(text);
+        if (modeValueLabel.getText().equals("Loading...") || !isLoading) modeValueLabel.setText(text);
+        if (reasonValueLabel.getText().equals("Loading...") || !isLoading) reasonValueLabel.setText(text);
+        if (topSpendingCategoryLabel.getText().equals("N/A") || topSpendingCategoryLabel.getText().equals("Loading...") || !isLoading) topSpendingCategoryLabel.setText(isLoading ? "N/A" : topSpendingCategoryLabel.getText()); // Keep N/A or actual value when not loading
+        if (expenditureValueLabel.getText().equals("Loading...") || !isLoading) expenditureValueLabel.setText(text);
+        if (budgetStatusLabel.getText().equals("Loading...") || !isLoading) budgetStatusLabel.setText(text);
+        if (largeConsumptionTextArea.getText().equals("Loading...") || !isLoading) largeConsumptionTextArea.setText(isLoading ? "Loading..." : largeConsumptionTextArea.getText()); // Keep existing text when not loading
+
+
         saveCustomBudgetButton.setEnabled(!isLoading);
         restoreIntelligentButton.setEnabled(!isLoading);
     }
