@@ -32,7 +32,7 @@ public class TransactionService {
     private static final double FREQUENT_LARGE_TRANSACTION_AMOUNT = 5000.0;
     private static final int FREQUENT_LARGE_TRANSACTION_COUNT = 3;
     private static final double LARGE_EXPENSE_MULTIPLIER = 3.0; // Expense > 3 * avg_daily_expense
-    private static final double LARGE_TRANSFER_OUT_AMOUNT = 10000.0; // Transfer Out > 5000
+    private static final double LARGE_TRANSFER_OUT_AMOUNT = 50000.0; // Transfer Out > 5000
 
     /**
      * Constructs a TransactionService instance with the specified dependencies.
