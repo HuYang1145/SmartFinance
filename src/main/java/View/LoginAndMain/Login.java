@@ -255,10 +255,10 @@ public class Login extends JFrame {
 
         JButton btn = new JButton("Log in");
         btn.setFont(new Font("Segoe UI", Font.BOLD, 18));
-        btn.setForeground(Color.WHITE);
-        btn.setBackground(new Color(0, 47, 167));
+        btn.setForeground(Color.decode("#84ACC9"));
+        btn.setBackground(Color.white);
         btn.setFocusPainted(false);
-        btn.setBorder(new RoundBorder(30, new Color(0, 47, 167)));
+        btn.setBorder(new RoundBorder(30, Color.white));
         btn.setPreferredSize(new Dimension(240, 50));
         btn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         btn.addMouseListener(new MouseAdapter() {
@@ -334,10 +334,10 @@ public class Login extends JFrame {
 
         JButton registerBtn = new JButton("Register");
         registerBtn.setFont(new Font("Segoe UI", Font.BOLD, 18));
-        registerBtn.setForeground(Color.WHITE);
-        registerBtn.setBackground(new Color(0, 47, 167));
+        registerBtn.setForeground(Color.decode("#84ACC9"));
+        registerBtn.setBackground(Color.white);
         registerBtn.setFocusPainted(false);
-        registerBtn.setBorder(new RoundBorder(30, new Color(0, 47, 167)));
+        registerBtn.setBorder(new RoundBorder(30, Color.white));
         registerBtn.setPreferredSize(new Dimension(240, 50));
         registerBtn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         registerBtn.addMouseListener(new MouseAdapter() {
@@ -411,8 +411,8 @@ public class Login extends JFrame {
         bar.setUI(new BasicScrollBarUI() {
             @Override
             protected void configureScrollBarColors() {
-                this.thumbColor = new Color(156, 39, 176);
-                this.trackColor = new Color(40, 100, 250);
+                this.thumbColor = Color.decode("#84ACC9");
+                this.trackColor = Color.decode("#A1DDA3");
             }
 
             @Override
