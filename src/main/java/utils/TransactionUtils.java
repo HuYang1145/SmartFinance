@@ -1,4 +1,12 @@
+/**
+ * Provides utility methods for normalizing transaction amounts and timestamps.
+ * Integrates with an exchange rate service to convert foreign currencies to CNY and standardizes time formats.
+ *
+ * @author Group 19
+ * @version 1.0
+ */
 package utils;
+
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -9,20 +17,31 @@ import java.util.regex.Pattern;
 import Service.ExchangeRateService;
 
 public class TransactionUtils {
-    // 不再硬编码汇率，而是依赖注入这个服务
+    // No longer hardcodes exchange rates, relies on injected service
     private final ExchangeRateService rateService;
     private static final DateTimeFormatter OUT_FMT =
             DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm");
 
+    /**
+     * Constructs a TransactionUtils instance with the specified exchange rate service.
+     * Immediately fetches the latest exchange rates.
+     *
+     * @param rateService the service for accessing exchange rate data
+     */
     public TransactionUtils(ExchangeRateService rateService) {
         this.rateService = rateService;
-        // 立即加载最新汇率
+        // Immediately load the latest exchange rates
         rateService.fetchExchangeRates(rates -> {}, err -> System.err.println("Rate fetch error: " + err));
     }
 
     /**
-     * 把 "30 dollars"/"$30"/"30 USD" → 根据实时汇率算成人民币
-     * 把 "30 yuan"/"30 CNY"/没有单位 → 直接当人民币
+     * Normalizes a raw amount string to CNY. Converts amounts like "30 dollars", "$30", or "30 USD"
+     * to CNY using real-time exchange rates. Treats "30 yuan", "30 CNY", or amounts without units as CNY.
+     *
+     * @param rawAmt the raw amount string (e.g., "30 USD", "$30", "30 yuan")
+     * @return the normalized amount in CNY
+     * @throws IllegalArgumentException if the amount is empty or the format is unrecognized
+     * @throws RuntimeException if the required exchange rate is unavailable
      */
     public double normalizeAmount(String rawAmt) {
         if (rawAmt == null || rawAmt.isBlank()) {
@@ -36,28 +55,33 @@ public class TransactionUtils {
         double value = Double.parseDouble(m.group(1));
         String unit = m.group(2).toUpperCase();
 
-        // 1. 美元
+        // 1. US Dollar
         if (unit.contains("DOLLAR") || unit.equals("USD") || unit.equals("$")) {
             Double usd2cny = rateService.getExchangeRates().get("USD");
             if (usd2cny == null) throw new RuntimeException("USD exchange rate not available");
             return value * usd2cny;
         }
-        // 2. 欧元
+        // 2. Euro
         if (unit.contains("EUR") || unit.equals("€")) {
             Double eur2cny = rateService.getExchangeRates().get("EUR");
             if (eur2cny == null) throw new RuntimeException("EUR exchange rate not available");
             return value * eur2cny;
         }
-        // 3. 其他已支持货币
+        // 3. Other supported currencies
         if (!unit.isEmpty() && rateService.getExchangeRates().containsKey(unit)) {
             return value * rateService.getExchangeRates().get(unit);
         }
-        // 4. 默认当人民币
+        // 4. Default to CNY
         return value;
     }
+
     /**
-     * 把 "today"/"yesterday"/"last month" 等相对时间转成 "yyyy/MM/dd HH:mm" 格式。
-     * 如果已经是具体日期（如 "2025/05/01 14:30"），就尝试 parse 并返回格式化后的。
+     * Converts relative time expressions like "today", "yesterday", or "last month" to a standardized
+     * "yyyy/MM/dd HH:mm" format. Also parses specific dates like "2025/05/01 14:30" and reformats them.
+     * Falls back to the current time if parsing fails.
+     *
+     * @param rawTime the raw time string (e.g., "today", "2025/05/01 14:30")
+     * @return the normalized time in "yyyy/MM/dd HH:mm" format
      */
     public static String normalizeTime(String rawTime) {
         rawTime = rawTime.trim().toLowerCase();
@@ -99,7 +123,7 @@ public class TransactionUtils {
                 dt = today.plusYears(1).withDayOfYear(1).atTime(now);
                 break;
             default:
-                // 尝试解析常见格式
+                // Attempt to parse common formats
                 try {
                     dt = LocalDateTime.parse(rawTime, DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm"));
                 } catch (Exception e1) {
@@ -107,7 +131,7 @@ public class TransactionUtils {
                         LocalDate d = LocalDate.parse(rawTime, DateTimeFormatter.ofPattern("yyyy/MM/dd"));
                         dt = d.atStartOfDay();
                     } catch (Exception e2) {
-                        // 最后 fallback：用当前时间
+                        // Final fallback: use current time
                         dt = LocalDateTime.now();
                     }
                 }
@@ -115,4 +139,3 @@ public class TransactionUtils {
         return dt.format(OUT_FMT);
     }
 }
-

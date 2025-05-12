@@ -1,3 +1,4 @@
+
 package View.Bill;
 
 import java.awt.BorderLayout;
@@ -52,6 +53,14 @@ import Service.BudgetService;
 import View.Bill.BillComponents.GradientBorder;
 import View.Transaction.TransactionSystemComponents;
 
+/**
+ * A JPanel that displays bill statistics, including income and expense donut charts,
+ * transaction records, type analysis, and a monthly bar chart for a selected date range
+ * and category field.
+ * 
+ * @author Group 19
+ * @version 1.0
+ */
 public class BillPanel extends JPanel {
     private JComboBox<Integer> startYearComboBox, endYearComboBox;
     private JComboBox<String> startMonthComboBox, endMonthComboBox;
@@ -62,6 +71,13 @@ public class BillPanel extends JPanel {
     private JPanel incomeChartPanel, expenseChartPanel, transactionTablePanel, dailyBarChartPanel;
     private JScrollPane typeAnalysisPanel;
 
+    /**
+     * Constructs a BillPanel for the specified user with controllers for personal center and bill data.
+     * 
+     * @param username the username of the current user
+     * @param personCenterController the controller for personal center data
+     * @param billController the controller for bill data
+     */
     public BillPanel(String username, PersonCenterController personCenterController, BillController billController) {
         this.username = username;
         this.personCenterController = personCenterController;
@@ -78,7 +94,6 @@ public class BillPanel extends JPanel {
         JPanel selectorPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 5));
         selectorPanel.setBackground(Color.WHITE);
 
-        // Start Date Selector
         JLabel fromLabel = new JLabel("From:");
         fromLabel.setFont(labelFont);
         fromLabel.setForeground(new Color(50, 50, 50));
@@ -172,7 +187,6 @@ public class BillPanel extends JPanel {
         });
         selectorPanel.add(startMonthComboBox);
 
-        // End Date Selector
         JLabel toLabel = new JLabel("To:");
         toLabel.setFont(labelFont);
         toLabel.setForeground(new Color(50, 50, 50));
@@ -265,7 +279,6 @@ public class BillPanel extends JPanel {
         });
         selectorPanel.add(endMonthComboBox);
 
-        // Categorization Selector
         JLabel categorizeLabel = new JLabel("Categorize By:");
         categorizeLabel.setFont(labelFont);
         categorizeLabel.setForeground(new Color(50, 50, 50));
@@ -324,11 +337,17 @@ public class BillPanel extends JPanel {
         categoryFieldComboBox.addActionListener(e -> updateChart());
     }
 
+    /**
+     * Initializes the chart by calling the updateChart method.
+     */
     public void initializeChart() {
         System.out.println("Initializing chart for BillPanel");
         updateChart();
     }
 
+    /**
+     * Updates the chart based on the selected date range and category field.
+     */
     public void updateChart() {
         String[] dateRange = getSelectedDateRange();
         if (dateRange == null) {
@@ -339,6 +358,14 @@ public class BillPanel extends JPanel {
         updateChart(username, dateRange[0], dateRange[1], categoryField);
     }
 
+    /**
+     * Updates the chart with data for the specified user, date range, and category field.
+     * 
+     * @param username the username to retrieve transactions for
+     * @param startYearMonth the start year and month (yyyy/MM)
+     * @param endYearMonth the end year and month (yyyy/MM)
+     * @param categoryField the field to categorize transactions by
+     */
     public void updateChart(String username, String startYearMonth, String endYearMonth, String categoryField) {
         if (username == null) {
             System.err.println("Cannot update chart: username is null");
@@ -435,6 +462,11 @@ public class BillPanel extends JPanel {
         }
     }
 
+    /**
+     * Retrieves the selected date range from the combo boxes.
+     * 
+     * @return an array containing the start and end year/month (yyyy/MM), or null if the range is invalid
+     */
     public String[] getSelectedDateRange() {
         int startYear = (Integer) startYearComboBox.getSelectedItem();
         String startMonth = (String) startMonthComboBox.getSelectedItem();
@@ -454,6 +486,16 @@ public class BillPanel extends JPanel {
         return new String[]{startYearMonth, endYearMonth};
     }
 
+    /**
+     * Creates a donut chart panel for income or expense categories.
+     * 
+     * @param username the username to retrieve transactions for
+     * @param isExpense true for expense chart, false for income chart
+     * @param startYearMonth the start year and month (yyyy/MM)
+     * @param endYearMonth the end year and month (yyyy/MM)
+     * @param categoryField the field to categorize transactions by
+     * @return the donut chart panel
+     */
     private JPanel createDonutChartPanel(String username, boolean isExpense, String startYearMonth, String endYearMonth, String categoryField) {
         return new TransactionSystemComponents.MidGradientPanel() {
             private List<Map.Entry<String, Double>> categoryEntries = new ArrayList<>();
@@ -564,14 +606,9 @@ public class BillPanel extends JPanel {
 
                 int startAngle = 0;
                 Color[] colors = {
-                        new Color(255, 182, 193), // Light Pink
-                        new Color(173, 216, 230), // Light Blue
-                        new Color(144, 238, 144), // Light Green
-                        new Color(240, 230, 140), // Light Yellow
-                        new Color(221, 160, 221), // Light Purple
-                        new Color(255, 218, 185), // Light Peach
-                        new Color(135, 206, 250), // Light Sky Blue
-                        new Color(200, 162, 200)  // Light Lavender
+                        new Color(255, 182, 193), new Color(173, 216, 230), new Color(144, 238, 144),
+                        new Color(240, 230, 140), new Color(221, 160, 221), new Color(255, 218, 185),
+                        new Color(135, 206, 250), new Color(200, 162, 200)
                 };
 
                 int diameter = Math.min(getWidth(), getHeight()) - 80;
@@ -664,6 +701,14 @@ public class BillPanel extends JPanel {
         };
     }
 
+    /**
+     * Creates a panel displaying a table of transaction records.
+     * 
+     * @param username the username to retrieve transactions for
+     * @param startYearMonth the start year and month (yyyy/MM)
+     * @param endYearMonth the end year and month (yyyy/MM)
+     * @return the transaction table panel
+     */
     private JPanel getTransactionTablePanel(String username, String startYearMonth, String endYearMonth) {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBackground(Color.WHITE);
@@ -728,6 +773,15 @@ public class BillPanel extends JPanel {
         return panel;
     }
 
+    /**
+     * Creates a scrollable panel displaying type analysis for expense transactions.
+     * 
+     * @param username the username to retrieve transactions for
+     * @param startYearMonth the start year and month (yyyy/MM)
+     * @param endYearMonth the end year and month (yyyy/MM)
+     * @param categoryField the field to categorize transactions by
+     * @return the type analysis panel as a JScrollPane
+     */
     private JScrollPane getTypeAnalysisPanel(String username, String startYearMonth, String endYearMonth, String categoryField) {
         JPanel panel = new JPanel(new GridLayout(0, 2, 10, 10));
         panel.setBackground(Color.WHITE);
@@ -751,14 +805,9 @@ public class BillPanel extends JPanel {
         }
 
         Color[] fieldColors = {
-                new Color(255, 182, 193),
-                new Color(144, 238, 144),
-                new Color(135, 206, 250),
-                new Color(240, 230, 140),
-                new Color(221, 160, 221),
-                new Color(173, 216, 230),
-                new Color(255, 218, 185),
-                new Color(200, 162, 200)
+                new Color(255, 182, 193), new Color(144, 238, 144), new Color(135, 206, 250),
+                new Color(240, 230, 140), new Color(221, 160, 221), new Color(173, 216, 230),
+                new Color(255, 218, 185), new Color(200, 162, 200)
         };
 
         int i = 0;
@@ -787,6 +836,14 @@ public class BillPanel extends JPanel {
         return scrollPane;
     }
 
+    /**
+     * Creates a panel displaying a bar chart of monthly income and expense totals.
+     * 
+     * @param username the username to retrieve transactions for
+     * @param startYearMonth the start year and month (yyyy/MM)
+     * @param endYearMonth the end year and month (yyyy/MM)
+     * @return the monthly bar chart panel
+     */
     private JPanel getDailyLineChartPanel(String username, String startYearMonth, String endYearMonth) {
         JPanel panel = new TransactionSystemComponents.MidGradientPanel() {
             private boolean showIncome = true;
@@ -795,7 +852,6 @@ public class BillPanel extends JPanel {
             private double totalExpense = 0.0;
 
             {
-                // Button panel for Show Income and Show Expense
                 JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 5));
                 buttonPanel.setOpaque(false);
                 JButton showIncomeButton = new JButton("Show Income");
@@ -833,7 +889,6 @@ public class BillPanel extends JPanel {
 
                 List<Transaction> transactions = billController.getFilteredTransactions(username, startYearMonth, endYearMonth);
 
-                // Calculate months between start and end dates
                 LocalDate startDate = LocalDate.parse(startYearMonth + "/01", BudgetService.DATE_FORMATTER);
                 LocalDate endDate = LocalDate.parse(endYearMonth + "/01", BudgetService.DATE_FORMATTER).withDayOfMonth(1);
                 List<String> months = new ArrayList<>();
@@ -843,7 +898,6 @@ public class BillPanel extends JPanel {
                 totalIncome = 0.0;
                 totalExpense = 0.0;
 
-                // Generate list of months
                 LocalDate current = startDate;
                 while (!current.isAfter(endDate)) {
                     String monthKey = current.getYear() + "/" + String.format("%02d", current.getMonthValue());
@@ -853,7 +907,6 @@ public class BillPanel extends JPanel {
                     current = current.plusMonths(1);
                 }
 
-                // Aggregate transactions by month
                 for (Transaction t : transactions) {
                     try {
                         LocalDate date = LocalDate.parse(t.getTimestamp(), BudgetService.DATE_FORMATTER);
@@ -883,15 +936,13 @@ public class BillPanel extends JPanel {
 
                 int margin = 50;
                 int width = getWidth() - 2 * margin;
-                int height = getHeight() - 2 * margin - 50; // Adjust for button panel
+                int height = getHeight() - 2 * margin - 50;
                 int barWidth = (int) Math.max(1, height / (2.0 * months.size()));
 
-                // Draw axes
                 g2d.setColor(Color.WHITE);
-                g2d.drawLine(margin, margin, margin + width, margin); // Top axis (Amount)
-                g2d.drawLine(margin, margin, margin, margin + height); // Left axis (Months)
+                g2d.drawLine(margin, margin, margin + width, margin);
+                g2d.drawLine(margin, margin, margin, margin + height);
 
-                // Draw amount ticks (horizontal axis)
                 g2d.setFont(new Font("Segoe UI", Font.PLAIN, 12));
                 g2d.setColor(Color.WHITE);
                 int numTicks = 5;
@@ -905,13 +956,11 @@ public class BillPanel extends JPanel {
                     g2d.drawString(amountLabel, x - labelWidth / 2, margin + 20);
                 }
 
-                // Draw "Amount (¥)" label
                 String amountLabel = "Amount (¥)";
                 FontMetrics fm = g2d.getFontMetrics();
                 int labelWidth = fm.stringWidth(amountLabel);
                 g2d.drawString(amountLabel, margin + width - labelWidth, margin + 40);
 
-                // Draw month ticks (vertical axis)
                 g2d.setFont(new Font("Segoe UI", Font.PLAIN, 12));
                 g2d.setColor(Color.WHITE);
                 for (int i = 0; i < months.size(); i++) {
@@ -922,7 +971,6 @@ public class BillPanel extends JPanel {
                     g2d.drawString(month, margin - monthLabelWidth - 10, y + 5);
                 }
 
-                // Draw bars
                 for (int i = 0; i < months.size(); i++) {
                     String month = months.get(i);
                     double income = monthlyIncomes.get(month);
@@ -936,18 +984,17 @@ public class BillPanel extends JPanel {
 
                     if (showIncome && income > 0) {
                         int incomeWidth = (int) ((income / maxAmount) * width);
-                        g2d.setColor(new Color(54, 162, 235)); // Blue
+                        g2d.setColor(new Color(54, 162, 235));
                         g2d.fillRoundRect(margin, y, incomeWidth, adjustedBarWidth, roundness, roundness);
                     }
 
                     if (showExpense && expense > 0) {
                         int expenseWidth = (int) ((expense / maxAmount) * width);
-                        g2d.setColor(new Color(255, 99, 132)); // Red
+                        g2d.setColor(new Color(255, 99, 132));
                         g2d.fillRoundRect(margin, y + (hasBoth ? barWidth : 0), expenseWidth, adjustedBarWidth, roundness, roundness);
                     }
                 }
 
-                // Draw total income and expense
                 g2d.setFont(new Font("Segoe UI", Font.PLAIN, 12));
                 g2d.setColor(Color.WHITE);
                 fm = g2d.getFontMetrics();
@@ -961,6 +1008,13 @@ public class BillPanel extends JPanel {
         return panel;
     }
 
+    /**
+     * Retrieves the value of the specified field from a transaction.
+     * 
+     * @param t the transaction to extract the field from
+     * @param field the field name to retrieve
+     * @return the field value, or "Unclassified" if not applicable
+     */
     private String getFieldValue(Transaction t, String field) {
         switch (field) {
             case "category": return t.getCategory();
@@ -974,7 +1028,9 @@ public class BillPanel extends JPanel {
         }
     }
 
-
+    /**
+     * A custom UI for scrollbars with a modern look, featuring a rounded thumb and track.
+     */
     private static class ModernScrollBarUI extends BasicScrollBarUI {
         private static final Color TRACK_COLOR = new Color(240, 240, 240);
         private static final Color THUMB_COLOR = new Color(100, 149, 237);

@@ -1,5 +1,5 @@
 # Ignore Maven build directory
-#target/
+target/
 
 # You might want to ignore other things like IDE files (.vscode/, .idea/)
 .vscode/

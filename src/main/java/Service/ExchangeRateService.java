@@ -1,3 +1,10 @@
+/**
+ * Manages exchange rate data by fetching current and historical rates from external APIs and caching historical rates.
+ * Supports asynchronous rate retrieval and normalization to a target currency (CNY).
+ *
+ * @author Group 19
+ * @version 1.0
+ */
 package Service;
 
 import java.io.File;
@@ -28,18 +35,38 @@ public class ExchangeRateService {
     private static final String CACHE_FILE = "history_cache.json";
     private static final long ONE_DAY_MS = 24 * 60 * 60 * 1000;
 
+    /**
+     * Constructs an ExchangeRateService and loads historical rates from cache.
+     */
     public ExchangeRateService() {
         loadCache();
     }
 
+    /**
+     * Retrieves the current exchange rates.
+     *
+     * @return a map of currency codes to exchange rates relative to CNY
+     */
     public Map<String, Double> getExchangeRates() {
         return exchangeRates;
     }
 
+    /**
+     * Retrieves historical exchange rates for a specific date.
+     *
+     * @param date the date in yyyy-MM-dd format
+     * @return a map of currency codes to exchange rates for the given date, or an empty map if not found
+     */
     public Map<String, Double> getHistoricalRates(String date) {
         return historicalRatesCache.getOrDefault(date, new HashMap<>());
     }
 
+    /**
+     * Asynchronously fetches current exchange rates from the exchangerate-api and updates the rates map.
+     *
+     * @param onSuccess callback to handle the updated exchange rates
+     * @param onError   callback to handle any errors during the API call
+     */
     public void fetchExchangeRates(Consumer<Map<String, Double>> onSuccess, Consumer<String> onError) {
         new Thread(() -> {
             try {
@@ -70,6 +97,10 @@ public class ExchangeRateService {
         }).start();
     }
 
+    /**
+     * Fetches historical exchange rates for the past 12 months from the fixer.io API, caching the results.
+     * Only fetches if the cache is empty or older than one day.
+     */
     public void fetchHistoricalRates() {
         long currentTime = System.currentTimeMillis();
         if (currentTime - lastApiCallTimestamp < ONE_DAY_MS && !historicalRatesCache.isEmpty()) {
@@ -120,6 +151,9 @@ public class ExchangeRateService {
         saveCache();
     }
 
+    /**
+     * Saves the historical rates cache and timestamp to a JSON file.
+     */
     private void saveCache() {
         try (FileWriter writer = new FileWriter(CACHE_FILE)) {
             Gson gson = new Gson();
@@ -132,6 +166,9 @@ public class ExchangeRateService {
         }
     }
 
+    /**
+     * Loads the historical rates cache and timestamp from a JSON file if it exists.
+     */
     private void loadCache() {
         File file = new File(CACHE_FILE);
         if (!file.exists()) return;

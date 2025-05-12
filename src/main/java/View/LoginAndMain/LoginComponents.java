@@ -1,39 +1,35 @@
+/**
+ * Provides utility methods for displaying custom message dialogs in the Smart Finance Application.
+ * Supports styled message dialogs with configurable titles, messages, and types (e.g., error, warning, information).
+ *
+ * @author Group 19
+ * @version 1.0
+ */
 package View.LoginAndMain;
 
-import java.awt.BasicStroke;
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Dialog.ModalityType;
 import java.awt.Font;
-import java.awt.GradientPaint;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Insets;
-import java.awt.RenderingHints;
 import java.awt.Window;
-import java.awt.event.FocusAdapter;
-import java.awt.event.FocusEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.geom.RoundRectangle2D;
-
-import javax.swing.BorderFactory;
-import javax.swing.DefaultListCellRenderer;
 import javax.swing.JButton;
-import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
-import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JPasswordField;
-import javax.swing.JTextField;
 import javax.swing.SwingConstants;
-import javax.swing.border.Border;
 
 public class LoginComponents {
 
+    /**
+     * Displays a custom message dialog with the specified message, title, and type.
+     * The dialog is modal, centered relative to the parent window, and styled with a consistent look.
+     *
+     * @param parent      the parent window for the dialog
+     * @param message     the message to display, supports HTML for formatting
+     * @param title       the title of the dialog
+     * @param messageType the type of message (e.g., JOptionPane.ERROR_MESSAGE, WARNING_MESSAGE, INFORMATION_MESSAGE)
+     */
     public static void showCustomMessage(Window parent, String message, String title, int messageType) {
         JDialog dialog = new JDialog(parent, title, ModalityType.APPLICATION_MODAL);
         dialog.setSize(400, 200);

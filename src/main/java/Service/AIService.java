@@ -1,3 +1,11 @@
+/**
+ * Provides AI-driven services for processing user inputs, recognizing intents, and managing transactions.
+ * This service integrates with external AI models and transaction systems to handle user requests such as
+ * recording expenses/income, querying balances, and generating suggestions.
+ *
+ * @author Group 19
+ * @version 1.0
+ */
 package Service;
 
 import java.io.BufferedReader;
@@ -34,7 +42,17 @@ public class AIService {
     private final TransactionController transactionController;
     private final TransactionUtils txUtils;
 
-    public AIService(TransactionService transactionService,TransactionController transactionController, DeepSeekService deepSeekService, UserRepository userRepository,ExchangeRateService rateService) {
+    /**
+     * Constructs an AIService instance with dependencies for transaction processing and AI services.
+     *
+     * @param transactionService    the service for handling transaction-related operations
+     * @param transactionController the controller for managing transaction data
+     * @param deepSeekService       the service for interacting with the DeepSeek AI model
+     * @param userRepository        the repository for user data access
+     * @param rateService           the service for exchange rate conversions
+     */
+    public AIService(TransactionService transactionService, TransactionController transactionController, 
+                    DeepSeekService deepSeekService, UserRepository userRepository, ExchangeRateService rateService) {
         this.transactionService = transactionService;
         this.transactionController = transactionController;
         this.deepSeekService = deepSeekService;
@@ -43,31 +61,36 @@ public class AIService {
         this.predictExePath = System.getProperty("user.dir") + File.separator + "dist" + File.separator + "predict" + File.separator + "predict.exe";
     }
 
+    /**
+     * Processes user input to predict and respond with appropriate actions, such as recording transactions
+     * or querying balances. Manages session context for multi-turn conversations.
+     *
+     * @param userInput the user's input text
+     * @return an AIResponse containing the response message and optional error
+     * @throws Exception if an error occurs during intent recognition or transaction processing
+     */
     public AIResponse predictReply(String userInput) {
         User user = userRepository.getCurrentUser();
         if (user == null) {
             return new AIResponse(null, "Please log in first.");
         }
-        String userKey = user.getUsername();            // 或者 sessionId
-        SessionContext ctx = sessions.get(userKey);      // 看看有没有正在补全的会话
+        String userKey = user.getUsername();
+        SessionContext ctx = sessions.get(userKey);
 
         try {
-            // —— 如果有未完成的对话，就继续补全槽位 ——
             if (ctx != null) {
-                // —— 如果正在确认 ——
                 if (!ctx.getMissingSlots().isEmpty()) {
-                    // 正在补全槽位
                     EntityResultModel er = recognizeEntitiesWithPy(userInput);
                     String slot = ctx.getMissingSlots().get(0);
-                    String val ;
+                    String val;
                     if (slot.equals("merchant")) {
-                        val = userInput;  // 仅 merchant 使用原始文本
-                    }else if (slot.equals("type")) {
+                        val = userInput;
+                    } else if (slot.equals("type")) {
                         val = er.getCategory();
                         if (val == null || val.isBlank()) {
-                            val = userInput.trim();  // fallback
+                            val = userInput.trim();
                         }
-                    }else {
+                    } else {
                         val = switch (slot) {
                             case "amount" -> er.getAmount();
                             case "timestamp" -> er.getTime();
@@ -85,14 +108,13 @@ public class AIService {
                         }
                         ctx.getMissingSlots().remove(0);
                     } else {
-                        return new AIResponse("AI didn't recognize " + slot + ", please tell me again.",null );
+                        return new AIResponse("AI didn't recognize " + slot + ", please tell me again.", null);
                     }
 
                     if (!ctx.getMissingSlots().isEmpty()) {
-                        return new AIResponse("Please tell me " + ctx.getMissingSlots().get(0) + ".",null);
+                        return new AIResponse("Please tell me " + ctx.getMissingSlots().get(0) + ".", null);
                     }
 
-                    // 槽位已补全，进入确认流程
                     ctx.setConfirmed(false);
                     String preview = ctx.getSlots().entrySet().stream()
                             .map(e -> e.getKey() + ": " + e.getValue())
@@ -100,7 +122,6 @@ public class AIService {
                     return new AIResponse("Please confirm the transaction:\n" + preview + "\nReply 'yes' to confirm, or tell me what to change in the format 'change ** to **.", null);
                 }
 
-                // —— 等待用户确认 ——
                 if (!ctx.isConfirmed()) {
                     if (userInput.trim().equalsIgnoreCase("yes") || userInput.trim().equalsIgnoreCase("confirm")) {
                         ctx.setConfirmed(true);
@@ -113,7 +134,6 @@ public class AIService {
                     }
                 }
 
-                // —— 用户确认后，写入交易记录 ——
                 ctx.getSlots().put("operation", ctx.getIntent().equals("RecordExpense") ? "Expense" : "Income");
                 transactionController.addTransactionFromEntities(user, ctx.getSlots());
                 sessions.remove(userKey);
@@ -123,8 +143,6 @@ public class AIService {
                 );
             }
 
-
-            // —— 初次识别意图 ——
             IntentResultModel intentResult = recognizeIntent(userInput);
             String intent = intentResult.getIntent();
 
@@ -165,11 +183,11 @@ public class AIService {
 
                 return new AIResponse("Please tell me " + missing.get(0) + ".", null);
             }
-            if("QueryBalance".equals(intent)) {
+            if ("QueryBalance".equals(intent)) {
                 double balance = transactionService.getBalance(user);
                 return new AIResponse("Your balance is: ¥" + String.format("%.2f", balance), null);
             }
-            if("QuerySuggestion".equals(intent)) {
+            if ("QuerySuggestion".equals(intent)) {
                 String summary = transactionService.buildTransactionSummary(user);
                 if (summary.isEmpty()) {
                     return new AIResponse(null, "No transactions loaded.");
@@ -177,14 +195,14 @@ public class AIService {
                 String suggestions = deepSeekService.callDeepSeekApi(summary, "Analyze these transactions and give 2-3 brief, actionable suggestions.");
                 return new AIResponse("Suggestions:\n" + suggestions, null);
             }
-            if("QuerySpendTime".equals(intent)) {
+            if ("QuerySpendTime".equals(intent)) {
                 double spent = transactionService.getCurrentMonthExpense(user);
                 return new AIResponse("You spent ¥" + String.format("%.2f", spent) + " this month.", null);
             }
             return new AIResponse(
                 "I can tell you your balance, monthly spending, or record expense/income.",
                 null
-        );
+            );
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -192,7 +210,13 @@ public class AIService {
         }
     }
 
-
+    /**
+     * Recognizes the intent of the user input by invoking an external prediction executable.
+     *
+     * @param input the user's input text
+     * @return an IntentResultModel containing the recognized intent
+     * @throws Exception if the prediction process fails or output parsing errors occur
+     */
     private IntentResultModel recognizeIntent(String input) throws Exception {
         ProcessBuilder pb = new ProcessBuilder(predictExePath, input);
         pb.redirectErrorStream(true);
@@ -204,8 +228,8 @@ public class AIService {
             String line;
             while ((line = reader.readLine()) != null) {
                 if (line.trim().startsWith("{") && line.trim().endsWith("}")) {
-                    output.setLength(0);  // 清除前面的 debug 输出
-                    output.append(line.trim()); // 只保留 JSON
+                    output.setLength(0);
+                    output.append(line.trim());
                 }
             }
         }
@@ -220,14 +244,20 @@ public class AIService {
             throw new RuntimeException("Failed to parse predict.exe output: " + output);
         }
     }
-    private EntityResultModel recognizeEntitiesWithPy(String input) throws Exception {
-        String baseDir = System.getProperty("user.dir");  // 项目根路径
 
+    /**
+     * Recognizes entities in the user input using a Python-based NER model.
+     *
+     * @param input the user's input text
+     * @return an EntityResultModel containing extracted entities
+     * @throws Exception if the NER process fails or output parsing errors occur
+     */
+    private EntityResultModel recognizeEntitiesWithPy(String input) throws Exception {
+        String baseDir = System.getProperty("user.dir");
         String python = "D:/python/envs/nlp/python.exe";
         String script = baseDir + "/ner/predict_ner.py";
         String modelDir = baseDir + "/ner/ner_model";
 
-        // 构造命令：python predict.py --model_dir ner_model --text "..."
         ProcessBuilder pb = new ProcessBuilder(
                 python,
                 script,
@@ -237,7 +267,6 @@ public class AIService {
         pb.redirectErrorStream(true);
         Process proc = pb.start();
 
-        // 读取输出 JSON
         StringBuilder output = new StringBuilder();
         try (BufferedReader reader = new BufferedReader(
                 new InputStreamReader(proc.getInputStream(), StandardCharsets.UTF_8))) {
@@ -252,15 +281,20 @@ public class AIService {
             throw new RuntimeException("python predict.py 返回错误，exit=" + exitCode + " out=" + output);
         }
 
-        // 使用 GSON 解析成你的实体模型
         return GSON.fromJson(output.toString(), EntityResultModel.class);
     }
+
+    /**
+     * Attempts to modify a slot in the session context based on user input.
+     *
+     * @param ctx       the session context containing slot data
+     * @param userInput the user's input specifying the slot to modify
+     */
     private void tryModifySlot(SessionContext ctx, String userInput) {
         String input = userInput.trim().toLowerCase();
         Map<String, String> slots = ctx.getSlots();
         Matcher m;
 
-        // 1. 修改金额：change/set amount to <number>
         m = Pattern.compile("^(?:change|set) amount to ([0-9]+(?:\\.[0-9]+)?)$").matcher(input);
         if (m.find()) {
             double amt = txUtils.normalizeAmount(m.group(1));
@@ -268,7 +302,6 @@ public class AIService {
             return;
         }
 
-        // 2. 修改时间：change/set time to <text>
         m = Pattern.compile("^(?:change|set) (?:time|date) to (.+)$").matcher(input);
         if (m.find()) {
             String rawTime = m.group(1).trim();
@@ -276,20 +309,17 @@ public class AIService {
             return;
         }
 
-        // 3. 修改类别：change/set type to <text>
         m = Pattern.compile("^(?:change|set) type to (.+)$").matcher(input);
         if (m.find()) {
             slots.put("type", m.group(1).trim());
             return;
         }
 
-        // 4. 修改商户：change/set merchant to <text>
         m = Pattern.compile("^(?:change|set) merchant to (.+)$").matcher(input);
         if (m.find()) {
             slots.put("merchant", m.group(1).trim());
         }
 
-        //5.修改operation
         m = Pattern.compile("^(?:change|set) operation to (income|expense)$").matcher(input);
         if (m.find()) {
             String op = m.group(1).trim().equalsIgnoreCase("income") ? "Income" : "Expense";

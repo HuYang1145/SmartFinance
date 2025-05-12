@@ -1,3 +1,10 @@
+/**
+ * Manages user authentication and registration processes by interacting with the account repository.
+ * Provides functionality for user login and registration with validation checks.
+ *
+ * @author Group 19
+ * @version 1.0
+ */
 package Service;
 
 import java.text.SimpleDateFormat;
@@ -7,20 +14,34 @@ import Model.User;
 import Model.UserSession;
 import Repository.AccountRepository;
 
-
 public class LoginService {
     private final AccountRepository accountRepository;
 
+    /**
+     * Constructs a LoginService instance with the specified account repository.
+     *
+     * @param accountRepository the repository for accessing and managing user account data
+     */
     public LoginService(AccountRepository accountRepository) {
         this.accountRepository = accountRepository;
     }
 
+    /**
+     * Authenticates a user by verifying the provided username and password.
+     * Sets the current user session if authentication is successful.
+     *
+     * @param username the username of the user attempting to log in
+     * @param password the password provided by the user
+     * @return true if login is successful, false otherwise
+     * @throws IllegalArgumentException if username or password is null or empty
+     * @throws IllegalStateException if the account is frozen
+     */
     public boolean loginUser(String username, String password) {
         if (username == null || username.trim().isEmpty()) {
-            throw new IllegalArgumentException("用户名不能为空！");
+            throw new IllegalArgumentException("Username cannot be empty!");
         }
         if (password == null || password.trim().isEmpty()) {
-            throw new IllegalArgumentException("密码不能为空！");
+            throw new IllegalArgumentException("Password cannot be empty!");
         }
 
         User user = accountRepository.findByUsername(username);
@@ -29,13 +50,26 @@ public class LoginService {
         }
 
         if (user.getAccountStatus() == User.AccountStatus.FROZEN) {
-            throw new IllegalStateException("此账户当前被冻结。请联系管理员。");
+            throw new IllegalStateException("This account is currently frozen. Please contact the administrator.");
         }
 
         UserSession.setCurrentAccount(user);
         return true;
     }
 
+    /**
+     * Registers a new user with the provided details and saves them to the repository.
+     * Validates all input fields and checks for duplicate usernames.
+     *
+     * @param username    the username for the new account
+     * @param password    the password for the new account
+     * @param phone       the phone number of the user
+     * @param email       the email address of the user
+     * @param gender      the gender of the user
+     * @param address     the address of the user
+     * @param accountType the type of account
+     * @throws IllegalArgumentException if any field is null, empty, or if the username already exists
+     */
     public void registerUser(
             String username, String password, String phone, String email,
             String gender, String address, String accountType) {
@@ -46,11 +80,11 @@ public class LoginService {
                 gender == null || gender.trim().isEmpty() ||
                 address == null || address.trim().isEmpty() ||
                 accountType == null || accountType.trim().isEmpty()) {
-            throw new IllegalArgumentException("所有字段均需填写！");
+            throw new IllegalArgumentException("All fields must be filled!");
         }
 
         if (accountRepository.findByUsername(username) != null) {
-            throw new IllegalArgumentException("用户名已存在！请选择其他用户名。");
+            throw new IllegalArgumentException("Username already exists! Please choose another username.");
         }
 
         String creationTime = new SimpleDateFormat("yyyy/MM/dd HH:mm").format(new Date());
@@ -62,6 +96,11 @@ public class LoginService {
         accountRepository.save(user);
     }
 
+    /**
+     * Retrieves the account repository used by this service.
+     *
+     * @return the AccountRepository instance
+     */
     public AccountRepository getAccountRepository() {
         return accountRepository;
     }

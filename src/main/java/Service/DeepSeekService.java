@@ -1,3 +1,10 @@
+/**
+ * Provides integration with the DeepSeek API to generate AI-driven responses based on transaction summaries and prompts.
+ * Handles HTTP requests and JSON parsing for communication with the DeepSeek chat completions endpoint.
+ *
+ * @author Group 19
+ * @version 1.0
+ */
 package Service;
 
 import java.net.URI;
@@ -20,6 +27,14 @@ public class DeepSeekService {
     private static final String DEEPSEEK_MODEL = "deepseek-reasoner";
     private static final Gson GSON = new Gson();
 
+    /**
+     * Calls the DeepSeek API to generate a response based on a transaction summary and user prompt.
+     *
+     * @param summary the transaction summary to provide context
+     * @param prompt  the specific instruction or question for the AI
+     * @return the AI-generated response content
+     * @throws RuntimeException if the API call fails or the response cannot be parsed
+     */
     public String callDeepSeekApi(String summary, String prompt) {
         try {
             HttpClient client = HttpClient.newHttpClient();

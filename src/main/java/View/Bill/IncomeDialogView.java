@@ -1,3 +1,10 @@
+/**
+ * A dialog view for adding income records in the Smart Finance Application.
+ * Provides input fields for amount, time, and password, along with confirm and cancel buttons.
+ *
+ * @author Group 19
+ * @version 1.0
+ */
 package View.Bill;
 
 import java.awt.BorderLayout;
@@ -30,6 +37,11 @@ public class IncomeDialogView extends JDialog {
     private JButton cancelButton;
     private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy/MM/dd HH:mm");
 
+    /**
+     * Constructs an IncomeDialogView for adding income records.
+     *
+     * @param owner the parent dialog that owns this dialog
+     */
     public IncomeDialogView(Dialog owner) {
         super(owner, "Add Income", true);
         initComponents();
@@ -40,6 +52,9 @@ public class IncomeDialogView extends JDialog {
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
     }
 
+    /**
+     * Initializes the dialog's components, including input fields and buttons.
+     */
     private void initComponents() {
         amountField = new JTextField(15);
         timeField = new JTextField(DATE_FORMAT.format(new Date()), 15);
@@ -52,6 +67,9 @@ public class IncomeDialogView extends JDialog {
         cancelButton.setBackground(new Color(200, 200, 200));
     }
 
+    /**
+     * Lays out the dialog's components, including title, input form, and button panel.
+     */
     private void layoutComponents() {
         setLayout(new BorderLayout(10, 10));
         getContentPane().setBackground(new Color(245, 245, 245));
@@ -93,20 +111,62 @@ public class IncomeDialogView extends JDialog {
         add(buttonPanel, BorderLayout.SOUTH);
     }
 
+    /**
+     * Gets the amount input field.
+     *
+     * @return the amount text field
+     */
     public JTextField getAmountField() { return amountField; }
+
+    /**
+     * Gets the time input field.
+     *
+     * @return the time text field
+     */
     public JTextField getTimeField() { return timeField; }
+
+    /**
+     * Gets the password input field.
+     *
+     * @return the password field
+     */
     public JPasswordField getPasswordField() { return passwordField; }
+
+    /**
+     * Gets the confirm button.
+     *
+     * @return the confirm button
+     */
     public JButton getConfirmButton() { return confirmButton; }
+
+    /**
+     * Gets the cancel button.
+     *
+     * @return the cancel button
+     */
     public JButton getCancelButton() { return cancelButton; }
 
+    /**
+     * Displays an error message dialog.
+     *
+     * @param message the error message to display
+     */
     public void showError(String message) {
         JOptionPane.showMessageDialog(this, message, "Error", JOptionPane.ERROR_MESSAGE);
     }
 
+    /**
+     * Displays a success message dialog.
+     *
+     * @param message the success message to display
+     */
     public void showSuccess(String message) {
         JOptionPane.showMessageDialog(this, message, "Success", JOptionPane.INFORMATION_MESSAGE);
     }
 
+    /**
+     * Clears the password field.
+     */
     public void clearPassword() {
         passwordField.setText("");
     }
