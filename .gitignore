@@ -7,4 +7,4 @@ target/
 
 # Also potentially ignore specific files like .class files if target isn't ignored
 # But ignoring target/ is usually sufficient for Maven projects
-# *.class
+*.class
