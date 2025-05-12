@@ -14,5 +14,6 @@ Model version1 trained to recognize ** time/amount/category ** based on self-col
 
 # Model files 
 Files shared via Netflix: dist.zip 
-Link: https://pan.baidu.com/s/1M3x8FVq7p5cE0sdAx2x9UA Extract code: pgpp 
+Link: 通过网盘分享的文件：dist.zip
+链接: https://pan.baidu.com/s/1-KS5m-kMqiNnixVpC1V_og code: bupt
 Download and unzip into coursework directory, same level as src.
