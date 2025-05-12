@@ -46,8 +46,7 @@ import Model.Transaction;
 import Model.UserSession;
 import Service.PersonChartDataService;
 import Service.PersonFinancialService;
-import View.PersonalCenter.PersonalCenterComponents.GradientBorder;
-import View.PersonalCenter.PersonalCenterComponents.GradientPanel;
+import View.LoginAndMain.GradientComponents.*;
 
 /**
  * A JPanel that displays a user's financial overview, including income and expense categories,
