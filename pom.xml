@@ -17,6 +17,10 @@
         <maven.compiler.release>21</maven.compiler.release>
         <java.version>21</java.version>
         <file.encoding>UTF-8</file.encoding>
+        <!-- Define Mockito version as a property -->
+        <mockito.version>5.8.0</mockito.version> <!-- **Added/Corrected:** Define the Mockito version property here -->
+         <!-- Define JUnit Jupiter version as a property -->
+         <junit.jupiter.version>5.11.3</junit.jupiter.version> <!-- Using the version from your original dependency -->
     </properties>
 
     <!-- 依赖 -->
@@ -50,12 +54,30 @@
         </dependency>
 
         <!-- JUnit 5，用于单元测试 -->
+        <!-- Keeping the single 'junit-jupiter' dependency as in your original file -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
-            <version>5.11.3</version>
+            <version>${junit.jupiter.version}</version> <!-- Use the version property -->
             <scope>test</scope>
         </dependency>
+
+        <!-- Mockito，用于创建模拟对象 -->
+        <!-- Add Mockito Core -->
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <version>${mockito.version}</version> <!-- Use the version property -->
+            <scope>test</scope>
+        </dependency>
+        <!-- Add Mockito JUnit Jupiter integration -->
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-junit-jupiter</artifactId>
+            <version>${mockito.version}</version> <!-- Use the version property -->
+            <scope>test</scope>
+        </dependency>
+
     </dependencies>
 
     <!-- 构建配置 -->
@@ -67,12 +89,50 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.14.0</version>
                 <configuration>
-                    <release>21</release>
-                    <source>21</source>
-                    <target>21</target>
-                    <encoding>UTF-8</encoding>
+                    <release>${java.version}</release>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
+                    <encoding>${project.build.sourceEncoding}</encoding>
                 </configuration>
             </plugin>
+
+             <!-- Maven Surefire Plugin for running tests -->
+             <!-- This plugin is essential for running JUnit tests -->
+             <plugin>
+                 <groupId>org.apache.maven.plugins</groupId>
+                 <artifactId>maven-surefire-plugin</artifactId>
+                 <version>3.2.5</version> <!-- Use a recent version -->
+                 <configuration>
+                      <!-- Configuration for JUnit 5 -->
+                      <!-- If not using AspectJ weaving, remove the argLine part -->
+                     <!-- <argLine>-javaagent:"${settings.localRepository}"/org/aspectj/aspectjweaver/${aspectj.version}/aspectjweaver-${aspectj.version}.jar</argLine> -->
+                      <!-- If you have a logging.properties file for tests -->
+                     <!-- <systemPropertyVariables>
+                         java.util.logging.config.file=${project.build.testOutputDirectory}/logging.properties
+                     </systemPropertyVariables> -->
+                     <testFailureIgnore>false</testFailureIgnore> <!-- Fail build on test failure -->
+                 </configuration>
+                 <!-- Dependencies for the Surefire plugin itself (ensure it can run JUnit 5) -->
+                 <dependencies>
+                      <!-- If you removed junit-jupiter-engine from main dependencies, add it here -->
+                      <!-- <dependency>
+                          <groupId>org.junit.jupiter</groupId>
+                          <artifactId>junit-jupiter-engine</artifactId>
+                          <version>${junit.jupiter.version}</version>
+                      </dependency> -->
+                      <!-- If you need AspectJ weaving for mocks (less common) -->
+                      <!-- <dependency>
+                           <groupId>org.aspectj</groupId>
+                           <artifactId>aspectjweaver</artifactId>
+                           <version>${aspectj.version}</version>
+                      </dependency> -->
+                 </dependencies>
+             </plugin>
+             <!-- Define aspectj.version property IF you included the aspectj weaver dependency -->
+             <!-- <properties>
+                 <aspectj.version>1.9.21</aspectj.version>
+             </properties> -->
+
 
             <!-- Maven JAR 插件，生成标准 JAR 文件 -->
             <plugin>
@@ -109,19 +169,19 @@
                         <goals>
                             <goal>javadoc</goal>
                         </goals>
-                        <phase>compile</phase>
+                         <phase>package</phase> <!-- Changed phase to package -->
                     </execution>
                 </executions>
                 <configuration>
-                    <sourcepath>${project.basedir}/src/main/java</sourcepath>
-                    <encoding>UTF-8</encoding>
-                    <charset>UTF-8</charset>
-                    <docencoding>UTF-8</docencoding>
-                    <show>private</show>
+                    <source>${java.version}</source>
+                    <encoding>${project.build.sourceEncoding}</encoding>
+                    <charset>${project.build.sourceEncoding}</charset>
+                    <docencoding>${project.build.sourceEncoding}</docencoding>
+                    <show>public</show> <!-- Changed to public, private is rarely needed in API docs -->
                     <author>true</author>
                     <version>true</version>
-                    <doctitle>SmartFinance API Documentation</doctitle>
-                    <windowtitle>SmartFinance API Documentation</windowtitle>
+                    <doctitle>${project.name} API Documentation</doctitle>
+                    <windowtitle>${project.name} API Documentation</windowtitle>
                     <!-- 降低 Javadoc 严格性，忽略缺少注释的错误 -->
                     <additionalOptions>
                         <additionalOption>-Xdoclint:none</additionalOption>
@@ -135,7 +195,7 @@
                 <artifactId>maven-resources-plugin</artifactId>
                 <version>3.3.1</version>
                 <configuration>
-                    <encoding>UTF-8</encoding>
+                    <encoding>${project.build.sourceEncoding}</encoding>
                 </configuration>
             </plugin>
         </plugins>
