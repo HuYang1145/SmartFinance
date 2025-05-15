@@ -1,7 +1,7 @@
 package Controller;
 
 import java.time.LocalDate;
-
+import java.util.List;
 import javax.swing.SwingWorker;
 
 import Model.BudgetDataContainer;
@@ -45,24 +45,37 @@ public class BudgetManagementController {
      * Loads budget data for the current user and updates the view asynchronously.
      * Displays a loading state during data retrieval and handles errors if data loading fails.
      */
+    /**
+     * Loads budget data and chart data for the current user and updates the view asynchronously.
+     * Displays a loading state during data retrieval and handles errors if data loading fails.
+     */
     public void loadBudgetData() {
         if (!view.isInitialized()) return;
         view.setLoadingState(true);
-        SwingWorker<BudgetDataContainer, Void> worker = new SwingWorker<>() {
+        SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
+            private BudgetDataContainer budgetData;
+            private List<BudgetService.MonthlyFinancialData> pastMonthsData;
+
             @Override
-            protected BudgetDataContainer doInBackground() {
-                return budgetService.getBudgetData(username, LocalDate.now());
+            protected Void doInBackground() throws Exception {
+                LocalDate now = LocalDate.now();
+                budgetData = budgetService.getBudgetData(username, now);
+                pastMonthsData = budgetService.getPastThreeMonthsFinancialData(username, now);
+                return null;
             }
 
             @Override
             protected void done() {
+                view.setLoadingState(false);
                 try {
-                    BudgetDataContainer data = get();
-                    view.updateBudgetData(data);
-                    view.setLoadingState(false);
+                    get(); // Check for any exceptions during doInBackground
+                    view.updateBudgetData(budgetData);
+                    if (pastMonthsData != null && !pastMonthsData.isEmpty()) {
+                        view.updateChartData(pastMonthsData);
+                    }
                 } catch (Exception e) {
                     view.showError("Failed to load budget data: " + e.getMessage());
-                    view.setLoadingState(false);
+                    e.printStackTrace();
                 }
             }
         };
