@@ -1,147 +1,258 @@
 package Controller;
 
-import javax.swing.ImageIcon;
-import javax.swing.SwingWorker;
-
 import Model.HoroscopeReportModel;
+// import Model.Transaction; // Not directly used in this class, consider removing if not needed by a commented-out part
 import Service.HoroscopeService;
 import Service.ImageLoader;
 import View.HoroscopePanel.HoroscopePanel;
 
+import javax.swing.ImageIcon;
+import javax.swing.SwingWorker;
+import java.io.File;
+import java.time.LocalDate;
+import java.util.Collections;
+// import java.util.List; // Not directly used, consider removing
+
 /**
- * Manages interactions between the horoscope panel and the horoscope service in the finance management
- * system. Handles loading welcome images, generating weekly horoscope reports, and navigating between
- * welcome and report views.
- *
- * @author Group 19
- * @version 1.0
+ * Controller for the Horoscope feature.
+ * Manages interactions between the {@link HoroscopePanel} (view) and the {@link HoroscopeService} (model/service).
+ * It handles requests to load welcome images, generate monthly spending star reports, and navigate UI states.
+ * Images are loaded asynchronously using {@link ImageLoader}.
  */
 public class HoroscopeController {
-    /** Username of the current user. */
     private final String username;
-    /** Horoscope panel for displaying UI components. */
     private final HoroscopePanel view;
-    /** Service for generating horoscope reports. */
     private final HoroscopeService horoscopeService;
-    /** Utility for loading images. */
     private final ImageLoader imageLoader;
-    /** Target width for loaded images. */
-    private static final int IMAGE_TARGET_WIDTH = 600;
-    /** Target height for loaded images. */
-    private static final int IMAGE_TARGET_HEIGHT = 600;
 
     /**
-     * Constructs a HoroscopeController with the specified username and view.
-     * Initializes the horoscope service and image loader, and validates the username.
+     * Fallback width for the welcome image if panel dimensions are not available or too small.
+     * Intended for a "Super Big" display.
+     */
+    private static final int FALLBACK_WELCOME_IMAGE_WIDTH = 1200;
+    /**
+     * Fallback height for the welcome image if panel dimensions are not available or too small.
+     * Intended for a "Super Big" display.
+     */
+    private static final int FALLBACK_WELCOME_IMAGE_HEIGHT = 900;
+
+    /**
+     * Fallback width for the report image if panel dimensions are not available or too small.
+     * Intended for a "Medium-Large" display.
+     */
+    private static final int FALLBACK_REPORT_IMAGE_WIDTH = 550;
+    /**
+     * Fallback height for the report image if panel dimensions are not available or too small.
+     * Intended for a "Medium-Large" display.
+     */
+    private static final int FALLBACK_REPORT_IMAGE_HEIGHT = 412;
+
+    /**
+     * Base path for horoscope-related images stored in the file system.
+     * Constructed using {@code File.separator} for platform independence.
+     */
+    private static final String HOROSCOPE_IMAGE_BASE_PATH = "src" + File.separator + "test" + File.separator + "horoscope" + File.separator;
+
+    /**
+     * Constructs a HoroscopeController.
      *
-     * @param username the username of the current user
-     * @param view     the horoscope panel for UI interaction
-     * @throws IllegalArgumentException if the username is null or empty
+     * @param username The username of the current user. If null or empty, attempts to retrieve
+     * from {@link Model.UserSession}.
+     * @param view     The {@link HoroscopePanel} instance this controller will manage.
+     * @throws IllegalArgumentException if the username cannot be determined (is null or empty after attempting session retrieval)
+     * and the view is available to show an error.
      */
     public HoroscopeController(String username, HoroscopePanel view) {
-        this.username = username != null && !username.trim().isEmpty() ? username : Model.UserSession.getCurrentUsername();
-        if (this.username == null || this.username.trim().isEmpty()) {
-            view.showError("User context not found.");
-            throw new IllegalArgumentException("Username cannot be null or empty");
-        }
         this.view = view;
+        // Prioritize provided username, then fallback to UserSession
+        this.username = (username != null && !username.trim().isEmpty()) ? username : Model.UserSession.getCurrentUsername();
+
+        if (this.username == null || this.username.trim().isEmpty()) {
+            if (this.view != null) {
+                this.view.showError("User context not found. Horoscope feature requires login.");
+            }
+            // This exception ensures the controller is not created in an invalid state.
+            throw new IllegalArgumentException("Username cannot be null or empty for HoroscopeController");
+        }
         this.horoscopeService = new HoroscopeService();
         this.imageLoader = new ImageLoader();
     }
 
     /**
-     * Loads the welcome image asynchronously and updates the view.
-     * Displays a loading state during image retrieval and handles errors if loading fails.
+     * Loads the welcome image asynchronously.
+     * The image is scaled to fit the provided target container dimensions or uses fallback dimensions.
+     * Updates the view with the loaded image or an error message.
+     *
+     * @param targetContainerWidth  The target width of the container where the image will be displayed.
+     * If less than or equal to 50, fallback width is used.
+     * @param targetContainerHeight The target height of the container where the image will be displayed.
+     * If less than or equal to 50, fallback height is used.
      */
-    public void loadWelcomeImage() {
+    public void loadWelcomeImage(int targetContainerWidth, int targetContainerHeight) {
+        if (view == null) return; // Safety check
         view.setLoadingState(true);
-        imageLoader.loadImage("icons/welcome.jpg", IMAGE_TARGET_WIDTH, IMAGE_TARGET_HEIGHT, new ImageLoader.Callback() {
-            @Override
-            public void onSuccess(ImageIcon icon) {
-                view.setWelcomeImage(icon);
-                view.setLoadingState(false);
-            }
+        String welcomeImageName = "welcome.jpg";
+        String welcomeImagePath = HOROSCOPE_IMAGE_BASE_PATH + welcomeImageName;
+        System.out.println("HoroscopeController: Attempting to load welcome image: " + new File(welcomeImagePath).getAbsolutePath());
 
-            @Override
-            public void onError(String message) {
-                view.setWelcomeImage(null);
-                view.showError("Failed to load welcome image: " + message);
-                view.setLoadingState(false);
-            }
-        });
+        // Use fallback if provided dimensions are too small or invalid
+        int actualTargetWidth = (targetContainerWidth > 50) ? targetContainerWidth : FALLBACK_WELCOME_IMAGE_WIDTH;
+        int actualTargetHeight = (targetContainerHeight > 50) ? targetContainerHeight : FALLBACK_WELCOME_IMAGE_HEIGHT;
+
+        System.out.println("HoroscopeController: Welcome image target dimensions for ImageLoader: " + actualTargetWidth + "x" + actualTargetHeight);
+
+        imageLoader.loadImageFromFileSystem(welcomeImagePath,
+                actualTargetWidth,
+                actualTargetHeight,
+                new ImageLoader.Callback() {
+                    @Override
+                    public void onSuccess(ImageIcon icon) {
+                        if (view != null) {
+                            view.setWelcomeImage(icon);
+                            view.setLoadingState(false);
+                        }
+                    }
+                    @Override
+                    public void onError(String message) {
+                        if (view != null) {
+                            view.setWelcomeImage(null); // Clear any previous image
+                            view.showError("Failed to load welcome image (" + welcomeImageName + "): " + message);
+                            view.setLoadingState(false);
+                        }
+                    }
+                });
     }
 
     /**
-     * Initiates the loading of a weekly horoscope report when the reveal button is clicked.
+     * Processes a request to generate and display a horoscope (spending star) report for a selected month.
+     * Validates the selected month and then calls {@link #loadMonthlyReport(int)}.
+     *
+     * @param selectedMonth The month number (1 for January, ..., 12 for December).
      */
-    public void onRevealClicked() {
-        loadReport();
+    public void processHoroscopeRequest(int selectedMonth) {
+        if (view == null) return;
+        if (selectedMonth < 1 || selectedMonth > 12) {
+            view.showError("Invalid month selected. Please choose a valid month.");
+            return;
+        }
+        loadMonthlyReport(selectedMonth);
     }
 
     /**
-     * Refreshes the weekly horoscope report when the refresh button is clicked.
-     */
-    public void onRefreshClicked() {
-        loadReport();
-    }
-
-    /**
-     * Navigates back to the welcome card and reloads the welcome image.
+     * Handles the action when the "back" or "try another month" button is clicked.
+     * Switches the view to the welcome card and reloads the welcome image if the panel is visible.
      */
     public void onBackClicked() {
+        if (view == null) return;
         view.showWelcomeCard();
-        loadWelcomeImage();
+        // Reload welcome image if the panel is currently showing and has valid dimensions
+        if (view.isShowing()) { // Check if the panel itself is visible
+            loadWelcomeImage(view.getWelcomeImageLabelWidth(), view.getWelcomeImageLabelHeight());
+        }
     }
 
     /**
-     * Loads a weekly horoscope report asynchronously, including its image, and updates the view.
-     * Displays a loading state during data retrieval and handles errors by showing a default error report.
+     * Loads the monthly spending star report asynchronously.
+     * Fetches the report data using {@link HoroscopeService} and then loads the associated image.
+     * Updates the view with the report details (title, description, image, transactions) or an error message.
+     *
+     * @param selectedMonth The month number (1-12) for which to generate the report.
      */
-    private void loadReport() {
+    private void loadMonthlyReport(int selectedMonth) {
+        if (view == null) return;
         view.setLoadingState(true);
+        final int reportYear = LocalDate.now().getYear(); // Assume current year for reports
+
         SwingWorker<HoroscopeReportModel, Void> worker = new SwingWorker<>() {
             @Override
-            protected HoroscopeReportModel doInBackground() {
-                return horoscopeService.generateWeeklyReport(username);
+            protected HoroscopeReportModel doInBackground() throws Exception {
+                // This runs on a background thread
+                return horoscopeService.generateMonthlyHoroscopeReport(username, selectedMonth, reportYear);
             }
 
             @Override
             protected void done() {
+                // This runs on the EDT
+                if (view == null) return;
                 try {
-                    HoroscopeReportModel report = get();
-                    // Ensure report is not null by using default error report
-                    final HoroscopeReportModel finalReport = (report != null) ? report : horoscopeService.getDefaultErrorReport();
-                    imageLoader.loadImage(finalReport.getImagePath(), IMAGE_TARGET_WIDTH, IMAGE_TARGET_HEIGHT, new ImageLoader.Callback() {
-                        @Override
-                        public void onSuccess(ImageIcon icon) {
-                            view.setReportData(finalReport.getTitle(), finalReport.getDescription(), icon);
-                            view.setLoadingState(false);
-                        }
+                    HoroscopeReportModel report = get(); // Retrieve result from doInBackground
+                    if (report == null) { // Should not happen if service returns a valid model or error model
+                        view.showError("Failed to generate horoscope report (Service returned null).");
+                        view.setLoadingState(false);
+                        return;
+                    }
 
-                        @Override
-                        public void onError(String message) {
-                            view.setReportData(finalReport.getTitle(), finalReport.getDescription(), null);
-                            view.showError("Failed to load report image: " + message);
-                            view.setLoadingState(false);
-                        }
-                    });
-                } catch (Exception e) {
-                    // Handle exception by using default error report
-                    final HoroscopeReportModel errorReport = horoscopeService.getDefaultErrorReport();
-                    imageLoader.loadImage(errorReport.getImagePath(), IMAGE_TARGET_WIDTH, IMAGE_TARGET_HEIGHT, new ImageLoader.Callback() {
-                        @Override
-                        public void onSuccess(ImageIcon icon) {
-                            view.setReportData(errorReport.getTitle(), errorReport.getDescription(), icon);
-                            view.setLoadingState(false);
-                        }
+                    String reportImageFileName = report.getImageFileName();
+                    String fullReportImagePath = HOROSCOPE_IMAGE_BASE_PATH + reportImageFileName;
+                    System.out.println("HoroscopeController: Loading report image '" + reportImageFileName + "' from: " + new File(fullReportImagePath).getAbsolutePath());
 
-                        @Override
-                        public void onError(String message) {
-                            view.setReportData(errorReport.getTitle(), errorReport.getDescription(), null);
-                            view.showError("Failed to load report: " + e.getMessage());
+                    if (reportImageFileName != null && !reportImageFileName.isEmpty()) {
+                        int panelReportWidth = view.getReportImageLabelWidth();
+                        int panelReportHeight = view.getReportImageLabelHeight();
+
+                        // Use fallback if panel dimensions are too small or invalid
+                        int finalReportTargetWidth = (panelReportWidth > 100) ? panelReportWidth : FALLBACK_REPORT_IMAGE_WIDTH;
+                        int finalReportTargetHeight = (panelReportHeight > 100) ? panelReportHeight : FALLBACK_REPORT_IMAGE_HEIGHT;
+
+                        System.out.println("HoroscopeController: Report image target dimensions for ImageLoader: " + finalReportTargetWidth + "x" + finalReportTargetHeight);
+
+                        imageLoader.loadImageFromFileSystem(fullReportImagePath,
+                                finalReportTargetWidth,
+                                finalReportTargetHeight,
+                                new ImageLoader.Callback() {
+                                    @Override
+                                    public void onSuccess(ImageIcon icon) {
+                                        if (view != null) {
+                                            view.setReportData(report.getTitle(), report.getDescription(), icon, report.getMonthlyTransactions(), report.getSelectedMonth());
+                                            view.setLoadingState(false);
+                                        }
+                                    }
+                                    @Override
+                                    public void onError(String message) {
+                                        if (view != null) {
+                                            // Display report text even if image fails, but show error for image
+                                            view.setReportData(report.getTitle(), report.getDescription(), null, report.getMonthlyTransactions(), report.getSelectedMonth());
+                                            view.showError("Failed to load report image '" + reportImageFileName + "': " + message);
+                                            view.setLoadingState(false);
+                                        }
+                                    }
+                                });
+                    } else {
+                        // No image file name provided, set report data without an image
+                        if (view != null) {
+                            view.setReportData(report.getTitle(), report.getDescription(), null, report.getMonthlyTransactions(), report.getSelectedMonth());
                             view.setLoadingState(false);
                         }
-                    });
+                    }
+                } catch (Exception e) { // Catch exceptions from get() or other issues in done()
+                    System.err.println("HoroscopeController: Error retrieving/processing report: " + e.getMessage());
+                    e.printStackTrace();
+                    if (view != null) {
+                        view.showError("Unexpected error generating Spending Star: " + e.getMessage());
+                        // Create a fallback error report model
+                        HoroscopeReportModel errorFallback = new HoroscopeReportModel(
+                                "Error Generating Report",
+                                "Could not retrieve your spending star at this time. Please check your transactions or try again later.",
+                                HoroscopeService.NO_DATA_IMAGE_FILENAME, // Use the standard "no data" image
+                                selectedMonth,
+                                Collections.emptyList()
+                        );
+                        String errorImgPath = HOROSCOPE_IMAGE_BASE_PATH + errorFallback.getImageFileName();
+
+                        // Attempt to load the fallback error image
+                        imageLoader.loadImageFromFileSystem(errorImgPath,
+                                FALLBACK_REPORT_IMAGE_WIDTH, // Use report fallback dimensions
+                                FALLBACK_REPORT_IMAGE_HEIGHT,
+                                new ImageLoader.Callback() {
+                                    @Override public void onSuccess(ImageIcon icon) {
+                                        if (view != null) view.setReportData(errorFallback.getTitle(), errorFallback.getDescription(), icon, errorFallback.getMonthlyTransactions(), errorFallback.getSelectedMonth());
+                                    }
+                                    @Override public void onError(String msg) { // If even fallback image fails
+                                        if (view != null) view.setReportData(errorFallback.getTitle(), errorFallback.getDescription(), null, errorFallback.getMonthlyTransactions(), errorFallback.getSelectedMonth());
+                                    }
+                                });
+                        view.setLoadingState(false);
+                    }
                 }
             }
         };
