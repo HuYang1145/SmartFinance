@@ -1,38 +1,30 @@
-/**
- * Provides services for managing and analyzing user transactions, including balance queries,
- * transaction summaries, and monthly expense calculations.
- *
- * @author Group 19
- * @version 1.0
- */
 package Service;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Map;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
+import java.util.Objects; // Added import
 
 import Model.Transaction;
 import Model.User;
 import Repository.TransactionRepository;
-import Service.BudgetService;
 
 public class TransactionService {
     private static final DateTimeFormatter TRANSACTION_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm");
-     private static final DateTimeFormatter DATE_ONLY_FORMATTER = DateTimeFormatter.ofPattern("yyyy/MM/dd"); // Added for date parsing
+     private static final DateTimeFormatter DATE_ONLY_FORMATTER = DateTimeFormatter.ofPattern("yyyy/MM/dd");
 
     private final TransactionRepository transactionRepository;
-    private final BudgetService budgetService; // Added dependency
+    private final BudgetService budgetService; // Marked as final, initialized in constructor
 
     // Define the thresholds for new abnormal checks
-    private static final double FREQUENT_LARGE_TRANSACTION_AMOUNT = 5000.0;
-    private static final int FREQUENT_LARGE_TRANSACTION_COUNT = 3;
-    private static final double LARGE_EXPENSE_MULTIPLIER = 3.0; // Expense > 3 * avg_daily_expense
-    private static final double LARGE_TRANSFER_OUT_AMOUNT = 50000.0; // Transfer Out > 5000
+    private static final double FREQUENT_LARGE_TRANSACTION_AMOUNT = 5000.0; // 一天内转账或收支>=5000的阈值
+    private static final int FREQUENT_LARGE_TRANSACTION_COUNT = 3; // 一天内转账或收支 >= 5000 的次数阈值
+    private static final double LARGE_EXPENSE_MULTIPLIER = 3.0; // 单笔支出 > 平均支出倍数
+    private static final double LARGE_TRANSFER_OUT_AMOUNT = 50000.0; // 单笔转出或消费金额大于阈值
 
     /**
      * Constructs a TransactionService instance with the specified dependencies.
@@ -41,8 +33,9 @@ public class TransactionService {
      * @param budgetService         the service for budget-related calculations
      */
     public TransactionService(TransactionRepository transactionRepository, BudgetService budgetService) {
-        this.transactionRepository = transactionRepository;
-        this.budgetService = budgetService;
+        this.transactionRepository = Objects.requireNonNull(transactionRepository, "TransactionRepository cannot be null"); // Use Objects.requireNonNull for clarity and null check
+        this.budgetService = Objects.requireNonNull(budgetService, "BudgetService cannot be null"); // Use Objects.requireNonNull
+         System.out.println("TransactionService initialized with TransactionRepository and BudgetService.");
     }
 
     /**
@@ -63,16 +56,22 @@ public class TransactionService {
      */
     public String buildTransactionSummary(User user) {
         if (user == null) return "";
-        List<Transaction> transactions = transactionRepository.findTransactionsByUser(user);
+        List<Transaction> transactions = transactionRepository.findTransactionsByUser(user); // Blocking call
         if (transactions.isEmpty()) return "";
         StringBuilder sb = new StringBuilder("Operation,Amount,Time,Merchant/Payee,Type,Category\n");
         for (Transaction tx : transactions) {
+             if (tx == null) continue;
+
             String merchant = tx.getMerchant() != null ? tx.getMerchant() : "";
             String type = tx.getType() != null ? tx.getType() : "";
              String category = tx.getCategory() != null ? tx.getCategory() : "";
-            sb.append(tx.getOperation()).append(",")
+             String operation = tx.getOperation() != null ? tx.getOperation() : "";
+             String timestamp = tx.getTimestamp() != null ? tx.getTimestamp() : "";
+
+
+            sb.append(escapeForSummary(operation)).append(",")
               .append(String.format("%.2f", tx.getAmount())).append(",")
-              .append(tx.getTimestamp()).append(",")
+              .append(escapeForSummary(timestamp)).append(",")
               .append(escapeForSummary(merchant)).append(",")
               .append(escapeForSummary(type)).append(",")
               .append(escapeForSummary(category)).append("\n");
@@ -88,23 +87,27 @@ public class TransactionService {
      */
     public double getCurrentMonthExpense(User user) {
         if (user == null) return 0.0;
-        List<Transaction> transactions = transactionRepository.findTransactionsByUser(user);
+        List<Transaction> transactions = transactionRepository.findTransactionsByUser(user); // Blocking call
         double totalExpense = 0.0;
         LocalDate now = LocalDate.now();
         int currentYear = now.getYear();
         int currentMonth = now.getMonthValue();
         for (Transaction tx : transactions) {
+             if (tx == null || tx.getOperation() == null || tx.getTimestamp() == null) continue;
+
             if ("Expense".equalsIgnoreCase(tx.getOperation())) {
                 try {
-                    // Assuming timestamp is yyyy/MM/dd HH:mm or yyyy/MM/dd
                     String[] dateTimeParts = tx.getTimestamp().split(" ");
-                    LocalDate date = LocalDate.parse(dateTimeParts[0], DATE_ONLY_FORMATTER); // Use DATE_ONLY_FORMATTER
+                    LocalDate date = LocalDate.parse(dateTimeParts[0], DATE_ONLY_FORMATTER);
 
                     if (date.getYear() == currentYear && date.getMonthValue() == currentMonth) {
                         totalExpense += tx.getAmount();
                     }
                 } catch (DateTimeParseException e) {
-                    System.err.println("Date parse error in getCurrentMonthExpense: " + tx.getTimestamp());
+                    System.err.println("Date parse error in getCurrentMonthExpense for transaction: " + tx.getTimestamp() + " - " + e.getMessage());
+                } catch (Exception e) {
+                     System.err.println("Unexpected error processing transaction in getCurrentMonthExpense: " + tx.getTimestamp() + " - " + e.getMessage());
+                     e.printStackTrace();
                 }
             }
         }
@@ -113,53 +116,59 @@ public class TransactionService {
 
     /**
      * Checks for abnormal transactions for a given user based on specific patterns in their history.
+     * This is typically used for a warning upon login.
      * Combines checks for:
-     * 1. Frequent large transactions on any single day (>= 3 transactions with amount >= 2000).
-     * 2. Any single expense transaction exceeding 3 times the user's average daily expense.
-     * 3. Any single expense transaction (interpreting "转出" as Expense) exceeding 5000.
+     * 1. Frequent large transactions on any single day in the history (>= 3 transactions with operation "Income" or "Expense" and amount >= 5000).
+     * 2. Any single expense transaction in the history exceeding 3 times the user's average daily expense (calculated over past 3 full months).
+     * 3. Any single expense or transfer out transaction in the history exceeding 50000.
      *
      * @param username     The username to check transactions for.
-     * @param transactions The list of transactions to analyze.
+     * @param transactions The list of all transactions for the user to analyze.
      * @return A list of strings describing the detected abnormal patterns, or an empty list if none found.
      */
     public List<String> checkAbnormalTransactions(String username, List<Transaction> transactions) {
         List<String> warnings = new ArrayList<>();
         if (username == null || username.trim().isEmpty() || transactions == null || transactions.isEmpty()) {
-            return warnings; // Return empty list if no data
+            return warnings;
         }
 
-        System.out.println("Checking historical abnormal transactions for user " + username + "...");
+        System.out.println("Checking historical abnormal transactions for user " + username + " (" + transactions.size() + " transactions)...");
 
-        // Pattern 2 & 3 Checks (per transaction, across all history)
-        double averageDailyExpense = budgetService.calculateAverageDailyExpense(username, 3); // Use last 3 full months for average
-        boolean largeExpenseFound = false;
-        boolean largeTransferOutFound = false; // Assuming '转出' corresponds to Expense operation > 5000
+        // Calculate average daily expense (can be 0 if no past expenses or income)
+        double averageDailyExpense = budgetService.calculateAverageDailyExpense(username, 3); // Blocking call
+
+        // Use flags to ensure we add each *type* of warning at most once for historical checks.
+        boolean largeExpenseFound = false; // Flag for Pattern 2 (>3x avg)
+        boolean largeTransferOrExpenseFound = false; // Flag for Pattern 3 (>=50000)
 
         for (Transaction tx : transactions) {
-            if (tx == null) continue;
+            if (tx == null || tx.getOperation() == null) continue;
 
-            // Pattern 2: Single large expense (> 3 * avg daily)
-            if ("Expense".equalsIgnoreCase(tx.getOperation()) && tx.getAmount() > averageDailyExpense * LARGE_EXPENSE_MULTIPLIER && averageDailyExpense > 0) {
+            // Pattern 2: Single large expense (> 3 * avg daily) - only if average daily is meaningful (>0)
+            if ("Expense".equalsIgnoreCase(tx.getOperation()) && averageDailyExpense > 0 && tx.getAmount() > averageDailyExpense * LARGE_EXPENSE_MULTIPLIER) {
                  largeExpenseFound = true;
+                 // No need to check further for this pattern in this loop if already found
             }
 
-            // Pattern 3: Single large "transfer out" (> 5000) - interpreting "转出" as Expense operation here
-            // This might be ambiguous with the UI's "Operation" dropdown (Income/Expense).
-            // If 'Transfer Out' is a 'Type' within 'Expense', the old logic from TC was checking Type.
-            // If 'Transfer Out' is a distinct 'Operation', this check should filter by Operation.
-            // Based on the prompt "转出金额大于5000", it's likely an Operation.
-            // Let's check Operation == "Transfer Out" (if that operation exists) OR Operation == "Expense" with amount > 5000.
-            // Given the available operations (Income/Expense in UI, or the old list in TC),
-            // let's assume "转出金额大于5000" means an 'Expense' transaction with amount > 5000 for simplicity based on current UI.
-            if ("Expense".equalsIgnoreCase(tx.getOperation()) && tx.getAmount() > LARGE_TRANSFER_OUT_AMOUNT) {
-                 largeTransferOutFound = true;
+            // Pattern 3: Single large "transfer out" or "expense" (>= 50000)
+            if (("Expense".equalsIgnoreCase(tx.getOperation()) || "Transfer Out".equalsIgnoreCase(tx.getOperation()))
+                 && tx.getAmount() >= LARGE_TRANSFER_OUT_AMOUNT) {
+                 largeTransferOrExpenseFound = true;
+                 // No need to check further for this pattern in this loop if already found
             }
+
+            // Optimization: If both P2 and P3 warnings are already flagged, we can stop iterating transactions for these patterns
+             if (largeExpenseFound && largeTransferOrExpenseFound) {
+                 break; // Exit the loop early as we found at least one instance of each flagged pattern
+             }
         }
+
+        // Add warnings based on flags after iterating all transactions for P2 and P3
          if (largeExpenseFound) {
-             warnings.add(String.format("A single expense transaction exceeded %.1f times your average daily spending (avg daily: ¥%.2f).", LARGE_EXPENSE_MULTIPLIER, averageDailyExpense));
+             warnings.add(String.format("A single expense transaction in your history exceeded %.1f times your average daily spending (avg daily: ¥%.2f).", LARGE_EXPENSE_MULTIPLIER, averageDailyExpense));
          }
-         if (largeTransferOutFound) {
-             warnings.add(String.format("A single expense transaction of over ¥%.2f was recorded.", LARGE_TRANSFER_OUT_AMOUNT));
+         if (largeTransferOrExpenseFound) {
+             warnings.add(String.format("A single Expense or Transfer Out transaction of over ¥%.2f was recorded.", LARGE_TRANSFER_OUT_AMOUNT)); // Updated warning message
          }
 
 
@@ -169,40 +178,38 @@ public class TransactionService {
             .filter(tx -> tx != null && tx.getTimestamp() != null)
             .collect(Collectors.groupingBy(tx -> {
                 try {
-                    // Parse only date part for grouping
-                    return LocalDate.parse(tx.getTimestamp().split(" ")[0], DATE_ONLY_FORMATTER);
+                    String[] dateTimeParts = tx.getTimestamp().split(" ");
+                    return LocalDate.parse(dateTimeParts[0], DATE_ONLY_FORMATTER);
                 } catch (DateTimeParseException e) {
-                    System.err.println("Date parse error grouping transactions: " + tx.getTimestamp());
-                    return null; // Ignore transactions with invalid dates
+                    System.err.println("Date parse error grouping transactions by day: " + tx.getTimestamp() + " - " + e.getMessage());
+                    return null; // Group transactions with invalid dates under null key
                 }
             }));
 
-        boolean frequentLargeTransactionsFound = false;
+        // Process groups, skipping the null key group
         for (Map.Entry<LocalDate, List<Transaction>> entry : transactionsByDay.entrySet()) {
-            if (entry.getKey() == null) continue; // Skip invalid dates
+            if (entry.getKey() == null) continue;
+
             long largeTransactionCount = entry.getValue().stream()
                  .filter(tx -> {
-                     // Check if Operation is Income or Expense and amount is large
-                     boolean isRelevantOperation = "Income".equalsIgnoreCase(tx.getOperation()) || "Expense".equalsIgnoreCase(tx.getOperation());
-                     return tx != null && isRelevantOperation && tx.getAmount() >= FREQUENT_LARGE_TRANSACTION_AMOUNT;
+                      boolean isRelevantOperation = "Income".equalsIgnoreCase(tx.getOperation()) || "Expense".equalsIgnoreCase(tx.getOperation());
+                      return tx != null && isRelevantOperation && tx.getAmount() >= FREQUENT_LARGE_TRANSACTION_AMOUNT;
                  })
                 .count();
 
             if (largeTransactionCount >= FREQUENT_LARGE_TRANSACTION_COUNT) {
-                frequentLargeTransactionsFound = true;
-                // We just need to know *if* it happened, not list every day, for the login warning.
-                // Add the date to the warning for more specific feedback
+                // Add a specific warning for this day
                 warnings.add(String.format("Frequent large transactions (>= ¥%.2f, >= %d times) occurred on %s.", FREQUENT_LARGE_TRANSACTION_AMOUNT, FREQUENT_LARGE_TRANSACTION_COUNT, entry.getKey().format(DATE_ONLY_FORMATTER)));
             }
         }
 
-        System.out.println("Historical abnormal transaction check completed. Warnings: " + warnings.size());
+        System.out.println("Historical abnormal transaction check completed. Warnings found: " + warnings.size());
         return warnings;
     }
 
     /**
-     * Checks if adding a new transaction triggers real-time abnormal transaction warnings.
-     * This check is performed BEFORE the transaction is added to the history.
+     * Checks if adding a *new* transaction triggers real-time abnormal transaction warnings based on the combined list.
+     * This check is performed BEFORE the transaction is added to the history file.
      *
      * @param username          The username of the user.
      * @param existingTransactions The list of existing transactions for the user.
@@ -214,57 +221,88 @@ public class TransactionService {
          if (newTransaction == null || username == null || username.trim().isEmpty()) {
              return warnings;
          }
+         // Basic validation for new transaction's essential fields for check
+         if (newTransaction.getOperation() == null || newTransaction.getTimestamp() == null) {
+              System.err.println("Real-time check: New transaction is missing operation or timestamp. Cannot perform full check.");
+              // Add a generic warning for invalid input and proceed with other checks if possible.
+               warnings.add("Cannot perform full risk check due to invalid new transaction data (missing operation or time).");
+              // If amount or operation are missing, cannot check P2/P3 either.
+              if (newTransaction.getAmount() < 0 || newTransaction.getOperation() == null) { // Check amount >= 0
+                   return warnings; // Return with only the invalid data warning
+              }
+         }
 
-         double averageDailyExpense = budgetService.calculateAverageDailyExpense(username, 3); // Calculate average daily expense
 
-         // Pattern 2 Check (Single large expense)
-         if ("Expense".equalsIgnoreCase(newTransaction.getOperation()) && newTransaction.getAmount() > averageDailyExpense * LARGE_EXPENSE_MULTIPLIER && averageDailyExpense > 0) {
+         // Calculate average daily expense (use the BudgetService dependency)
+         double averageDailyExpense = budgetService.calculateAverageDailyExpense(username, 3);
+
+
+         // Pattern 2 Check (Single large expense) - applies to the NEW transaction
+         // Only check if the new transaction is an Expense AND averageDailyExpense is meaningful (>0)
+         if ("Expense".equalsIgnoreCase(newTransaction.getOperation()) && averageDailyExpense > 0 && newTransaction.getAmount() > averageDailyExpense * LARGE_EXPENSE_MULTIPLIER) {
              warnings.add(String.format("This expense (¥%.2f) exceeds %.1f times your average daily spending (¥%.2f).", newTransaction.getAmount(), LARGE_EXPENSE_MULTIPLIER, averageDailyExpense));
          }
 
-         // Pattern 3 Check (Single large "transfer out" - interpreting "转出" as Expense operation here)
-         if ("Expense".equalsIgnoreCase(newTransaction.getOperation()) && newTransaction.getAmount() > LARGE_TRANSFER_OUT_AMOUNT) {
-             warnings.add(String.format("This expense transaction (¥%.2f) is a large amount.", newTransaction.getAmount()));
+         // Pattern 3 Check (Single large "transfer out" or "expense" (>= 50000)) - applies to the NEW transaction
+         if (("Expense".equalsIgnoreCase(newTransaction.getOperation()) || "Transfer Out".equalsIgnoreCase(newTransaction.getOperation()))
+             && newTransaction.getAmount() >= LARGE_TRANSFER_OUT_AMOUNT) {
+             warnings.add(String.format("This Expense or Transfer Out transaction (¥%.2f) is over ¥%.2f.", newTransaction.getAmount(), LARGE_TRANSFER_OUT_AMOUNT));
          }
+
 
          // Pattern 1 Check (Frequent large transactions on the same day)
          // Check if adding THIS transaction *causes* the frequent limit to be reached for THIS day
-         try {
-             String[] dateTimeParts = newTransaction.getTimestamp().split(" ");
-             LocalDate newTransactionDay = LocalDate.parse(dateTimeParts[0], DATE_ONLY_FORMATTER);
+         // This check requires a valid timestamp AND the transaction itself must be large and relevant (Income/Expense)
+         if (newTransaction.getTimestamp() != null && newTransaction.getOperation() != null &&
+             ( "Income".equalsIgnoreCase(newTransaction.getOperation()) || "Expense".equalsIgnoreCase(newTransaction.getOperation())) &&
+             newTransaction.getAmount() >= FREQUENT_LARGE_TRANSACTION_AMOUNT) { // Check if the new transaction itself is 'large' for Pattern 1
+              try {
+                  String[] dateTimeParts = newTransaction.getTimestamp().split(" ");
+                  LocalDate newTransactionDay = LocalDate.parse(dateTimeParts[0], DATE_ONLY_FORMATTER);
 
-              // Count existing large transactions for the same day as the new one
-             long existingLargeTransactionsToday = existingTransactions.stream()
-                 .filter(tx -> tx != null && tx.getTimestamp() != null)
-                 .filter(tx -> {
-                      try {
-                          LocalDate txDay = LocalDate.parse(tx.getTimestamp().split(" ")[0], DATE_ONLY_FORMATTER);
-                          return txDay.equals(newTransactionDay); // Filter for the same day
-                      } catch (DateTimeParseException e) {
-                          System.err.println("Date parse error filtering for daily check: " + tx.getTimestamp());
-                          return false; // Ignore transactions with invalid dates
-                      }
-                  })
-                 .filter(tx -> {
-                      // Check if Operation is Income or Expense and amount is large
-                      boolean isRelevantOperation = "Income".equalsIgnoreCase(tx.getOperation()) || "Expense".equalsIgnoreCase(tx.getOperation());
-                      return tx != null && isRelevantOperation && tx.getAmount() >= FREQUENT_LARGE_TRANSACTION_AMOUNT;
-                  })
-                 .count();
+                  // Count existing large, relevant transactions for the same day as the new one
+                  long existingLargeTransactionsToday = (existingTransactions == null) ? 0 : existingTransactions.stream() // Handle null existingTransactions
+                      .filter(tx -> tx != null && tx.getTimestamp() != null && tx.getOperation() != null) // Filter out invalid existing transactions
+                      .filter(tx -> {
+                           try {
+                               String[] existingDateTimeParts = tx.getTimestamp().split(" ");
+                               LocalDate txDay = LocalDate.parse(existingDateTimeParts[0], DATE_ONLY_FORMATTER);
+                               return txDay.equals(newTransactionDay); // Filter for the same day
+                           } catch (DateTimeParseException e) {
+                               System.err.println("Date parse error filtering for daily check on existing transaction: " + tx.getTimestamp() + " - " + e.getMessage());
+                               return false; // Ignore existing transactions with invalid dates
+                           } catch (Exception e) {
+                                System.err.println("Unexpected error parsing existing timestamp for daily check: " + tx.getTimestamp() + " - " + e.getMessage());
+                                e.printStackTrace();
+                                return false; // Ignore existing transactions with unexpected errors
+                           }
+                       })
+                      .filter(tx -> {
+                           // Check if Operation is Income or Expense and amount is large
+                           boolean isRelevantOperation = "Income".equalsIgnoreCase(tx.getOperation()) || "Expense".equalsIgnoreCase(tx.getOperation());
+                           return isRelevantOperation && tx.getAmount() >= FREQUENT_LARGE_TRANSACTION_AMOUNT;
+                       })
+                      .count();
 
-             // Check if the new transaction itself is large
-             boolean isNewTransactionLarge = ("Income".equalsIgnoreCase(newTransaction.getOperation()) || "Expense".equalsIgnoreCase(newTransaction.getOperation())) && newTransaction.getAmount() >= FREQUENT_LARGE_TRANSACTION_AMOUNT;
+                  // If adding the new large transaction makes the total count for today >= FREQUENT_LARGE_TRANSACTION_COUNT
+                  if ((existingLargeTransactionsToday + 1) >= FREQUENT_LARGE_TRANSACTION_COUNT) {
+                      warnings.add(String.format("Adding this transaction (¥%.2f) will result in %d large transactions (>= ¥%.2f) today (%s).",
+                          newTransaction.getAmount(), existingLargeTransactionsToday + 1, FREQUENT_LARGE_TRANSACTION_AMOUNT, newTransactionDay.format(DATE_ONLY_FORMATTER)));
+                  }
 
-             // If adding the new transaction makes the count >= FREQUENT_LARGE_TRANSACTION_COUNT for today
-             if (isNewTransactionLarge && (existingLargeTransactionsToday + 1) >= FREQUENT_LARGE_TRANSACTION_COUNT) {
-                 warnings.add(String.format("Adding this transaction (¥%.2f) will result in >= %d large transactions (>= ¥%.2f) today (%s).", newTransaction.getAmount(), FREQUENT_LARGE_TRANSACTION_COUNT, FREQUENT_LARGE_TRANSACTION_AMOUNT, newTransactionDay.format(DATE_ONLY_FORMATTER)));
-             }
-
-         } catch (DateTimeParseException e) {
-             System.err.println("Date parse error for new transaction timestamp during realtime check: " + newTransaction.getTimestamp());
-              // Warning might not be possible due to invalid date, but proceed with other checks
+              } catch (DateTimeParseException e) {
+                  // This case is handled by the outer check if timestamp is null.
+                  System.err.println("Date parse error for new transaction timestamp during realtime daily check: " + newTransaction.getTimestamp() + " - " + e.getMessage());
+                   warnings.add("Cannot perform daily transaction frequency check due to invalid date format in new transaction: " + newTransaction.getTimestamp());
+              } catch (Exception e) {
+                   System.err.println("Unexpected error during realtime daily frequency check: " + e.getMessage());
+                   e.printStackTrace();
+                   warnings.add("An error occurred during real-time daily frequency check.");
+              }
          }
 
+
+        System.out.println("Real-time abnormal transaction check completed. Warnings found: " + warnings.size());
         return warnings;
     }
 
@@ -283,8 +321,8 @@ public class TransactionService {
      * Escapes a field for CSV formatting by enclosing it in quotes if it contains commas,
      * quotes, newline, carriage return, or is empty (to preserve structure with split(",", -1)).
      *
-     * @param field the field to escape
-     * @return the escaped field
+     * @param field The field to escape.
+     * @return The escaped field, or an empty string if the field is null.
      */
     private String escapeForSummary(String field) {
          if (field == null) return ""; // Treat null as empty string
