@@ -55,7 +55,7 @@ public class BudgetService {
     /**
      * Formatter for parsing only the date part "yyyy/MM/dd".
      */
-     private static final DateTimeFormatter DATE_ONLY_FORMATTER = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+    private static final DateTimeFormatter DATE_ONLY_FORMATTER = DateTimeFormatter.ofPattern("yyyy/MM/dd");
 
 
     /**
@@ -65,15 +65,15 @@ public class BudgetService {
      */
     public BudgetService(TransactionRepository transactionRepository) {
         this.transactionRepository = transactionRepository;
-         System.out.println("BudgetService initialized with TransactionRepository.");
+        System.out.println("BudgetService initialized with TransactionRepository.");
     }
 
     /**
      * Calculates the average daily expense for a user over a specified number of past full months.
      * Considers only 'Expense' operations. A "full month" excludes the current partial month.
      *
-     * @param username    The username of the user.
-     * @param pastMonths  The number of past *full* months to include in the calculation (e.g., 3 for the last 3 completed months).
+     * @param username   The username of the user.
+     * @param pastMonths The number of past *full* months to include in the calculation (e.g., 3 for the last 3 completed months).
      * @return The average daily expense over the specified period, or 0.0 if no expenses or no full months included.
      */
     public double calculateAverageDailyExpense(String username, int pastMonths) {
@@ -106,10 +106,10 @@ public class BudgetService {
                         }
                     } catch (DateTimeParseException e) {
                         System.err.println("Failed to parse date in calculateAverageDailyExpense for transaction: " + tx.getTimestamp() + " - " + e.getMessage());
-                         // Ignore transaction with bad date format
+                        // Ignore transaction with bad date format
                     } catch (Exception e) {
-                         System.err.println("Unexpected error processing transaction in calculateAverageDailyExpense: " + tx.getTimestamp() + " - " + e.getMessage());
-                         e.printStackTrace();
+                        System.err.println("Unexpected error processing transaction in calculateAverageDailyExpense: " + tx.getTimestamp() + " - " + e.getMessage());
+                        e.printStackTrace();
                     }
                 }
             }
@@ -118,7 +118,7 @@ public class BudgetService {
         }
 
         if (totalDays <= 0 || totalExpense <= 0) {
-             return 0.0;
+            return 0.0;
         }
 
         return totalExpense / totalDays;
@@ -137,10 +137,10 @@ public class BudgetService {
         double currentMonthIncome = calculateCurrentMonthIncome(transactions, now);
         double currentMonthExpense = calculateCurrentMonthExpense(transactions, now);
         String topType = findTopExpenseType(transactions, now);
-        List<String> largeConsumptions = findLargeConsumptions(transactions, currentMonthIncome, now);
+        List<LargeConsumptionItem> largeConsumptionItems = findLargeConsumptions(transactions, currentMonthIncome, now);
         BudgetRecommendation recommendation = calculateRecommendation(username, now);
         Double customBudget = getCustomBudget(username); // Blocking call
-        return new BudgetDataContainer(recommendation, currentMonthExpense, currentMonthIncome, topType, largeConsumptions, customBudget);
+        return new BudgetDataContainer(recommendation, currentMonthExpense, currentMonthIncome, topType, largeConsumptionItems, customBudget); // Directly pass largeConsumptionItems
     }
 
     /**
@@ -188,10 +188,10 @@ public class BudgetService {
                 bw.write(entry.getKey() + "," + String.format("%.2f", entry.getValue()));
                 bw.newLine();
             }
-             System.out.println("Saved custom budget for user " + username + ": ¥" + budget);
+            System.out.println("Saved custom budget for user " + username + ": ¥" + budget);
         } catch (IOException e) {
             System.err.println("Error writing to budget file: " + e.getMessage());
-             e.printStackTrace();
+            e.printStackTrace();
         }
     }
 
@@ -202,16 +202,16 @@ public class BudgetService {
      */
     public void clearCustomBudget(String username) {
         cachedCustomBudgets.remove(username);
-         try (BufferedWriter bw = new BufferedWriter(new FileWriter(BUDGET_FILE, false))) {
-             // Overwrite the file with the reduced cache state
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(BUDGET_FILE, false))) {
+            // Overwrite the file with the reduced cache state
             for (Map.Entry<String, Double> entry : cachedCustomBudgets.entrySet()) {
                 bw.write(entry.getKey() + "," + String.format("%.2f", entry.getValue()));
                 bw.newLine();
             }
-             System.out.println("Cleared custom budget for user " + username);
+            System.out.println("Cleared custom budget for user " + username);
         } catch (IOException e) {
             System.err.println("Error writing to budget file when clearing: " + e.getMessage());
-             e.printStackTrace();
+            e.printStackTrace();
         }
     }
 
@@ -226,50 +226,50 @@ public class BudgetService {
         if (cachedCustomBudgets.containsKey(username)) {
             return cachedCustomBudgets.get(username);
         }
-         // If not in cache, load all budgets from file into cache
-         loadBudgetsFromFile();
-         // Then check cache again
-         return cachedCustomBudgets.get(username);
+        // If not in cache, load all budgets from file into cache
+        loadBudgetsFromFile();
+        // Then check cache again
+        return cachedCustomBudgets.get(username);
     }
 
-     /**
-      * Loads all custom budgets from the budget file into the cache.
-      * Handles potential file read errors and format errors.
-      */
-     private void loadBudgetsFromFile() {
-         System.out.println("Loading custom budgets from file: " + BUDGET_FILE);
-         File budgetFile = new File(BUDGET_FILE);
-         if (!budgetFile.exists()) {
-             System.out.println("Budget file not found. No custom budgets loaded.");
-             return;
-         }
+    /**
+     * Loads all custom budgets from the budget file into the cache.
+     * Handles potential file read errors and format errors.
+     */
+    private void loadBudgetsFromFile() {
+        System.out.println("Loading custom budgets from file: " + BUDGET_FILE);
+        File budgetFile = new File(BUDGET_FILE);
+        if (!budgetFile.exists()) {
+            System.out.println("Budget file not found. No custom budgets loaded.");
+            return;
+        }
 
-         try (BufferedReader br = new BufferedReader(new FileReader(budgetFile))) {
-             String line;
-             while ((line = br.readLine()) != null) {
-                 String[] parts = line.split(",");
-                 if (parts.length == 2) {
-                     String user = parts[0].trim();
-                     try {
-                         double budget = Double.parseDouble(parts[1].trim());
-                         cachedCustomBudgets.put(user, budget);
-                     } catch (NumberFormatException e) {
-                         System.err.println("Error parsing budget amount for user " + user + " in file: " + parts[1] + " - " + e.getMessage());
-                          // Continue reading other lines
-                     }
-                 } else if (!line.trim().isEmpty()) {
-                      System.err.println("Skipping invalid line in budget file (incorrect field count): " + line);
-                 }
-             }
-             System.out.println("Finished loading custom budgets from file. Loaded " + cachedCustomBudgets.size() + " entries.");
-         } catch (IOException e) {
-             System.err.println("Error reading budget file: " + e.getMessage());
-             e.printStackTrace();
-         } catch (Exception e) {
-              System.err.println("Unexpected error during budget file loading: " + e.getMessage());
-              e.printStackTrace();
-         }
-     }
+        try (BufferedReader br = new BufferedReader(new FileReader(budgetFile))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                String[] parts = line.split(",");
+                if (parts.length == 2) {
+                    String user = parts[0].trim();
+                    try {
+                        double budget = Double.parseDouble(parts[1].trim());
+                        cachedCustomBudgets.put(user, budget);
+                    } catch (NumberFormatException e) {
+                        System.err.println("Error parsing budget amount for user " + user + " in file: " + parts[1] + " - " + e.getMessage());
+                        // Continue reading other lines
+                    }
+                } else if (!line.trim().isEmpty()) {
+                    System.err.println("Skipping invalid line in budget file (incorrect field count): " + line);
+                }
+            }
+            System.out.println("Finished loading custom budgets from file. Loaded " + cachedCustomBudgets.size() + " entries.");
+        } catch (IOException e) {
+            System.err.println("Error reading budget file: " + e.getMessage());
+            e.printStackTrace();
+        } catch (Exception e) {
+            System.err.println("Unexpected error during budget file loading: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
 
 
     /**
@@ -283,7 +283,7 @@ public class BudgetService {
         if (transactions == null) return 0.0;
         double totalIncome = 0.0;
         for (Transaction tx : transactions) {
-             if (tx == null || tx.getOperation() == null || tx.getTimestamp() == null) continue;
+            if (tx == null || tx.getOperation() == null || tx.getTimestamp() == null) continue;
 
             if ("Income".equalsIgnoreCase(tx.getOperation())) {
                 try {
@@ -296,8 +296,8 @@ public class BudgetService {
                 } catch (DateTimeParseException e) {
                     System.err.println("Failed to parse date in calculateCurrentMonthIncome for transaction: " + tx.getTimestamp() + " - " + e.getMessage());
                 } catch (Exception e) {
-                     System.err.println("Unexpected error processing transaction in calculateCurrentMonthIncome: " + tx.getTimestamp() + " - " + e.getMessage());
-                     e.printStackTrace();
+                    System.err.println("Unexpected error processing transaction in calculateCurrentMonthIncome: " + tx.getTimestamp() + " - " + e.getMessage());
+                    e.printStackTrace();
                 }
             }
         }
@@ -317,7 +317,7 @@ public class BudgetService {
         LocalDate firstDayOfMonth = now.withDayOfMonth(1);
         LocalDate lastDayOfMonth = now.withDayOfMonth(now.lengthOfMonth());
         for (Transaction tx : transactions) {
-             if (tx == null || tx.getOperation() == null || tx.getTimestamp() == null) continue;
+            if (tx == null || tx.getOperation() == null || tx.getTimestamp() == null) continue;
 
             if ("Expense".equalsIgnoreCase(tx.getOperation())) {
                 try {
@@ -330,8 +330,8 @@ public class BudgetService {
                 } catch (DateTimeParseException e) {
                     System.err.println("Failed to parse date in calculateCurrentMonthExpense for transaction: " + tx.getTimestamp() + " - " + e.getMessage());
                 } catch (Exception e) {
-                     System.err.println("Unexpected error processing transaction in calculateCurrentMonthExpense: " + tx.getTimestamp() + " - " + e.getMessage());
-                     e.printStackTrace();
+                    System.err.println("Unexpected error processing transaction in calculateCurrentMonthExpense: " + tx.getTimestamp() + " - " + e.getMessage());
+                    e.printStackTrace();
                 }
             }
         }
@@ -349,7 +349,7 @@ public class BudgetService {
         if (transactions == null) return null;
         Map<String, Double> typeTotals = new HashMap<>();
         for (Transaction tx : transactions) {
-             if (tx == null || tx.getOperation() == null || tx.getTimestamp() == null) continue;
+            if (tx == null || tx.getOperation() == null || tx.getTimestamp() == null) continue;
 
             if ("Expense".equalsIgnoreCase(tx.getOperation())) {
                 try {
@@ -368,8 +368,8 @@ public class BudgetService {
                 } catch (DateTimeParseException e) {
                     System.err.println("Failed to parse date in findTopExpenseType for transaction: " + tx.getTimestamp() + " - " + e.getMessage());
                 } catch (Exception e) {
-                     System.err.println("Unexpected error processing transaction in findTopExpenseType: " + tx.getTimestamp() + " - " + e.getMessage());
-                     e.printStackTrace();
+                    System.err.println("Unexpected error processing transaction in findTopExpenseType: " + tx.getTimestamp() + " - " + e.getMessage());
+                    e.printStackTrace();
                 }
             }
         }
@@ -389,37 +389,130 @@ public class BudgetService {
      * @param now                the current date for temporal context
      * @return a list of formatted large consumption details
      */
-    private List<String> findLargeConsumptions(List<Transaction> transactions, double currentMonthIncome, LocalDate now) {
+    private List<LargeConsumptionItem> findLargeConsumptions(List<Transaction> transactions, double currentMonthIncome, LocalDate now) {
         if (transactions == null) return new ArrayList<>();
-        List<String> largeConsumptions = new ArrayList<>();
-        // Calculate the large threshold: 7% of current month's income, with a minimum floor of 100.0 if income is zero/low.
+        List<LargeConsumptionItem> largeConsumptions = new ArrayList<>();
         double largeThreshold = (currentMonthIncome > 0) ? currentMonthIncome * LARGE_CONSUMPTION_THRESHOLD_RATIO : 100.0;
-        largeThreshold = Math.max(largeThreshold, 100.0); // Ensure threshold is at least 100
+        largeThreshold = Math.max(largeThreshold, 100.0);
 
-
-        DateTimeFormatter displayFormatter = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+        DateTimeFormatter displayFormatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm");
         for (Transaction tx : transactions) {
-             if (tx == null || tx.getOperation() == null || tx.getTimestamp() == null) continue;
+            if (tx == null || tx.getOperation() == null || tx.getTimestamp() == null) continue;
 
             if ("Expense".equalsIgnoreCase(tx.getOperation())) {
                 try {
-                    // Parse only date part
-                    String[] dateTimeParts = tx.getTimestamp().split(" ");
-                    LocalDate transactionDate = LocalDate.parse(dateTimeParts[0], DATE_ONLY_FORMATTER);
-                    if (transactionDate.getYear() == now.getYear() && transactionDate.getMonthValue() == now.getMonthValue() && tx.getAmount() > largeThreshold) {
-                         // Include time in the description for clarity if available
-                         String timePart = dateTimeParts.length > 1 ? " " + dateTimeParts[1] : "";
-                        largeConsumptions.add(String.format("%s%s - ¥%.2f - %s", transactionDate.format(displayFormatter), timePart, tx.getAmount(), tx.getType() != null && !tx.getType().trim().isEmpty() ? tx.getType().trim() : "Unspecified Type")); // Include type
+                    LocalDate transactionDateOnly = LocalDate.parse(tx.getTimestamp().split(" ")[0], DATE_ONLY_FORMATTER);
+                    if (transactionDateOnly.getYear() == now.getYear() && transactionDateOnly.getMonthValue() == now.getMonthValue() && tx.getAmount() > largeThreshold) {
+                        try {
+                            LocalDate dateTime = LocalDate.parse(tx.getTimestamp().split(" ")[0], DATE_ONLY_FORMATTER); // This seems to parse only date part again
+                            largeConsumptions.add(new LargeConsumptionItem(dateTime, tx.getAmount(), tx.getType() != null ? tx.getType().trim() : "Unspecified Type", tx.getTimestamp()));
+                        } catch (DateTimeParseException e) {
+                            // Fallback to date only if time parsing fails
+                            largeConsumptions.add(new LargeConsumptionItem(transactionDateOnly, tx.getAmount(), tx.getType() != null ? tx.getType().trim() : "Unspecified Type", tx.getTimestamp().split(" ")[0]));
+                        }
                     }
                 } catch (DateTimeParseException e) {
                     System.err.println("Failed to parse date in findLargeConsumptions for transaction: " + tx.getTimestamp() + " - " + e.getMessage());
                 } catch (Exception e) {
-                     System.err.println("Unexpected error processing transaction in findLargeConsumptions: " + tx.getTimestamp() + " - " + e.getMessage());
-                     e.printStackTrace();
+                    System.err.println("Unexpected error processing transaction in findLargeConsumptions: " + tx.getTimestamp() + " - " + e.getMessage());
+                    e.printStackTrace();
                 }
             }
         }
         return largeConsumptions;
+    }
+
+    /**
+     * Represents a single large consumption item.
+     */
+    public static class LargeConsumptionItem {
+        /**
+         * The date of the consumption.
+         */
+        private LocalDate date;
+        /**
+         * The amount of the consumption.
+         */
+        private double amount;
+        /**
+         * The type or category of the consumption.
+         */
+        private String type;
+        /**
+         * The original timestamp string of the transaction, kept for sorting purposes.
+         */
+        private String timestamp;
+
+        /**
+         * Constructs a LargeConsumptionItem.
+         *
+         * @param date      The date of the consumption.
+         * @param amount    The amount of the consumption.
+         * @param type      The type or category of the consumption.
+         * @param timestamp The original timestamp string of the transaction.
+         */
+        public LargeConsumptionItem(LocalDate date, double amount, String type, String timestamp) {
+            this.date = date;
+            this.amount = amount;
+            this.type = type;
+            this.timestamp = timestamp;
+        }
+
+        /**
+         * Gets the date of the consumption.
+         *
+         * @return The date of the consumption.
+         */
+        public LocalDate getDate() {
+            return date;
+        }
+
+        /**
+         * Gets the amount of the consumption.
+         *
+         * @return The amount of the consumption.
+         */
+        public double getAmount() {
+            return amount;
+        }
+
+        /**
+         * Gets the type or category of the consumption.
+         *
+         * @return The type or category of the consumption.
+         */
+        public String getType() {
+            return type;
+        }
+
+        /**
+         * Gets the original timestamp string of the transaction.
+         *
+         * @return The original timestamp string.
+         */
+        public String getTimestamp() {
+            return timestamp;
+        }
+
+        /**
+         * Returns a string representation of the large consumption item,
+         * formatted to include date, amount, and type.
+         *
+         * @return A formatted string representing the item.
+         */
+        @Override
+        public String toString() {
+            DateTimeFormatter displayFormatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm");
+            try {
+                // Assuming DATE_FORMATTER can parse the full timestamp or just date part
+                LocalDate dateTime = LocalDate.parse(timestamp, DATE_FORMATTER);
+                return String.format("%s - ¥%.2f - %s", dateTime.format(displayFormatter), amount, type);
+            } catch (DateTimeParseException e) {
+                // Fallback if full parsing fails, try parsing just the date part
+                LocalDate dateOnly = LocalDate.parse(timestamp.split(" ")[0], DATE_ONLY_FORMATTER);
+                return String.format("%s - ¥%.2f - %s", dateOnly.format(DateTimeFormatter.ofPattern("yyyy/MM/dd")), amount, type);
+            }
+        }
     }
 
     /**
@@ -454,10 +547,10 @@ public class BudgetService {
     /**
      * Calculates a normal budget based on past consumption ratios or default savings.
      *
-     * @param username           the username of the user
-     * @param now                the current date for temporal context
+     * @param username             the username of the user
+     * @param now                  the current date for temporal context
      * @param totalIncomeThisMonth the total income for the current month
-     * @param hasPastData        whether sufficient past data is available to calculate average ratio
+     * @param hasPastData          whether sufficient past data is available to calculate average ratio
      * @return the suggested normal budget
      */
     private double calculateNormalBudget(String username, LocalDate now, double totalIncomeThisMonth, boolean hasPastData) {
@@ -469,8 +562,8 @@ public class BudgetService {
     /**
      * Calculates an economical budget with increased savings for unstable or festival periods.
      *
-     * @param username           the username of the user
-     * @param now                the current date for temporal context
+     * @param username             the username of the user
+     * @param now                  the current date for temporal context
      * @param totalIncomeThisMonth the total income for the current month
      * @return the suggested economical budget
      */
@@ -499,15 +592,15 @@ public class BudgetService {
 
             // Only consider months with income > 0 for ratio calculation
             if (totalIncome > 0) {
-                 // If income > 0, calculate ratio. If expense is also > 0, it's a meaningful ratio month.
-                 // If income > 0 but expense is 0, ratio is 0. This is a valid data point.
-                 totalConsumptionRatioSum += (totalExpense / totalIncome);
-                 validMonthsCount++; // Count this month as valid for the average
+                // If income > 0, calculate ratio. If expense is also > 0, it's a meaningful ratio month.
+                // If income > 0 but expense is 0, ratio is 0. This is a valid data point.
+                totalConsumptionRatioSum += (totalExpense / totalIncome);
+                validMonthsCount++; // Count this month as valid for the average
             } else if (totalExpense > 0) {
-                 // If income is 0 but expense > 0, this month has an undefined/infinite ratio. Skip for averaging.
-                 System.out.println("Skipping ratio calculation for month " + monthDate.getYear() + "/" + monthDate.getMonthValue() + " due to zero income but non-zero expense.");
+                // If income is 0 but expense > 0, this month has an undefined/infinite ratio. Skip for averaging.
+                System.out.println("Skipping ratio calculation for month " + monthDate.getYear() + "/" + monthDate.getMonthValue() + " due to zero income but non-zero expense.");
             }
-             // If both are zero, it doesn't affect the average ratio or valid count.
+            // If both are zero, it doesn't affect the average ratio or valid count.
         }
 
         // If we found at least LEARNING_MONTHS (3) months with income > 0, return the average ratio.
@@ -568,15 +661,15 @@ public class BudgetService {
         return false; // Not unstable if fewer than 3 total expenses or fewer than 3 large expenses
     }
 
-     /**
-      * Retrieves a list of expense amounts for a given date range.
-      * (Helper for hasUnstableSpendingLastMonth - kept for BudgetMode)
-      *
-      * @param username the username of the user
-      * @param start    the start date of the period (inclusive)
-      * @param end      the end date of the period (inclusive)
-      * @return a list of expense amounts within the specified date range. Returns empty list if no transactions or transactions list is null.
-      */
+    /**
+     * Retrieves a list of expense amounts for a given date range.
+     * (Helper for hasUnstableSpendingLastMonth - kept for BudgetMode)
+     *
+     * @param username the username of the user
+     * @param start    the start date of the period (inclusive)
+     * @param end      the end date of the period (inclusive)
+     * @return a list of expense amounts within the specified date range. Returns empty list if no transactions or transactions list is null.
+     */
     private List<Double> getMonthlyExpensesAmounts(String username, LocalDate start, LocalDate end) {
         List<Double> expenses = new ArrayList<>();
         List<Transaction> transactions = transactionRepository.findTransactionsByUsername(username); // Blocking call
@@ -598,8 +691,8 @@ public class BudgetService {
                 } catch (DateTimeParseException e) {
                     System.err.println("Failed to parse date in getMonthlyExpensesAmounts for transaction: " + tx.getTimestamp() + " - " + e.getMessage());
                 } catch (Exception e) {
-                     System.err.println("Unexpected error processing transaction in getMonthlyExpensesAmounts: " + tx.getTimestamp() + " - " + e.getMessage());
-                     e.printStackTrace();
+                    System.err.println("Unexpected error processing transaction in getMonthlyExpensesAmounts: " + tx.getTimestamp() + " - " + e.getMessage());
+                    e.printStackTrace();
                 }
             }
         }
@@ -662,11 +755,11 @@ public class BudgetService {
         /**
          * Constructs a BudgetRecommendation with the specified parameters.
          *
-         * @param mode           the budget mode
-         * @param budget         the suggested budget amount
-         * @param saving         the suggested savings amount
-         * @param reason         the reason for the recommendation
-         * @param hasPastData    whether sufficient past data is available for meaningful ratio calculation
+         * @param mode          the budget mode
+         * @param budget        the suggested budget amount
+         * @param saving        the suggested savings amount
+         * @param reason        the reason for the recommendation
+         * @param hasPastData   whether sufficient past data is available for meaningful ratio calculation
          */
         public BudgetRecommendation(BudgetMode mode, double budget, double saving, String reason, boolean hasPastData) {
             this.mode = mode;
@@ -719,6 +812,95 @@ public class BudgetService {
          */
         public boolean hasPastData() {
             return hasPastData;
+        }
+    }
+
+    /**
+     * Retrieves income and expense data for the past three full months.
+     * If the current month is M of year Y, it retrieves data for months M-1, M-2, and M-3 of year Y (adjusting for year changes).
+     *
+     * @param username The username of the user.
+     * @param now      The current date.
+     * @return A list of income and expenses for the past three full months, sorted by month (oldest to newest).
+     * Note: The actual implementation detail of `java.util.Collections.reverse(monthlyData);` means the list
+     * will be sorted from newest to oldest before returning. The Javadoc here reflects the original Chinese comment's stated intent.
+     */
+    public List<MonthlyFinancialData> getPastThreeMonthsFinancialData(String username, LocalDate now) {
+        List<MonthlyFinancialData> monthlyData = new ArrayList<>();
+        DateTimeFormatter monthFormatter = DateTimeFormatter.ofPattern("yyyy-MM");
+
+        // 获取上个月的日期 (Get the date of the previous month)
+        LocalDate previousMonth = now.minusMonths(1);
+
+        // Loop to get data for the past three full months
+        // The loop adds data in chronological order (oldest first: prevMonth-2, prevMonth-1, prevMonth)
+        for (int i = 2; i >= 0; i--) {
+            LocalDate monthDate = previousMonth.minusMonths(i);
+            double income = calculateCurrentMonthIncome(transactionRepository.findTransactionsByUsername(username), monthDate);
+            double expense = calculateCurrentMonthExpense(transactionRepository.findTransactionsByUsername(username), monthDate);
+            monthlyData.add(new MonthlyFinancialData(monthDate.format(monthFormatter), income, expense));
+        }
+        // Ensure months are sorted chronologically (old to new)
+        // However, the reverse call below will make it newest to oldest.
+        java.util.Collections.reverse(monthlyData);
+        return monthlyData;
+    }
+
+    /**
+     * Represents financial data (income and expense) for a specific month.
+     */
+    public static class MonthlyFinancialData {
+        /**
+         * The month identifier, typically in "yyyy-MM" format.
+         */
+        private String month;
+        /**
+         * The total income for the month.
+         */
+        private double income;
+        /**
+         * The total expense for the month.
+         */
+        private double expense;
+
+        /**
+         * Constructs a MonthlyFinancialData instance.
+         *
+         * @param month   The month identifier (e.g., "2023-04").
+         * @param income  The total income for this month.
+         * @param expense The total expense for this month.
+         */
+        public MonthlyFinancialData(String month, double income, double expense) {
+            this.month = month;
+            this.income = income;
+            this.expense = expense;
+        }
+
+        /**
+         * Gets the month identifier.
+         *
+         * @return The month string (e.g., "2023-04").
+         */
+        public String getMonth() {
+            return month;
+        }
+
+        /**
+         * Gets the total income for the month.
+         *
+         * @return The total income.
+         */
+        public double getIncome() {
+            return income;
+        }
+
+        /**
+         * Gets the total expense for the month.
+         *
+         * @return The total expense.
+         */
+        public double getExpense() {
+            return expense;
         }
     }
 }
