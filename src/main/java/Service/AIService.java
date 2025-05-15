@@ -18,6 +18,7 @@ import java.nio.charset.StandardCharsets;
 import Controller.TransactionController;
 import Model.EntityResultModel;
 import com.google.gson.Gson;
+import java.io.IOException;
 
 import Model.AIResponse;
 import Model.IntentResultModel;
@@ -203,7 +204,7 @@ public class AIService {
                     return new AIResponse("You spent ¥" + String.format("%.2f", spent) + " this month.", null);
                 }
                 case "Greeting":{
-                    return new AIResponse("HI!  can tell you your balance, monthly spending, or record expense/income.", null);
+                    return new AIResponse("HI! I can tell you your balance, monthly spending, or record expense/income and give you some suggestion.", null);
                 }
                 case "Thanking":{
                     return new AIResponse("My honor.",null);

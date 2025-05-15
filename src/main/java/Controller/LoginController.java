@@ -144,7 +144,7 @@ public class LoginController {
      *
      * @param username the username of the logged-in user
      */
-    private void showMainInterface(String username) {
+    void showMainInterface(String username) {
         // Create services needed for MainPlane and its controllers.
         // BudgetService and TransactionService are already fields in LoginController,
         // so we can reuse them.

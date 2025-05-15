@@ -25,7 +25,7 @@ public class TransactionRepository {
     private static final DateTimeFormatter DATE_FORMATTER = Service.BudgetService.DATE_FORMATTER;
 
     /** The path to the CSV file storing transaction data. */
-    private static final String CSV_FILE = "transactions.csv";
+    private static String CSV_FILE = "transactions.csv";
 
     /**
      * Retrieves all transactions associated with a specific username from the CSV file.
@@ -117,7 +117,7 @@ public class TransactionRepository {
      * @param username The username whose transactions are to be read.
      * @return A list of {@link Transaction} objects for the user, or an empty list if an error occurs.
      */
-    public List<Transaction> readTransactions(String username) {
+    public static List<Transaction> readTransactions(String username) {
         List<Transaction> transactions = new ArrayList<>();
         try (BufferedReader br = new BufferedReader(new FileReader("transactions.csv"))) {
             String line = br.readLine(); // Skip header
@@ -180,5 +180,8 @@ public class TransactionRepository {
             e.printStackTrace();
         }
         return transactions;
+    }
+    public static void setCsvFilePathForTest(String path) {
+        CSV_FILE = path;
     }
 }

@@ -39,7 +39,7 @@ import Service.BudgetService;
  */
 public class TransactionController {
     /** The file path for storing transactions in CSV format. */
-    private static final String CSV_FILE_PATH = "transactions.csv";
+    private static  String CSV_FILE_PATH = "transactions.csv";
 
     /** The CSV header defining the structure of transaction records. */
     public static final String CSV_HEADER = "user,operation,amount,time,merchant,type,remark,category,payment_method,location,tag,attachment,recurrence";
@@ -375,6 +375,7 @@ public class TransactionController {
         } else {
             tempFile.delete();
         }
+
         return removed;
     }
 
@@ -524,4 +525,6 @@ public class TransactionController {
         }
         return field;
     }
+
+    public static void setCsvFilePathForTest(String path) { CSV_FILE_PATH = path; }
 }
