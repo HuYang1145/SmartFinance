@@ -639,7 +639,7 @@ public class BillPanel extends JPanel {
                 g2d.setColor(new Color(245, 245, 245));
                 g2d.fillArc(centerX - innerRadius, centerY - innerRadius, innerRadius * 2, innerRadius * 2, 0, 360);
 
-                g2d.setColor(Color.WHITE);
+                g2d.setColor(new Color(50, 50, 50));
                 g2d.setFont(new Font("Segoe UI", Font.PLAIN, 12));
                 FontMetrics fm = g2d.getFontMetrics();
                 List<Rectangle> labelBounds = new ArrayList<>();
@@ -687,7 +687,7 @@ public class BillPanel extends JPanel {
                     startAngle += arcAngle;
                 }
 
-                g2d.setColor(Color.WHITE);
+                g2d.setColor(Color.BLACK);
                 g2d.setFont(new Font("Segoe UI", Font.BOLD, 14));
                 String totalText = String.format("Total: ¥%.2f", totalAmount);
                 int textWidth = fm.stringWidth(totalText);

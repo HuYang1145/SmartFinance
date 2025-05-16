@@ -1,10 +1,3 @@
-/**
- * Represents the administrator interface for managing user accounts and transactions.
- * Provides a dashboard, account management panel, and sidebar for navigation and actions.
- *
- * @author Group 19
- * @version 1.0
- */
 package View.Administrator;
 
 import java.awt.BorderLayout;
@@ -17,7 +10,6 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.GridLayout;
 import java.awt.Insets;
 import java.io.File;
 import java.util.HashSet;
@@ -35,7 +27,6 @@ import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JPasswordField;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
@@ -47,9 +38,15 @@ import javax.swing.table.TableColumnModel;
 import Model.User;
 import Model.UserSession;
 import View.LoginAndMain.LoginComponents;
-
 import static View.LoginAndMain.LoginComponents.showCustomMessage;
 
+/**
+ * Represents the administrator interface for managing user accounts and transactions.
+ * Provides a dashboard, account management panel, and sidebar for navigation and actions.
+ *
+ * @author Group 19
+ * @version 1.0
+ */
 public class AdminView extends JDialog {
     public final CardLayout cardLayout;
     public JPanel contentPanel;
@@ -57,22 +54,22 @@ public class AdminView extends JDialog {
     private JTable accountTable;
     private DefaultTableModel tableModel;
     private final JPanel sidebarPanel;
+    private Consumer<String> modifyCustomerAction; // 添加成员变量
 
     /**
      * Constructs an AdminView dialog with specified actions for navigation and account management.
      *
      * @param dashboardAction         action to show the dashboard
-     * @param adminInfoAction         action to display admin information
-     * @param modifyCustomerAction    action to modify customer information
+     * @param modifyCustomerAction    action to query a customer for modification
      * @param customerInquiryAction   action to query customer information
      * @param deleteUsersAction       action to delete selected users
      * @param importAccountsAction    action to import customer accounts from a file
-     * @param importTransactionsAction action to import transaction records from a file
      * @param logoutAction            action to log out the administrator
      */
-    public AdminView(Runnable dashboardAction, Runnable adminInfoAction, Consumer<String[]> modifyCustomerAction,
+    public AdminView(Runnable dashboardAction, Consumer<String> modifyCustomerAction,
                     Consumer<List<User>> customerInquiryAction, Consumer<Set<String>> deleteUsersAction,
-                    Consumer<File> importAccountsAction, Consumer<File> importTransactionsAction, Runnable logoutAction) {
+                    Consumer<File> importAccountsAction, Runnable logoutAction) {
+        this.modifyCustomerAction = modifyCustomerAction; // 初始化成员变量
         setTitle("Administrator Account Center");
         setSize(1280, 720);
         setLocationRelativeTo(null);
@@ -84,13 +81,17 @@ public class AdminView extends JDialog {
         contentPanel.setLayout(cardLayout);
         contentPanel.setBackground(new Color(30, 60, 120));
 
-        JPanel dashboardPanel = createDashboardPanel();
+        JPanel dashboardPanel = createAdminInfoPanel();
         accountPanel = new JPanel(new BorderLayout());
         accountPanel.setBackground(new Color(245, 245, 245));
         setupAccountPanel(customerInquiryAction, deleteUsersAction);
 
+        JPanel modifyPanel = createModifyPanel();
+        modifyPanel.setBackground(new Color(245, 245, 245));
+
         contentPanel.add(dashboardPanel, "dashboard");
         contentPanel.add(accountPanel, "account");
+        contentPanel.add(modifyPanel, "modify");
 
         sidebarPanel = new JPanel();
         sidebarPanel.setPreferredSize(new Dimension(260, 0));
@@ -102,22 +103,16 @@ public class AdminView extends JDialog {
 
         sidebarPanel.add(createSidebarButton("Administrator Dashboard", btnSize, dashboardAction));
         sidebarPanel.add(Box.createVerticalStrut(10));
-        sidebarPanel.add(createSidebarButton("Administrator Information", btnSize, adminInfoAction));
+        sidebarPanel.add(createSidebarButton("Modify Customer Information", btnSize, () -> {
+            cardLayout.show(contentPanel, "modify");
+        }));
         sidebarPanel.add(Box.createVerticalStrut(10));
-        sidebarPanel.add(createSidebarButton("Modify Customer Information", btnSize, () -> showAdminVerificationDialog(modifyCustomerAction)));
-        sidebarPanel.add(Box.createVerticalStrut(10));
-        sidebarPanel.add(createSidebarButton("Customer Information Inquiry", btnSize, () -> {
+        sidebarPanel.add(createSidebarButton("Modify and Delete Customer Information", btnSize, () -> {
             customerInquiryAction.accept(null);
             cardLayout.show(contentPanel, "account");
         }));
         sidebarPanel.add(Box.createVerticalStrut(10));
-        sidebarPanel.add(createSidebarButton("Delete Customer Information", btnSize, () -> {
-            cardLayout.show(contentPanel, "account");
-        }));
-        sidebarPanel.add(Box.createVerticalStrut(10));
         sidebarPanel.add(createSidebarButton("Import Customer Accounts", btnSize, () -> importAccounts(importAccountsAction)));
-        sidebarPanel.add(Box.createVerticalStrut(10));
-        sidebarPanel.add(createSidebarButton("Import Transaction Records", btnSize, () -> importTransactions(importTransactionsAction)));
         sidebarPanel.add(Box.createVerticalGlue());
         sidebarPanel.add(Box.createVerticalStrut(10));
         sidebarPanel.add(createSidebarButton("Log Out", btnSize, logoutAction));
@@ -132,26 +127,77 @@ public class AdminView extends JDialog {
     }
 
     /**
-     * Creates the dashboard panel with a welcome message.
+     * Creates a panel displaying the admin's personal information.
      *
-     * @return the configured dashboard panel
+     * @return the configured admin info panel
      */
-    private JPanel createDashboardPanel() {
-        JPanel panel = new JPanel(null);
+    private JPanel createAdminInfoPanel() {
+        JPanel panel = new JPanel(new BorderLayout());
         panel.setBackground(new Color(245, 245, 245));
+        panel.setBorder(new EmptyBorder(20, 20, 20, 20));
 
-        JLabel title = new JLabel("Administrator Account Center");
+        JLabel title = new JLabel("Administrator Personal Information");
         title.setForeground(new Color(30, 60, 120));
-        title.setFont(new Font("Segoe UI", Font.BOLD, 28));
-        title.setBounds(40, 40, 500, 40);
-        panel.add(title);
+        title.setFont(new Font("Segoe UI", Font.BOLD, 24));
+        title.setHorizontalAlignment(SwingConstants.CENTER);
+        title.setBorder(new EmptyBorder(10, 0, 20, 0));
+        panel.add(title, BorderLayout.NORTH);
 
-        JLabel info = new JLabel("Welcome to the backend management system. Please select a function from the left.");
-        info.setForeground(Color.DARK_GRAY);
-        info.setFont(new Font("Segoe UI", Font.PLAIN, 16));
-        info.setBounds(40, 100, 600, 30);
-        panel.add(info);
+        JPanel infoPanel = new JPanel(new GridBagLayout());
+        infoPanel.setBackground(new Color(255, 255, 255));
+        infoPanel.setBorder(BorderFactory.createLineBorder(new Color(30, 60, 120), 2));
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(5, 10, 5, 10);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.anchor = GridBagConstraints.WEST;
 
+        String loggedInUsername = UserSession.getCurrentUsername();
+        if (loggedInUsername == null || loggedInUsername.isEmpty()) {
+            LoginComponents.showCustomMessage(this, "Administrator login information not detected, please log in first", "Error", JOptionPane.ERROR_MESSAGE);
+            return panel;
+        }
+
+        try {
+            String[][] adminInfo = new String[][]{
+                {"Username:", "Password:", "Phone:", "Email:", "Gender:", "Address:", "Creation Time:", "Account Status:", "Account Type:", "Balance:"},
+                {
+                    UserSession.getCurrentAccount().getUsername(),
+                    UserSession.getCurrentAccount().getPassword(),
+                    UserSession.getCurrentAccount().getPhone(),
+                    UserSession.getCurrentAccount().getEmail(),
+                    UserSession.getCurrentAccount().getGender(),
+                    UserSession.getCurrentAccount().getAddress(),
+                    UserSession.getCurrentAccount().getCreationTime(),
+                    UserSession.getCurrentAccount().getAccountStatus().toString(),
+                    UserSession.getCurrentAccount().getAccountType(),
+                    "%.2f".formatted(UserSession.getCurrentAccount().getBalance())
+                }
+            };
+
+            String[] headers = adminInfo[0];
+            String[] values = adminInfo[1];
+
+            for (int i = 0; i < headers.length; i++) {
+                JLabel nameLabel = new JLabel(headers[i]);
+                nameLabel.setFont(new Font("Segoe UI", Font.BOLD, 14));
+                nameLabel.setForeground(new Color(30, 60, 120));
+                gbc.gridx = 0;
+                gbc.gridy = i;
+                gbc.weightx = 0.3;
+                infoPanel.add(nameLabel, gbc);
+
+                JLabel valueLabel = new JLabel(values[i]);
+                valueLabel.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+                valueLabel.setForeground(Color.BLACK);
+                gbc.gridx = 1;
+                gbc.weightx = 0.7;
+                infoPanel.add(valueLabel, gbc);
+            }
+        } catch (Exception e) {
+            LoginComponents.showCustomMessage(this, "Failed to load administrator information: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+
+        panel.add(infoPanel, BorderLayout.CENTER);
         return panel;
     }
 
@@ -159,7 +205,7 @@ public class AdminView extends JDialog {
      * Sets up the account management panel with a table and buttons for querying and deleting users.
      *
      * @param customerInquiryAction action to query customer information
-     * @param deleteUsersAction    action to delete selected users
+     * @param deleteUsersAction     action to delete selected users
      */
     private void setupAccountPanel(Consumer<List<User>> customerInquiryAction, Consumer<Set<String>> deleteUsersAction) {
         String[] columnNames = {"Select", "Username", "Phone", "Email", "Gender", "Address", "Creation Time", "Account Status", "Account Type", "Balance"};
@@ -274,49 +320,186 @@ public class AdminView extends JDialog {
     }
 
     /**
-     * Displays a dialog for administrator verification before modifying customer information.
+     * Creates a panel for querying and modifying customer information.
      *
-     * @param modifyCustomerAction the action to perform with the provided credentials
+     * @return the configured modify panel
      */
-    private void showAdminVerificationDialog(Consumer<String[]> modifyCustomerAction) {
-        JDialog dialog = new JDialog(this, "Administrator Verification", true);
-        dialog.setSize(350, 180);
-        dialog.setLocationRelativeTo(this);
-        JPanel panel = new JPanel(new GridBagLayout());
-        panel.setBorder(new EmptyBorder(15, 15, 15, 15));
+    private JPanel createModifyPanel() {
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.setBorder(new EmptyBorder(20, 20, 20, 20));
+
+        JLabel title = new JLabel("Modify Customer Information");
+        title.setForeground(new Color(30, 60, 120));
+        title.setFont(new Font("Segoe UI", Font.BOLD, 24));
+        title.setHorizontalAlignment(SwingConstants.CENTER);
+        title.setBorder(new EmptyBorder(10, 0, 20, 0));
+        panel.add(title, BorderLayout.NORTH);
+
+        JPanel queryPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 5));
+        queryPanel.setBackground(new Color(245, 245, 245));
+        JLabel usernameLabel = new JLabel("Enter Username:");
+        usernameLabel.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        JTextField usernameField = new JTextField(20);
+        JButton queryButton = new JButton("Query");
+        queryButton.setForeground(Color.WHITE);
+        queryButton.setBackground(new Color(40, 167, 69));
+        queryButton.setPreferredSize(new Dimension(100, 30));
+        queryButton.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+        queryButton.addActionListener(e -> {
+            String username = usernameField.getText().trim();
+            if (!username.isEmpty()) {
+                modifyCustomerAction.accept(username);
+            } else {
+                LoginComponents.showCustomMessage(this, "Username cannot be empty.", "Input Error", JOptionPane.WARNING_MESSAGE);
+            }
+        });
+        queryPanel.add(usernameLabel);
+        queryPanel.add(usernameField);
+        queryPanel.add(queryButton);
+        panel.add(queryPanel, BorderLayout.CENTER);
+
+        return panel;
+    }
+
+    /**
+     * Updates the modify panel with the provided user account information for editing.
+     *
+     * @param account the user account to display for modification
+     * @param saveCallback the callback to handle saving changes
+     */
+    public void updateModifyPanel(User account, Consumer<User> saveCallback) {
+        // 查找 modify 面板
+        JPanel modifyPanel = null;
+        Component[] components = contentPanel.getComponents();
+        for (Component comp : components) {
+            // "modify" panel is the one added with the name "modify"
+            if (comp instanceof JPanel && comp.isVisible() && "Modify Customer Information".equals(((JPanel) comp).getBorder() instanceof EmptyBorder ? "" : ((JPanel) comp).getBorder().toString())) {
+                modifyPanel = (JPanel) comp;
+                break;
+            }
+        }
+        // Fallback: get the panel by index (assuming order is dashboard, account, modify)
+        if (modifyPanel == null && components.length >= 3) {
+            modifyPanel = (JPanel) components[2];
+        }
+        if (modifyPanel == null) return;
+
+        modifyPanel.removeAll();
+
+        JLabel title = new JLabel("Modify Customer Information");
+        title.setForeground(new Color(30, 60, 120));
+        title.setFont(new Font("Segoe UI", Font.BOLD, 24));
+        title.setHorizontalAlignment(SwingConstants.CENTER);
+        title.setBorder(new EmptyBorder(10, 0, 20, 0));
+        modifyPanel.add(title, BorderLayout.NORTH);
+
+        if (account == null) {
+            JPanel queryPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 5));
+            queryPanel.setBackground(new Color(245, 245, 245));
+            JLabel usernameLabel = new JLabel("Enter Username:");
+            usernameLabel.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+            JTextField usernameField = new JTextField(20);
+            JButton queryButton = new JButton("Query");
+            queryButton.setForeground(Color.WHITE);
+            queryButton.setBackground(new Color(40, 167, 69));
+            queryButton.setPreferredSize(new Dimension(100, 30));
+            queryButton.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+            queryButton.addActionListener(e -> {
+                String username = usernameField.getText().trim();
+                if (!username.isEmpty()) {
+                    modifyCustomerAction.accept(username);
+                } else {
+                    LoginComponents.showCustomMessage(this, "Username cannot be empty.", "Input Error", JOptionPane.WARNING_MESSAGE);
+                }
+            });
+            queryPanel.add(usernameLabel);
+            queryPanel.add(usernameField);
+            queryPanel.add(queryButton);
+            modifyPanel.add(queryPanel, BorderLayout.CENTER);
+            modifyPanel.revalidate();
+            modifyPanel.repaint();
+            return;
+        }
+
+        JPanel editPanel = new JPanel(new GridBagLayout());
+        editPanel.setBackground(new Color(245, 245, 245));
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(5, 5, 5, 5);
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
         gbc.gridx = 0; gbc.gridy = 0; gbc.weightx = 0.3;
-        panel.add(new JLabel("Admin Username:"), gbc);
+        editPanel.add(new JLabel("Username:"), gbc);
         gbc.gridx = 1; gbc.weightx = 0.7;
-        JTextField tfUser = new JTextField();
-        panel.add(tfUser, gbc);
+        JTextField tfUsername = new JTextField(account.getUsername(), 20);
+        tfUsername.setEditable(false);
+        editPanel.add(tfUsername, gbc);
 
-        gbc.gridx = 0; gbc.gridy = 1; gbc.weightx = 0.3;
-        panel.add(new JLabel("Admin Password:"), gbc);
-        gbc.gridx = 1; gbc.weightx = 0.7;
-        JPasswordField pfPass = new JPasswordField();
-        panel.add(pfPass, gbc);
+        gbc.gridx = 0; gbc.gridy++;
+        editPanel.add(new JLabel("Password:"), gbc);
+        gbc.gridx = 1;
+        JTextField tfPassword = new JTextField(account.getPassword(), 20);
+        editPanel.add(tfPassword, gbc);
 
-        gbc.gridx = 0; gbc.gridy = 2;
-        gbc.gridwidth = 2;
+        gbc.gridx = 0; gbc.gridy++;
+        editPanel.add(new JLabel("Phone:"), gbc);
+        gbc.gridx = 1;
+        JTextField tfPhone = new JTextField(account.getPhone(), 20);
+        editPanel.add(tfPhone, gbc);
+
+        gbc.gridx = 0; gbc.gridy++;
+        editPanel.add(new JLabel("Email:"), gbc);
+        gbc.gridx = 1;
+        JTextField tfEmail = new JTextField(account.getEmail(), 20);
+        editPanel.add(tfEmail, gbc);
+
+        gbc.gridx = 0; gbc.gridy++;
+        editPanel.add(new JLabel("Gender:"), gbc);
+        gbc.gridx = 1;
+        JComboBox<String> cbGender = new JComboBox<>(new String[]{"Male", "Female", "Other"});
+        cbGender.setSelectedItem(account.getGender());
+        editPanel.add(cbGender, gbc);
+
+        gbc.gridx = 0; gbc.gridy++;
+        editPanel.add(new JLabel("Address:"), gbc);
+        gbc.gridx = 1;
+        JTextField tfAddress = new JTextField(account.getAddress(), 20);
+        editPanel.add(tfAddress, gbc);
+
+        gbc.gridx = 0; gbc.gridy++;
+        editPanel.add(new JLabel("Account Status:"), gbc);
+        gbc.gridx = 1;
+        JComboBox<String> cbAccountStatus = new JComboBox<>(new String[]{"ACTIVE", "FROZEN"});
+        cbAccountStatus.setSelectedItem(account.getAccountStatus().toString());
+        editPanel.add(cbAccountStatus, gbc);
+
+        gbc.gridx = 0; gbc.gridy++; gbc.gridwidth = 2;
         gbc.fill = GridBagConstraints.NONE;
         gbc.anchor = GridBagConstraints.CENTER;
-        JButton btn = new JButton("Verify");
-        panel.add(btn, gbc);
-
-        dialog.add(panel);
-
-        btn.addActionListener(e -> {
-            String username = tfUser.getText();
-            String password = new String(pfPass.getPassword());
-            modifyCustomerAction.accept(new String[]{username, password});
-            dialog.dispose();
+        JButton saveButton = new JButton("Save Changes");
+        saveButton.setForeground(Color.WHITE);
+        saveButton.setBackground(new Color(40, 167, 69));
+        saveButton.setPreferredSize(new Dimension(150, 30));
+        saveButton.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+        saveButton.addActionListener(e -> {
+            User updatedAccount = new User(
+                    tfUsername.getText(),
+                    tfPassword.getText(),
+                    tfPhone.getText(),
+                    tfEmail.getText(),
+                    (String) cbGender.getSelectedItem(),
+                    tfAddress.getText(),
+                    account.getCreationTime(),
+                    User.AccountStatus.valueOf((String) cbAccountStatus.getSelectedItem()),
+                    account.getAccountType(),
+                    account.getBalance()
+            );
+            saveCallback.accept(updatedAccount);
         });
+        editPanel.add(saveButton, gbc);
 
-        dialog.setVisible(true);
+        modifyPanel.add(editPanel, BorderLayout.CENTER);
+        modifyPanel.revalidate();
+        modifyPanel.repaint();
     }
 
     /**
@@ -331,22 +514,6 @@ public class AdminView extends JDialog {
             File selectedFile = fileChooser.getSelectedFile();
             if (selectedFile != null) {
                 importAccountsAction.accept(selectedFile);
-            }
-        }
-    }
-
-    /**
-     * Opens a file chooser to import transaction records and invokes the provided action.
-     *
-     * @param importTransactionsAction the action to perform with the selected file
-     */
-    private void importTransactions(Consumer<File> importTransactionsAction) {
-        JFileChooser fileChooser = new JFileChooser();
-        fileChooser.setDialogTitle("Select transaction records file to import (5-column format)");
-        if (fileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
-            File selectedFile = fileChooser.getSelectedFile();
-            if (selectedFile != null) {
-                importTransactionsAction.accept(selectedFile);
             }
         }
     }
@@ -391,249 +558,5 @@ public class AdminView extends JDialog {
             }
         }
         return false;
-    }
-
-    /**
-     * Dialog for displaying administrator personal information.
-     */
-    public class AdminInfoDialog extends JDialog {
-        /**
-         * Constructs an AdminInfoDialog to display the current administrator's details.
-         */
-        public AdminInfoDialog() {
-            super(AdminView.this, "Administrator Personal Information", true);
-            setSize(400, 300);
-            setLocationRelativeTo(AdminView.this);
-            setLayout(new GridLayout(0, 2));
-
-            String loggedInUsername = UserSession.getCurrentUsername();
-
-            if (loggedInUsername == null || loggedInUsername.isEmpty()) {
-                LoginComponents.showCustomMessage(this, "Administrator login information not detected, please log in first", "Error", JOptionPane.ERROR_MESSAGE);
-                dispose();
-                return;
-            }
-
-            try {
-                String[][] adminInfo = new String[][]{{"Username:", "Password:", "Phone:", "Email:", "Gender:", "Address:", "Creation Time:", "Account Status:", "Account Type:", "Balance:"},
-                        {UserSession.getCurrentAccount().getUsername(), UserSession.getCurrentAccount().getPassword(), UserSession.getCurrentAccount().getPhone(), UserSession.getCurrentAccount().getEmail(), UserSession.getCurrentAccount().getGender(), UserSession.getCurrentAccount().getAddress(), UserSession.getCurrentAccount().getCreationTime(), UserSession.getCurrentAccount().getAccountStatus().toString(), UserSession.getCurrentAccount().getAccountType(), "%.2f".formatted(UserSession.getCurrentAccount().getBalance())}};
-
-                String[] headers = adminInfo[0];
-                String[] values = adminInfo[1];
-
-                for (int i = 0; i < headers.length; i++) {
-                    JLabel nameLabel = new JLabel(headers[i]);
-                    JLabel valueLabel = new JLabel(values[i]);
-                    add(nameLabel);
-                    add(valueLabel);
-                }
-            } catch (Exception e) {
-                LoginComponents.showCustomMessage(this, "Failed to load administrator information: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-                dispose();
-                return;
-            }
-
-            setVisible(true);
-        }
-    }
-
-    /**
-     * Dialog for modifying customer account information.
-     */
-    public class ModifyCustomerDialog extends JDialog {
-        private JTextField tfUsername, tfPhone, tfEmail, tfAddress;
-        private JPasswordField pfPassword;
-        private JComboBox<String> cbGender, cbAccountStatus;
-        private JPasswordField pfAdminPassword;
-        private Consumer<ModifyCustomerDialog> confirmCallback;
-
-        /**
-         * Constructs a ModifyCustomerDialog for editing a user's account details.
-         *
-         * @param account         the user account to modify
-         * @param confirmCallback the callback to handle confirmation
-         */
-        public ModifyCustomerDialog(User account, Consumer<ModifyCustomerDialog> confirmCallback) {
-            super(AdminView.this, "Modify Customer Information", true);
-            this.confirmCallback = confirmCallback;
-            setSize(400, 500);
-            setLocationRelativeTo(AdminView.this);
-            setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-
-            JPanel panel = new JPanel(new GridBagLayout());
-            GridBagConstraints gbc = new GridBagConstraints();
-            gbc.insets = new Insets(5, 5, 5, 5);
-            gbc.fill = GridBagConstraints.HORIZONTAL;
-
-            gbc.gridx = 0; gbc.gridy = 0;
-            panel.add(new JLabel("Username:"), gbc);
-            gbc.gridx = 1;
-            tfUsername = new JTextField(20);
-            tfUsername.setEditable(false);
-            panel.add(tfUsername, gbc);
-
-            gbc.gridx = 0; gbc.gridy = 1;
-            panel.add(new JLabel("Password:"), gbc);
-            gbc.gridx = 1;
-            pfPassword = new JPasswordField(20);
-            panel.add(pfPassword, gbc);
-
-            gbc.gridx = 0; gbc.gridy = 2;
-            panel.add(new JLabel("Phone:"), gbc);
-            gbc.gridx = 1;
-            tfPhone = new JTextField(20);
-            panel.add(tfPhone, gbc);
-
-            gbc.gridx = 0; gbc.gridy = 3;
-            panel.add(new JLabel("Email:"), gbc);
-            gbc.gridx = 1;
-            tfEmail = new JTextField(20);
-            panel.add(tfEmail, gbc);
-
-            gbc.gridx = 0; gbc.gridy = 4;
-            panel.add(new JLabel("Gender:"), gbc);
-            gbc.gridx = 1;
-            cbGender = new JComboBox<>(new String[]{"Male", "Female", "Other"});
-            panel.add(cbGender, gbc);
-
-            gbc.gridx = 0; gbc.gridy = 5;
-            panel.add(new JLabel("Address:"), gbc);
-            gbc.gridx = 1;
-            tfAddress = new JTextField(20);
-            panel.add(tfAddress, gbc);
-
-            gbc.gridx = 0; gbc.gridy = 6;
-            panel.add(new JLabel("Account Status:"), gbc);
-            gbc.gridx = 1;
-            cbAccountStatus = new JComboBox<>(new String[]{"ACTIVE", "FROZEN"});
-            panel.add(cbAccountStatus, gbc);
-
-            gbc.gridx = 0; gbc.gridy = 7;
-            panel.add(new JLabel("Admin Password:"), gbc);
-            gbc.gridx = 1;
-            pfAdminPassword = new JPasswordField(20);
-            panel.add(pfAdminPassword, gbc);
-
-            gbc.gridx = 0; gbc.gridy = 8; gbc.gridwidth = 2;
-            JButton btnConfirm = new JButton("Confirm");
-            btnConfirm.addActionListener(e -> confirmCallback.accept(this));
-            panel.add(btnConfirm, gbc);
-
-            add(panel);
-
-            setAccountInfo(account);
-            setVisible(true);
-        }
-
-        /**
-         * Gets the username from the dialog.
-         *
-         * @return the username
-         */
-        public String getUsername() {
-            return tfUsername.getText();
-        }
-
-        /**
-         * Gets the password from the dialog.
-         *
-         * @return the password
-         */
-        public String getPassword() {
-            return new String(pfPassword.getPassword());
-        }
-
-        /**
-         * Gets the phone number from the dialog.
-         *
-         * @return the phone number
-         */
-        public String getPhone() {
-            return tfPhone.getText();
-        }
-
-        /**
-         * Gets the email from the dialog.
-         *
-         * @return the email
-         */
-        public String getEmail() {
-            return tfEmail.getText();
-        }
-
-        /**
-         * Gets the selected gender from the dialog.
-         *
-         * @return the gender
-         */
-        public String getGender() {
-            return (String) cbGender.getSelectedItem();
-        }
-
-        /**
-         * Gets the address from the dialog.
-         *
-         * @return the address
-         */
-        public String getAddress() {
-            return tfAddress.getText();
-        }
-
-        /**
-         * Gets the selected account status from the dialog.
-         *
-         * @return the account status
-         */
-        public String getAccountStatus() {
-            return (String) cbAccountStatus.getSelectedItem();
-        }
-
-        /**
-         * Gets the admin password from the dialog.
-         *
-         * @return the admin password
-         */
-        public String getAdminPassword() {
-            return new String(pfAdminPassword.getPassword());
-        }
-
-        /**
-         * Sets the dialog fields with the provided account information.
-         *
-         * @param account the user account to display
-         */
-        public void setAccountInfo(User account) {
-            tfUsername.setText(account.getUsername());
-            pfPassword.setText(account.getPassword());
-            tfPhone.setText(account.getPhone());
-            tfEmail.setText(account.getEmail());
-            cbGender.setSelectedItem(account.getGender());
-            tfAddress.setText(account.getAddress());
-            cbAccountStatus.setSelectedItem(account.getAccountStatus().toString());
-        }
-
-        /**
-         * Closes the dialog.
-         */
-        public void close() {
-            dispose();
-        }
-    }
-
-    /**
-     * Displays the admin information dialog.
-     */
-    public void showAdminInfoDialog() {
-        new AdminInfoDialog();
-    }
-
-    /**
-     * Displays the modify customer dialog for the specified account.
-     *
-     * @param account         the user account to modify
-     * @param confirmCallback the callback to handle confirmation
-     */
-    public void showModifyCustomerDialog(User account, Consumer<ModifyCustomerDialog> confirmCallback) {
-        new ModifyCustomerDialog(account, confirmCallback);
     }
 }

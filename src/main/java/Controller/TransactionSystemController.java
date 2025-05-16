@@ -1,60 +1,41 @@
 package Controller;
 
+import java.awt.BorderLayout;
 import java.awt.Component;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeParseException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
-import javax.swing.Timer;
-import javax.swing.JOptionPane;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-// import java.awt.event.ItemEvent; // ItemEvent is not used in the provided snippet
-// import java.awt.event.ItemListener; // ItemListener is not used in the provided snippet
-import java.awt.BorderLayout; // Added import for BorderLayout
 
-
-import javax.swing.JPanel;
-import javax.swing.JList;
-import javax.swing.JTable;
+import javax.swing.DefaultListModel;
 import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
-import javax.swing.DefaultListModel;
-import javax.swing.JTextField;
-import javax.swing.JPasswordField;
-import javax.swing.JComboBox;
-import javax.swing.JButton;
-
-
+import javax.swing.JTable;
+import javax.swing.Timer; // Added import for BorderLayout
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableModel;
+
+import org.jfree.chart.axis.DateAxis;
+import org.jfree.data.time.Month;
+import org.jfree.data.time.TimeSeries;
+import org.jfree.data.time.TimeSeriesCollection;
 
 import Model.Transaction;
 import Model.TransactionCache;
 import Model.User;
 import Model.UserSession;
-import Repository.AccountRepository;
 import Service.BudgetService;
 import Service.ExchangeRateService;
 import Service.TransactionService;
 import View.Transaction.TransactionSystemComponents;
 import View.Transaction.TransactionSystemPlane;
-
-// Import JFreeChart classes
-import org.jfree.chart.ChartPanel;
-import org.jfree.chart.JFreeChart;
-import org.jfree.chart.axis.DateAxis; // Standard JFreeChart import
-import org.jfree.data.time.TimeSeries;
-import org.jfree.data.time.TimeSeriesCollection;
-import org.jfree.data.time.Month; // Used for data points, but not necessarily for TimeSeries constructor
-import org.jfree.data.time.RegularTimePeriod; // More general base class
 
 /**
  * Controller class for managing the transaction system panel in a financial management application.

@@ -46,7 +46,8 @@ import Model.Transaction;
 import Model.UserSession;
 import Service.PersonChartDataService;
 import Service.PersonFinancialService;
-import View.LoginAndMain.GradientComponents.*;
+import View.LoginAndMain.GradientComponents.GradientBorder;
+import View.LoginAndMain.GradientComponents.GradientPanel;
 
 /**
  * A JPanel that displays a user's financial overview, including income and expense categories,
@@ -705,121 +706,133 @@ public class PersonalCenterPanel extends JPanel {
         panel.add(title, BorderLayout.NORTH);
 
         annualChartPanel = new JPanel() {
-            @Override
-            protected void paintComponent(Graphics g) {
-                super.paintComponent(g);
-                if (!isDataLoaded) {
-                    Graphics2D g2d = (Graphics2D) g;
-                    g2d.setColor(Color.DARK_GRAY);
-                    g2d.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-                    g2d.drawString("Loading chart...", getWidth() / 2 - 50, getHeight() / 2);
-                    return;
-                }
+    @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        if (!isDataLoaded) {
+            Graphics2D g2d = (Graphics2D) g;
+            g2d.setColor(Color.DARK_GRAY);
+            g2d.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+            g2d.drawString("Loading chart...", getWidth() / 2 - 50, getHeight() / 2);
+            return;
+        }
 
-                Graphics2D g2d = (Graphics2D) g;
-                g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        Graphics2D g2d = (Graphics2D) g;
+        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-                int lineWidth = 400;
-                int lineHeight = 10;
-                double total = Math.max(annualIncome + annualExpense, 1);
-                int redLength = (int) ((annualIncome / total) * lineWidth);
-                int greenLength = lineWidth - redLength;
+        // Dynamically calculate dimensions based on panel size
+        int panelWidth = getWidth();
+        int panelHeight = getHeight();
+        int controlPanelHeight = 50; // Approximate height of control panel (buttons)
+        int margin = 20; // Margin for padding
+        int lineWidth = panelWidth - 2 * margin; // Dynamic width for bar and chart
+        int lineHeight = 10;
+        int chartWidth = lineWidth; 
+        int chartHeight = (panelHeight - controlPanelHeight - 100) / 2; // Adjust height to avoid control panel
+        chartHeight = Math.max(chartHeight, 150); // Ensure minimum height for readability
 
-                g2d.setColor(new Color(255, 99, 71));
-                g2d.fillRect(25, 80, redLength, lineHeight);
-                g2d.setColor(new Color(60, 179, 113));
-                g2d.fillRect(25 + redLength, 80, greenLength, lineHeight);
+        double total = Math.max(annualIncome + annualExpense, 1);
+        int redLength = (int) ((annualIncome / total) * lineWidth);
+        int greenLength = lineWidth - redLength;
 
-                g2d.setColor(Color.DARK_GRAY);
-                g2d.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-                g2d.drawString("Annual Income (¥)", 25, 60);
-                g2d.drawString(String.format("%.2f", annualIncome), 25, 75);
-                g2d.drawString("Annual Expense (¥)", 25 + lineWidth - 100, 60);
-                g2d.drawString(String.format("%.2f", annualExpense), 25 + lineWidth - 50, 75);
-                g2d.drawString("Annual Balance: " + String.format("%.2f", annualIncome - annualExpense) + " ¥",
-                        25 + lineWidth - 100, 110);
+        g2d.setColor(new Color(255, 99, 71));
+        g2d.fillRect(margin, 80, redLength, lineHeight);
+        g2d.setColor(new Color(60, 179, 113));
+        g2d.fillRect(margin + redLength, 80, greenLength, lineHeight);
 
-                int chartX = 60;
-                int chartY = 150;
-                int chartWidth = lineWidth;
-                int chartHeight = 200;
+        g2d.setColor(Color.DARK_GRAY);
+        g2d.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        g2d.drawString("Annual Income (¥)", margin, 60);
+        g2d.drawString(String.format("%.2f", annualIncome), margin, 75);
+        g2d.drawString("Annual Expense (¥)", margin + lineWidth - 100, 60);
+        g2d.drawString(String.format("%.2f", annualExpense), margin + lineWidth - 50, 75);
+        g2d.drawString("Annual Balance:(¥)",margin + lineWidth - 100, 110);
+        g2d.drawString(String.format("%.2f", annualIncome - annualExpense),margin + lineWidth - 100, 125);
 
-                double maxAmount = 0;
-                if (monthlyIncomes != null && monthlyExpenses != null) {
-                    for (int i = 1; i <= 12; i++) {
-                        String month = String.format("%02d", i);
-                        maxAmount = Math.max(maxAmount, monthlyIncomes.getOrDefault(month, 0.0));
-                        maxAmount = Math.max(maxAmount, monthlyExpenses.getOrDefault(month, 0.0));
-                    }
-                }
-                maxAmount = Math.max(maxAmount, 1);
+        int chartX = margin + 30;
+        int chartY = 130;
+        // Ensure chart does not extend into control panel area
+        if (chartY + chartHeight + controlPanelHeight > panelHeight - margin) {
+            chartHeight = panelHeight - chartY - controlPanelHeight - margin;
+            chartHeight = Math.max(chartHeight, 150); // Ensure minimum height
+        }
 
-                g2d.setColor(Color.BLACK);
-                g2d.drawLine(chartX, chartY, chartX, chartY + chartHeight);
-                g2d.drawLine(chartX, chartY + chartHeight, chartX + chartWidth, chartY + chartHeight);
-
-                g2d.setFont(new Font("Segoe UI", Font.PLAIN, 12));
-                int numTicks = 5;
-                double amountStep = maxAmount / numTicks;
-                for (int i = 0; i <= numTicks; i++) {
-                    double amount = i * amountStep;
-                    int y = chartY + chartHeight - (int) ((amount / maxAmount) * chartHeight);
-                    g2d.drawString(String.format("%.0f ¥", amount), chartX - 50, y + 5);
-                }
-
-                for (int i = 0; i < 12; i++) {
-                    int x = chartX + (i * chartWidth / 12);
-                    g2d.drawString(String.format("%02d", i + 1), x, chartY + chartHeight + 20);
-                }
-
-                if (monthlyIncomes != null && monthlyExpenses != null) {
-                    Path2D incomePath = new Path2D.Double();
-                    Path2D expensePath = new Path2D.Double();
-                    int[] incomePointsX = new int[12];
-                    int[] incomePointsY = new int[12];
-                    int[] expensePointsX = new int[12];
-                    int[] expensePointsY = new int[12];
-
-                    for (int i = 0; i < 12; i++) {
-                        String month = String.format("%02d", i + 1);
-                        double income = monthlyIncomes.getOrDefault(month, 0.0);
-                        double expense = monthlyExpenses.getOrDefault(month, 0.0);
-                        incomePointsX[i] = chartX + (i * chartWidth / 12);
-                        incomePointsY[i] = chartY + chartHeight - (int) ((income / maxAmount) * chartHeight);
-                        expensePointsX[i] = chartX + (i * chartWidth / 12);
-                        expensePointsY[i] = chartY + chartHeight - (int) ((expense / maxAmount) * chartHeight);
-                    }
-
-                    if (showIncome) {
-                        g2d.setColor(new Color(255, 99, 71));
-                        incomePath.moveTo(incomePointsX[0], incomePointsY[0]);
-                        for (int i = 1; i < 12; i++) {
-                            int x1 = incomePointsX[i - 1];
-                            int y1 = incomePointsY[i - 1];
-                            int x2 = incomePointsX[i];
-                            int y2 = incomePointsY[i];
-                            int cx = (x1 + x2) / 2;
-                            incomePath.curveTo(cx, y1, cx, y2, x2, y2);
-                        }
-                        g2d.draw(incomePath);
-                    }
-
-                    if (showExpense) {
-                        g2d.setColor(new Color(60, 179, 113));
-                        expensePath.moveTo(expensePointsX[0], expensePointsY[0]);
-                        for (int i = 1; i < 12; i++) {
-                            int x1 = expensePointsX[i - 1];
-                            int y1 = expensePointsY[i - 1];
-                            int x2 = expensePointsX[i];
-                            int y2 = expensePointsY[i];
-                            int cx = (x1 + x2) / 2;
-                            expensePath.curveTo(cx, y1, cx, y2, x2, y2);
-                        }
-                        g2d.draw(expensePath);
-                    }
-                }
+        double maxAmount = 0;
+        if (monthlyIncomes != null && monthlyExpenses != null) {
+            for (int i = 1; i <= 12; i++) {
+                String month = String.format("%02d", i);
+                maxAmount = Math.max(maxAmount, monthlyIncomes.getOrDefault(month, 0.0));
+                maxAmount = Math.max(maxAmount, monthlyExpenses.getOrDefault(month, 0.0));
             }
-        };
+        }
+        maxAmount = Math.max(maxAmount, 1);
+
+        g2d.setColor(Color.BLACK);
+        g2d.drawLine(chartX, chartY, chartX, chartY + chartHeight);
+        g2d.drawLine(chartX, chartY + chartHeight, chartX + chartWidth, chartY + chartHeight);
+
+        g2d.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+        int numTicks = 5;
+        double amountStep = maxAmount / numTicks;
+        for (int i = 0; i <= numTicks; i++) {
+            double amount = i * amountStep;
+            int y = chartY + chartHeight - (int) ((amount / maxAmount) * chartHeight);
+            g2d.drawString(String.format("%.0f ¥", amount), chartX - 50, y + 5);
+        }
+
+        for (int i = 0; i < 12; i++) {
+            int x = chartX + (i * chartWidth / 12);
+            g2d.drawString(String.format("%02d", i + 1), x, chartY + chartHeight + 20);
+        }
+
+        if (monthlyIncomes != null && monthlyExpenses != null) {
+            Path2D incomePath = new Path2D.Double();
+            Path2D expensePath = new Path2D.Double();
+            int[] incomePointsX = new int[12];
+            int[] incomePointsY = new int[12];
+            int[] expensePointsX = new int[12];
+            int[] expensePointsY = new int[12];
+
+            for (int i = 0; i < 12; i++) {
+                String month = String.format("%02d", i + 1);
+                double income = monthlyIncomes.getOrDefault(month, 0.0);
+                double expense = monthlyExpenses.getOrDefault(month, 0.0);
+                incomePointsX[i] = chartX + (i * chartWidth / 12);
+                incomePointsY[i] = chartY + chartHeight - (int) ((income / maxAmount) * chartHeight);
+                expensePointsX[i] = chartX + (i * chartWidth / 12);
+                expensePointsY[i] = chartY + chartHeight - (int) ((expense / maxAmount) * chartHeight);
+            }
+
+            if (showIncome) {
+                g2d.setColor(new Color(255, 99, 71));
+                incomePath.moveTo(incomePointsX[0], incomePointsY[0]);
+                for (int i = 1; i < 12; i++) {
+                    int x1 = incomePointsX[i - 1];
+                    int y1 = incomePointsY[i - 1];
+                    int x2 = incomePointsX[i];
+                    int y2 = incomePointsY[i];
+                    int cx = (x1 + x2) / 2;
+                    incomePath.curveTo(cx, y1, cx, y2, x2, y2);
+                }
+                g2d.draw(incomePath);
+            }
+
+            if (showExpense) {
+                g2d.setColor(new Color(60, 179, 113));
+                expensePath.moveTo(expensePointsX[0], expensePointsY[0]);
+                for (int i = 1; i < 12; i++) {
+                    int x1 = expensePointsX[i - 1];
+                    int y1 = expensePointsY[i - 1];
+                    int x2 = expensePointsX[i];
+                    int y2 = expensePointsY[i];
+                    int cx = (x1 + x2) / 2;
+                    expensePath.curveTo(cx, y1, cx, y2, x2, y2);
+                }
+                g2d.draw(expensePath);
+            }
+        }
+    }
+};
         annualChartPanel.setPreferredSize(new Dimension(450, 400));
         annualChartPanel.setOpaque(false);
         panel.add(annualChartPanel, BorderLayout.CENTER);

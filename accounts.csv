@@ -1,10 +1,9 @@
-Username,Password,Phone,Email,Gender,Address,CreationTime,AccountStatus,AccountType,Balance
-yaqi,1,1,1,Female,1,2025/4/1 19:19,ACTIVE,Personal,950.0
-1,1,1,1,Female,1,2025/4/1 19:32,ACTIVE,Admin,0.0
-2,2,2,4532,Male,2,2025/4/14 23:14,ACTIVE,Personal,1870.0
-3,3,3,3,Female,3,2025/4/14 23:14,ACTIVE,Personal,50000.0
+username,password,phone,email,gender,address,creationTime,accountStatus,accountType,balance
+yaqi,1,1,1,Female,1,2025/4/1 19:19,ACTIVE,Personal,950.00
+2,2,2,4532,Male,2,2025/4/14 23:14,ACTIVE,Personal,1870.00
+3,3,3,3,Female,3,2025/4/14 23:14,ACTIVE,Personal,50000.00
 Coca-Cola,9,18333344455,cocacola@example.com,Male,Atlanta,2023/9/15 21:45,ACTIVE,Personal,9876.54
-Pepsi,9,18244455566,pepsi@example.com,Female,New York City,2023/8/1 10:00,ACTIVE,Personal,5432.1
+Pepsi,9,18244455566,pepsi@example.com,Female,New York City,2023/8/1 10:00,ACTIVE,Personal,5432.10
 Siemens,9,17977788899,siemens@example.com,Male,Munich,2022/6/20 9:45,ACTIVE,Personal,7654.32
 Bosch,9,17888899900,bosch@example.com,Female,Stuttgart,2022/5/1 20:00,ACTIVE,Personal,4321.09
 Volkswagen,9,17799900011,volkswagen@example.com,Male,Wolfsburg,2024/8/15 11:15,ACTIVE,Admin,98765.43
@@ -16,7 +15,7 @@ Samsung,9,17244455566,samsung@example.com,Female,Seoul,2024/5/25 17:30,ACTIVE,Pe
 Apple,9,17155566677,apple@example.com,Male,Cupertino,2020/11/15 9:00,ACTIVE,Personal,87654.32
 Microsoft,9,17066677788,microsoft@example.com,Female,Redmond,2020/10/1 20:15,ACTIVE,Personal,54321.09
 Amazon,9,16977788899,amazon@example.com,Male,Seattle,2022/3/10 14:45,ACTIVE,Admin,198765.43
-Google,9,16888899900,google@example.com,Female,Mountain View,2023/10/20 11:00,ACTIVE,Personal,65432.1
+Google,9,16888899900,google@example.com,Female,Mountain View,2023/10/20 11:00,ACTIVE,Personal,65432.10
 Tesla,9,16799900011,tesla@example.com,Male,Austin,2025/4/1 22:30,ACTIVE,Personal,32109.87
 Kweichow Moutai,9,16333344455,moutai@example.com,Male,Maotai Town,2022/5/20 10:45,ACTIVE,Personal,23456.78
 Wuliangye,9,16244455566,wuliangye@example.com,Female,Yibin City,2022/4/1 21:00,ACTIVE,Personal,12345.67
@@ -34,14 +33,15 @@ Facebook,9,14422233344,facebook@example.com,Female,Menlo Park,2022/4/10 12:30,AC
 Twitter,9,14333344455,twitter@example.com,Male,San Francisco,2020/3/15 16:00,ACTIVE,Personal,54321.09
 Intel,9,14244455566,intel@example.com,Female,Santa Clara,2023/10/30 9:45,ACTIVE,Personal,12345.67
 Nvidia,9,14155566677,nvidia@example.com,Male,Santa Clara,2023/11/1 20:00,ACTIVE,Personal,67890.12
-JPMorgan Chase,9,18600011122,jpmorgan@example.com,Female,New York City,2024/11/1 20:45,ACTIVE,Personal,45678.9
+JPMorgan Chase,9,18600011122,jpmorgan@example.com,Female,New York City,2024/11/1 20:45,ACTIVE,Personal,45678.90
 Goldman Sachs,9,18511122233,goldmansachs@example.com,Male,New York City,2021/4/25 13:00,ACTIVE,Personal,78901.23
 Morgan Stanley,9,18422233344,morganstanley@example.com,Female,New York City,2025/1/5 17:15,ACTIVE,Personal,34567.89
-huyang,1,1,1,Male,1,2025/4/17 16:29,ACTIVE,Personal,7647522.0
-4,4,4,4,Female,4,2025/1/1 0:00,ACTIVE,Personal,27785.0
-5,5,5,5,Male,5,2025-04-20 23:40,ACTIVE,Personal,0.0
-BigSpenderBob,BigSpenderBob,1234567890,bob@example.com,Male,123 Main St,2025/05/01 10:00,ACTIVE,Personal,15000.0
-AverageJane,AverageJane,0987654321,jane@example.com,Female,456 Oak Ave,2025/05/01 10:05,ACTIVE,Personal,18000.0
-RapidFireRita,RapidFireRita,1122334455,rita@example.com,Female,789 Pine Rd,2025/05/01 10:10,ACTIVE,Personal,20000.0
+huyang,1,1,1,Male,1,2025/4/17 16:29,ACTIVE,Personal,7647522.00
+4,4,4,4,Female,4,2025/1/1 0:00,ACTIVE,Personal,27785.00
+5,5,5,5,Male,5,2025-04-20 23:40,ACTIVE,Personal,0.00
+BigSpenderBob,BigSpenderBob,1234567890,bob@example.com,Male,123 Main St,2025/05/01 10:00,ACTIVE,Personal,15000.00
+AverageJane,AverageJane,0987654321,jane@example.com,Female,456 Oak Ave,2025/05/01 10:05,ACTIVE,Personal,18000.00
+RapidFireRita,RapidFireRita,1122334455,rita@example.com,Female,789 Pine Rd,2025/05/01 10:10,ACTIVE,Personal,20000.00
 7,7,7,7,Male,7,2025/04/25 09:08,ACTIVE,Personal,0.00
-8,8,8,8,Male,8,2025/04/25 09:37,ACTIVE,Personal,0.0077,77,77,77,Male,77,2025-05-11T20:26:02.770163800,ACTIVE,Admin,0.00
+8,8,8,8,Male,8,2025/04/25 09:37,ACTIVE,Personal,0.01
+1,1,1,1,Female,1,2025/4/1 19:32,ACTIVE,Admin,0.00

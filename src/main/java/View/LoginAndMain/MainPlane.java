@@ -5,47 +5,33 @@ import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
-// Removed unnecessary imports related to Graphics/Shape/RoundRectangle2D/BufferedImage/File/IOException/ImageIO
-// import java.awt.Graphics;
-// import java.awt.Graphics2D;
-// import java.awt.RenderingHints;
-// import java.awt.Shape;
-// import java.awt.geom.RoundRectangle2D;
-// import java.awt.image.BufferedImage;
-// import java.io.File;
-// import java.io.IOException;
-// import javax.imageio.ImageIO;
-
-import java.util.ArrayList;
-import java.util.List;
-import javax.swing.*; // Consolidated Swing imports
-
-import Controller.BillController; // Keep import
-import Controller.MainPanelController; // Keep import
-import Controller.PersonCenterController; // Keep import
-import Model.UserSession; // Keep import
-// Keep imports for custom components and services
-import View.LoginAndMain.LoginRoundedInputField.*;
-import View.LoginAndMain.NavItemPanel.*;
-import Service.BudgetService;
-import Service.TransactionService;
-
 import java.awt.Font;
 import java.awt.event.FocusAdapter;
-import java.awt.event.FocusEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.FocusEvent; // Consolidated Swing imports
+import java.awt.event.MouseAdapter; // Keep import
+import java.awt.event.MouseEvent; // Keep import
+import java.util.ArrayList; // Keep import
+import java.util.List; // Keep import
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
-import javax.swing.SwingUtilities;
 import javax.swing.BoxLayout;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.DocumentListener;
+
+import Controller.BillController;
+import Controller.MainPanelController;
+import Controller.PersonCenterController;
+import Model.UserSession;
+import Service.BudgetService;
+import Service.TransactionService;
+import View.LoginAndMain.LoginRoundedInputField.*;
+import View.LoginAndMain.LoginRoundedInputField.RoundBorder;
 
 
 /**
