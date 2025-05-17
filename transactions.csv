@@ -324,4 +324,8 @@ RapidFireRita,Expense,50.00,2025/05/11 12:00,Grocery Store,Food,"Snacks","Food-G
 2,Expense,160.00,2025/05/19,Software License V,Other,"Annual license",Professional-Services,Credit Card,Online,Other,"[Attachment: Invoice]",Recurring
 2,Expense,100.00,2025/05/21,Online Fitness W,Health,"Coaching session",Health-Fitness,Alipay,Online,Fitness,"[Attachment: Receipt]",Non-recurring
 2,Expense,130.00,2025/05/24,Online Magazine X,Shopping,"Digital subscription",Shopping-Books/Media,Credit Card,Online,shopping,"[Attachment: Receipt]",Recurring
-2,Expense,190.00,2025/05/26,Online Store Y,Shopping,"Household item",Shopping-Online,WeChat Pay,Online,shopping,"[Attachment: Invoice]",Non-recurringuser1,Income,100.00,2024/05/18 10:00,market,Income,,Income,,,,,user1,Income,100.00,2024/05/18 10:00,market,Income,,Income,,,,,
+2,Expense,190.00,2025/05/26,Online Store Y,Shopping,"Household item",Shopping-Online,WeChat Pay,Online,shopping,"[Attachment: Invoice]",Non-recurring
+2,Expense,200.00,2025/05/12 12:00,KFC,food,,,,Online,,,
+2,Expense,1000.00,2025/05/15 12:00,Amazon,shopping,,,,Online,,,
+2,Expense,500.00,2025/03/15 12:00,gym,Fitness,,,,Online,,,
+2,Expense,10000.00,2025/02/15 12:00,Tianjing,Travel,,,,Online,,,
