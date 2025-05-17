@@ -119,7 +119,7 @@ public class TransactionRepository {
      */
     public static List<Transaction> readTransactions(String username) {
         List<Transaction> transactions = new ArrayList<>();
-        try (BufferedReader br = new BufferedReader(new FileReader("transactions.csv"))) {
+        try (BufferedReader br = new BufferedReader(new FileReader(CSV_FILE))) {
             String line = br.readLine(); // Skip header
             while ((line = br.readLine()) != null) {
                 String[] data = line.split(",", -1); // Use -1 to keep empty trailing fields
@@ -184,4 +184,5 @@ public class TransactionRepository {
     public static void setCsvFilePathForTest(String path) {
         CSV_FILE = path;
     }
+    public static String getCsvFilePath() { return CSV_FILE; }
 }
