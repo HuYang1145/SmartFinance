@@ -51,6 +51,7 @@ import Controller.PersonCenterController;
 import Model.Transaction;
 import Service.BudgetService;
 import View.Bill.BillComponents.GradientBorder;
+import View.LoginAndMain.GradientComponents;
 import View.Transaction.TransactionSystemComponents;
 
 /**
@@ -61,7 +62,7 @@ import View.Transaction.TransactionSystemComponents;
  * @author Group 19
  * @version 1.0
  */
-public class BillPanel extends JPanel {
+public class BillPanel extends TransactionSystemComponents.MidGradientPanel {
     private JComboBox<Integer> startYearComboBox, endYearComboBox;
     private JComboBox<String> startMonthComboBox, endMonthComboBox;
     private JComboBox<String> categoryFieldComboBox;
@@ -133,9 +134,9 @@ public class BillPanel extends JPanel {
                 JLabel lbl = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
                 if (isSelected) {
                     lbl.setBackground(new Color(100, 149, 237));
-                    lbl.setForeground(Color.WHITE);
+                    lbl.setForeground(Color.black);
                 } else {
-                    lbl.setBackground(Color.WHITE);
+                    lbl.setBackground(Color.BLACK);
                     lbl.setForeground(new Color(50, 50, 50));
                 }
                 lbl.setBorder(BorderFactory.createEmptyBorder(2, 10, 2, 10));
@@ -176,9 +177,9 @@ public class BillPanel extends JPanel {
                 JLabel lbl = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
                 if (isSelected) {
                     lbl.setBackground(new Color(100, 149, 237));
-                    lbl.setForeground(Color.WHITE);
+                    lbl.setForeground(Color.BLACK);
                 } else {
-                    lbl.setBackground(Color.WHITE);
+                    lbl.setBackground(Color.BLUE);
                     lbl.setForeground(new Color(50, 50, 50));
                 }
                 lbl.setBorder(BorderFactory.createEmptyBorder(2, 10, 2, 10));
@@ -226,9 +227,9 @@ public class BillPanel extends JPanel {
                 JLabel lbl = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
                 if (isSelected) {
                     lbl.setBackground(new Color(100, 149, 237));
-                    lbl.setForeground(Color.WHITE);
+                    lbl.setForeground(Color.BLACK);
                 } else {
-                    lbl.setBackground(Color.WHITE);
+                    lbl.setBackground(Color.BLACK);
                     lbl.setForeground(new Color(50, 50, 50));
                 }
                 lbl.setBorder(BorderFactory.createEmptyBorder(2, 10, 2, 10));
@@ -268,9 +269,9 @@ public class BillPanel extends JPanel {
                 JLabel lbl = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
                 if (isSelected) {
                     lbl.setBackground(new Color(100, 149, 237));
-                    lbl.setForeground(Color.WHITE);
+                    lbl.setForeground(Color.BLACK);
                 } else {
-                    lbl.setBackground(Color.WHITE);
+                    lbl.setBackground(Color.BLACK);
                     lbl.setForeground(new Color(50, 50, 50));
                 }
                 lbl.setBorder(BorderFactory.createEmptyBorder(2, 10, 2, 10));
@@ -316,9 +317,9 @@ public class BillPanel extends JPanel {
                 JLabel lbl = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
                 if (isSelected) {
                     lbl.setBackground(new Color(100, 149, 237));
-                    lbl.setForeground(Color.WHITE);
+                    lbl.setForeground(Color.BLACK);
                 } else {
-                    lbl.setBackground(Color.WHITE);
+                    lbl.setBackground(Color.BLACK);
                     lbl.setForeground(new Color(50, 50, 50));
                 }
                 lbl.setBorder(BorderFactory.createEmptyBorder(2, 10, 2, 10));
@@ -390,7 +391,8 @@ public class BillPanel extends JPanel {
 
             incomeChartPanel = createDonutChartPanel(username, false, startYearMonth, endYearMonth, categoryField);
             JPanel incomeCategoriesPanel = new JPanel(new BorderLayout());
-            incomeCategoriesPanel.setOpaque(false);
+            incomeCategoriesPanel.setOpaque(true);
+            incomeCategoriesPanel.setBackground(Color.WHITE);
             incomeCategoriesPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
             JLabel incomeTitle = new JLabel("Income Categories", SwingConstants.CENTER);
             incomeTitle.setFont(new Font("Segoe UI", Font.BOLD, 16));
@@ -409,7 +411,8 @@ public class BillPanel extends JPanel {
 
             expenseChartPanel = createDonutChartPanel(username, true, startYearMonth, endYearMonth, categoryField);
             JPanel expenseCategoriesPanel = new JPanel(new BorderLayout());
-            expenseCategoriesPanel.setOpaque(false);
+            expenseCategoriesPanel.setOpaque(true);
+            expenseCategoriesPanel.setBackground(Color.WHITE);
             expenseCategoriesPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
             JLabel expenseTitle = new JLabel("Expense Categories", SwingConstants.CENTER);
             expenseTitle.setFont(new Font("Segoe UI", Font.BOLD, 16));
@@ -497,7 +500,7 @@ public class BillPanel extends JPanel {
      * @return the donut chart panel
      */
     private JPanel createDonutChartPanel(String username, boolean isExpense, String startYearMonth, String endYearMonth, String categoryField) {
-        return new TransactionSystemComponents.MidGradientPanel() {
+        return new JPanel() {
             private List<Map.Entry<String, Double>> categoryEntries = new ArrayList<>();
             private double totalAmount = 0.0;
             private int hoveredIndex = -1;
@@ -592,12 +595,13 @@ public class BillPanel extends JPanel {
             @Override
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
+                setBackground(Color.WHITE);
                 Graphics2D g2d = (Graphics2D) g.create();
                 g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
                 if (totalAmount <= 0) {
                     g2d.setFont(new Font("Segoe UI", Font.PLAIN, 12));
-                    g2d.setColor(Color.WHITE);
+                    g2d.setColor(Color.black);
                     g2d.drawString("No valid " + (isExpense ? "expense" : "income") + " data to display.",
                             getWidth() / 2 - 70, getHeight() / 2);
                     g2d.dispose();
@@ -639,7 +643,7 @@ public class BillPanel extends JPanel {
                 g2d.setColor(new Color(245, 245, 245));
                 g2d.fillArc(centerX - innerRadius, centerY - innerRadius, innerRadius * 2, innerRadius * 2, 0, 360);
 
-                g2d.setColor(Color.WHITE);
+                g2d.setColor(Color.black);
                 g2d.setFont(new Font("Segoe UI", Font.PLAIN, 12));
                 FontMetrics fm = g2d.getFontMetrics();
                 List<Rectangle> labelBounds = new ArrayList<>();
@@ -687,7 +691,7 @@ public class BillPanel extends JPanel {
                     startAngle += arcAngle;
                 }
 
-                g2d.setColor(Color.WHITE);
+                g2d.setColor(Color.blue);
                 g2d.setFont(new Font("Segoe UI", Font.BOLD, 14));
                 String totalText = String.format("Total: ¥%.2f", totalAmount);
                 int textWidth = fm.stringWidth(totalText);
@@ -845,7 +849,7 @@ public class BillPanel extends JPanel {
      * @return the monthly bar chart panel
      */
     private JPanel getDailyLineChartPanel(String username, String startYearMonth, String endYearMonth) {
-        JPanel panel = new TransactionSystemComponents.MidGradientPanel() {
+        JPanel panel = new JPanel() {
             private boolean showIncome = true;
             private boolean showExpense = true;
             private double totalIncome = 0.0;
@@ -884,6 +888,7 @@ public class BillPanel extends JPanel {
             @Override
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
+                setBackground(Color.WHITE);
                 Graphics2D g2d = (Graphics2D) g.create();
                 g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
@@ -928,7 +933,7 @@ public class BillPanel extends JPanel {
 
                 if (maxAmount == 0) {
                     g2d.setFont(new Font("Segoe UI", Font.PLAIN, 12));
-                    g2d.setColor(Color.WHITE);
+                    g2d.setColor(Color.black);
                     g2d.drawString("No data for selected period", getWidth() / 2 - 70, getHeight() / 2);
                     g2d.dispose();
                     return;
@@ -939,12 +944,12 @@ public class BillPanel extends JPanel {
                 int height = getHeight() - 2 * margin - 50;
                 int barWidth = (int) Math.max(1, height / (2.0 * months.size()));
 
-                g2d.setColor(Color.WHITE);
+                g2d.setColor(Color.black);
                 g2d.drawLine(margin, margin, margin + width, margin);
                 g2d.drawLine(margin, margin, margin, margin + height);
 
                 g2d.setFont(new Font("Segoe UI", Font.PLAIN, 12));
-                g2d.setColor(Color.WHITE);
+                g2d.setColor(Color.black);
                 int numTicks = 5;
                 double amountStep = maxAmount / numTicks;
                 for (int i = 0; i <= numTicks; i++) {
@@ -962,7 +967,7 @@ public class BillPanel extends JPanel {
                 g2d.drawString(amountLabel, margin + width - labelWidth, margin + 40);
 
                 g2d.setFont(new Font("Segoe UI", Font.PLAIN, 12));
-                g2d.setColor(Color.WHITE);
+                g2d.setColor(Color.black);
                 for (int i = 0; i < months.size(); i++) {
                     String month = months.get(i);
                     int y = margin + i * barWidth * 2 + barWidth;
@@ -996,7 +1001,7 @@ public class BillPanel extends JPanel {
                 }
 
                 g2d.setFont(new Font("Segoe UI", Font.PLAIN, 12));
-                g2d.setColor(Color.WHITE);
+                g2d.setColor(Color.blue);
                 fm = g2d.getFontMetrics();
                 int textHeight = fm.getHeight();
                 g2d.drawString("Total Income: ¥" + "%.2f".formatted(totalIncome), margin + 10, margin + textHeight);

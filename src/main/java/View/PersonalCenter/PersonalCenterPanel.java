@@ -47,6 +47,7 @@ import Model.UserSession;
 import Service.PersonChartDataService;
 import Service.PersonFinancialService;
 import View.LoginAndMain.GradientComponents.*;
+import View.Transaction.TransactionSystemComponents;
 
 /**
  * A JPanel that displays a user's financial overview, including income and expense categories,
@@ -55,7 +56,7 @@ import View.LoginAndMain.GradientComponents.*;
  * @author Group 19
  * @version 1.0
  */
-public class PersonalCenterPanel extends JPanel {
+public class PersonalCenterPanel extends TransactionSystemComponents.MidGradientPanel {
     private JLabel totalIncomeYearLabel, totalExpenseYearLabel, totalBalanceYearLabel;
     private JLabel accountBalanceLabel, incomeChangeLabel, expenseChangeLabel;
     private JTextArea paymentLocationSummary;
@@ -86,7 +87,7 @@ public class PersonalCenterPanel extends JPanel {
         setBackground(new Color(245, 245, 245));
 
         Font labelFont = new Font("Segoe UI", Font.BOLD, 14);
-        JPanel yearPanel = new GradientPanel();
+        JPanel yearPanel = new JPanel();
         yearPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
         yearPanel.setOpaque(false);
         JLabel yearLabel = new JLabel("Select Year:");

@@ -1,60 +1,41 @@
 package Controller;
 
+import java.awt.BorderLayout;
 import java.awt.Component;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeParseException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
-import javax.swing.Timer;
-import javax.swing.JOptionPane;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-// import java.awt.event.ItemEvent; // ItemEvent is not used in the provided snippet
-// import java.awt.event.ItemListener; // ItemListener is not used in the provided snippet
-import java.awt.BorderLayout; // Added import for BorderLayout
 
-
-import javax.swing.JPanel;
-import javax.swing.JList;
-import javax.swing.JTable;
+import javax.swing.DefaultListModel;
 import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
-import javax.swing.DefaultListModel;
-import javax.swing.JTextField;
-import javax.swing.JPasswordField;
-import javax.swing.JComboBox;
-import javax.swing.JButton;
-
-
+import javax.swing.JTable;
+import javax.swing.Timer; // Added import for BorderLayout
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableModel;
+
+import org.jfree.chart.axis.DateAxis;
+import org.jfree.data.time.Month;
+import org.jfree.data.time.TimeSeries;
+import org.jfree.data.time.TimeSeriesCollection;
 
 import Model.Transaction;
 import Model.TransactionCache;
 import Model.User;
 import Model.UserSession;
-import Repository.AccountRepository;
 import Service.BudgetService;
 import Service.ExchangeRateService;
 import Service.TransactionService;
 import View.Transaction.TransactionSystemComponents;
 import View.Transaction.TransactionSystemPlane;
-
-// Import JFreeChart classes
-import org.jfree.chart.ChartPanel;
-import org.jfree.chart.JFreeChart;
-import org.jfree.chart.axis.DateAxis; // Standard JFreeChart import
-import org.jfree.data.time.TimeSeries;
-import org.jfree.data.time.TimeSeriesCollection;
-import org.jfree.data.time.Month; // Used for data points, but not necessarily for TimeSeries constructor
-import org.jfree.data.time.RegularTimePeriod; // More general base class
 
 /**
  * Controller class for managing the transaction system panel in a financial management application.
@@ -502,15 +483,17 @@ public class TransactionSystemController {
      * Falls back to mock data if the fetch fails.
      */
     private void fetchExchangeRates() {
-        System.out.println("Calling fetchExchangeRates...");
-        exchangeRateService.fetchExchangeRates(rates -> {
+    System.out.println("Calling fetchExchangeRates...");
+    exchangeRateService.fetchExchangeRates(rates -> {
+        javax.swing.SwingUtilities.invokeLater(() -> {
             System.out.println("Fetched exchange rates: " + rates);
             updateRateTable(rates);
             updateConversion();
-        }, error -> {
+        });
+    }, error -> {
+        javax.swing.SwingUtilities.invokeLater(() -> {
             System.err.println("Failed to fetch exchange rates: " + error);
             view.showError("Failed to fetch exchange rates: " + error);
-            // Use mock data for testing
             Map<String, Double> mockRates = new HashMap<>();
             mockRates.put("USD", 7.1);
             mockRates.put("EUR", 7.8);
@@ -523,12 +506,11 @@ public class TransactionSystemController {
             mockRates.put("SGD", 5.4);
             mockRates.put("NZD", 4.3);
             mockRates.put("CNY", 1.0);
-            // Add CNY to mock rates for consistency if needed, although conversion is to CNY
-             // mockRates.put("CNY", 1.0);
             updateRateTable(mockRates);
             updateConversion();
         });
-    }
+    });
+}
 
     /**
      * Starts timers for periodic exchange rate updates and countdown display.
@@ -565,81 +547,74 @@ public class TransactionSystemController {
      *
      * @param rates A map of currency codes to their exchange rates relative to CNY.
      */
-    private void updateRateTable(Map<String, Double> rates) {
-        // Find the Rate Table component within the view
-        JTable currentRateTable = null;
-        // Assuming the structure is JSplitPane -> Right Panel -> BlueGradientPanel -> JScrollPane -> JTable
-        Component[] mainComponents = view.getComponents(); // Components directly in TransactionSystemPlane (the JSplitPane)
-         for (Component comp : mainComponents) {
-             if (comp instanceof JSplitPane) {
-                 JSplitPane splitPane = (JSplitPane) comp;
-                 // Ensure right component exists and is a JPanel
-                 if (splitPane.getRightComponent() != null && splitPane.getRightComponent() instanceof JPanel) {
-                     JPanel rightPanel = (JPanel)splitPane.getRightComponent();
-                     for (Component sectionPanel : rightPanel.getComponents()) {
-                          // Check if it's the exchange rate panel (e.g., by title or type)
-                          if (sectionPanel instanceof TransactionSystemComponents.BlueGradientPanel) {
-                              boolean isExchangeRatePanel = false;
-                              // Check if this BlueGradientPanel contains the "Real-Time Exchange Rates" label
-                              for (Component child : ((JPanel)sectionPanel).getComponents()) {
-                                  if (child instanceof JLabel && "Real-Time Exchange Rates".equals(((JLabel)child).getText())) {
-                                      isExchangeRatePanel = true;
-                                      break;
-                                  }
-                              }
-                              if (isExchangeRatePanel) {
-                                   // Found the exchange rate panel, now find the JScrollPane and JTable within it
-                                  for (Component child : ((JPanel)sectionPanel).getComponents()) {
-                                      if (child instanceof JScrollPane) {
-                                          JScrollPane scrollPane = (JScrollPane)child;
-                                          if (scrollPane.getViewport().getView() instanceof JTable) {
-                                               currentRateTable = (JTable)scrollPane.getViewport().getView();
-                                               break; // Found the table
-                                          }
-                                      }
-                                  }
-                              }
-                          }
-                         if (currentRateTable != null) break; // Found the table
-                     }
-                 }
-             }
-              if (currentRateTable != null) break; // Found the table
-         }
-
-
-        if (currentRateTable == null) {
-            System.err.println("Rate table component not found in view structure.");
-            return;
-        }
-
-        DefaultTableModel tableModel = (DefaultTableModel) currentRateTable.getModel();
-        // Assuming the table has "Currency Pair" and "Exchange Rate" columns
-        // And rows correspond to currencies except CNY in a specific order
-        String[] currenciesInTableOrder = {"USD", "EUR", "GBP", "JPY", "AUD", "CAD", "CHF", "HKD", "SGD", "NZD"}; // Order based on createExchangeRatePanel
-
-        // Ensure table has enough rows or handle mismatch gracefully
-        if (tableModel.getRowCount() < currenciesInTableOrder.length) {
-             System.err.println("Warning: Rate table does not have enough rows (" + tableModel.getRowCount() + ") for all currencies (" + currenciesInTableOrder.length + ").");
-             // Optionally resize table or add rows here if possible, but typically UI setup defines row count.
-             // Assuming the table is created with enough rows initially.
-        }
-
-        for (int i = 0; i < currenciesInTableOrder.length; i++) {
-            String currency = currenciesInTableOrder[i];
-            Double rate = rates.getOrDefault(currency, 0.0);
-            // Ensure row index is valid before setting value
-            if (i < tableModel.getRowCount()) {
-                 tableModel.setValueAt(String.format("%.4f", rate), i, 1);
-            } else {
-                // This indicates a mismatch between the hardcoded list and the table model size.
-                 System.err.println("Error: Table row index " + i + " is out of bounds (" + tableModel.getRowCount() + ") for currency " + currency);
+     private void updateRateTable(Map<String, Double> rates) {
+    // Find the Rate Table component within the view
+    JTable currentRateTable = null;
+    // Assuming the structure is JSplitPane -> Right Panel -> BlueGradientPanel -> JScrollPane -> JTable
+    Component[] mainComponents = view.getComponents();
+    for (Component comp : mainComponents) {
+        if (comp instanceof JSplitPane) {
+            JSplitPane splitPane = (JSplitPane) comp;
+            if (splitPane.getRightComponent() != null && splitPane.getRightComponent() instanceof JPanel) {
+                JPanel rightPanel = (JPanel) splitPane.getRightComponent();
+                for (Component sectionPanel : rightPanel.getComponents()) {
+                    if (sectionPanel instanceof TransactionSystemComponents.BlueGradientPanel) {
+                        boolean isExchangeRatePanel = false;
+                        for (Component child : ((JPanel) sectionPanel).getComponents()) {
+                            if (child instanceof JLabel && "Real-Time Exchange Rates".equals(((JLabel) child).getText())) {
+                                isExchangeRatePanel = true;
+                                break;
+                            }
+                        }
+                        if (isExchangeRatePanel) {
+                            for (Component child : ((JPanel) sectionPanel).getComponents()) {
+                                if (child instanceof JScrollPane) {
+                                    JScrollPane scrollPane = (JScrollPane) child;
+                                    if (scrollPane.getViewport().getView() instanceof JTable) {
+                                        currentRateTable = (JTable) scrollPane.getViewport().getView();
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    if (currentRateTable != null) break;
+                }
             }
         }
-         currentRateTable.revalidate();
-         currentRateTable.repaint();
-        System.out.println("Updated rate table with rates for " + currenciesInTableOrder.length + " currencies.");
+        if (currentRateTable != null) break;
     }
+
+    if (currentRateTable == null) {
+        System.err.println("Rate table component not found in view structure.");
+        return;
+    }
+
+    // Check if the current model is DefaultTableModel, otherwise create a new one
+    DefaultTableModel tableModel;
+    if (currentRateTable.getModel() instanceof DefaultTableModel) {
+        tableModel = (DefaultTableModel) currentRateTable.getModel();
+    } else {
+        // Create new DefaultTableModel with correct columns
+        tableModel = new DefaultTableModel(new Object[]{"Currency Pair", "Exchange Rate"}, 0);
+        currentRateTable.setModel(tableModel);
+        System.out.println("Replaced table model with DefaultTableModel due to incompatible type: " + currentRateTable.getModel().getClass().getName());
+    }
+
+    // Clear existing rows
+    tableModel.setRowCount(0);
+
+    // Populate table with rates
+    String[] currenciesInTableOrder = {"USD", "EUR", "GBP", "JPY", "AUD", "CAD", "CHF", "HKD", "SGD", "NZD"};
+    for (String currency : currenciesInTableOrder) {
+        Double rate = rates.getOrDefault(currency, 0.0);
+        tableModel.addRow(new Object[]{currency, String.format("%.4f", rate)});
+    }
+
+    currentRateTable.revalidate();
+    currentRateTable.repaint();
+    System.out.println("Updated rate table with rates for " + currenciesInTableOrder.length + " currencies.");
+}
 
     /**
      * Updates the currency conversion result based on the entered amount and selected currency.

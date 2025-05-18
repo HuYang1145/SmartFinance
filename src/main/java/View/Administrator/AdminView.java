@@ -46,7 +46,7 @@ import javax.swing.table.TableColumnModel;
 
 import Model.User;
 import Model.UserSession;
-import View.LoginAndMain.LoginComponents;
+import View.Administrator.AdminComponent.*;
 
 import static View.LoginAndMain.LoginComponents.showCustomMessage;
 
@@ -280,44 +280,64 @@ public class AdminView extends JDialog {
      */
     private void showAdminVerificationDialog(Consumer<String[]> modifyCustomerAction) {
         JDialog dialog = new JDialog(this, "Administrator Verification", true);
-        dialog.setSize(350, 180);
+        dialog.setSize(380, 210);
+        dialog.setUndecorated(true);
         dialog.setLocationRelativeTo(this);
-        JPanel panel = new JPanel(new GridBagLayout());
-        panel.setBorder(new EmptyBorder(15, 15, 15, 15));
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(5, 5, 5, 5);
-        gbc.fill = GridBagConstraints.HORIZONTAL;
+        dialog.setBackground(new Color(0, 0, 0, 0));
 
-        gbc.gridx = 0; gbc.gridy = 0; gbc.weightx = 0.3;
+        RoundedShadowPanel content = new RoundedShadowPanel(18);
+        content.setLayout(new BorderLayout());
+        content.setBorder(BorderFactory.createEmptyBorder(0, 0, 18, 0));
+
+        DialogTitleBar titleBar = new DialogTitleBar("Administrator Verification");
+        JButton closeBtn = new JButton("✖");
+        closeBtn.setFocusPainted(false);
+        closeBtn.setBorderPainted(false);
+        closeBtn.setContentAreaFilled(false);
+        closeBtn.setForeground(Color.WHITE);
+        closeBtn.addActionListener(e -> dialog.dispose());
+        titleBar.add(closeBtn, BorderLayout.EAST);
+        content.add(titleBar, BorderLayout.NORTH);
+
+        JPanel panel = new JPanel(new GridBagLayout());
+        panel.setOpaque(false);
+        panel.setBorder(BorderFactory.createEmptyBorder(18, 28, 18, 28));
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(8, 8, 8, 8);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.weightx = 1;
+
+        gbc.gridx = 0; gbc.gridy = 0;
         panel.add(new JLabel("Admin Username:"), gbc);
-        gbc.gridx = 1; gbc.weightx = 0.7;
+        gbc.gridx = 1;
         JTextField tfUser = new JTextField();
         panel.add(tfUser, gbc);
 
-        gbc.gridx = 0; gbc.gridy = 1; gbc.weightx = 0.3;
+        gbc.gridx = 0; gbc.gridy = 1;
         panel.add(new JLabel("Admin Password:"), gbc);
-        gbc.gridx = 1; gbc.weightx = 0.7;
+        gbc.gridx = 1;
         JPasswordField pfPass = new JPasswordField();
         panel.add(pfPass, gbc);
 
-        gbc.gridx = 0; gbc.gridy = 2;
-        gbc.gridwidth = 2;
-        gbc.fill = GridBagConstraints.NONE;
-        gbc.anchor = GridBagConstraints.CENTER;
+        gbc.gridx = 0; gbc.gridy = 2; gbc.gridwidth = 2;
         JButton btn = new JButton("Verify");
-        panel.add(btn, gbc);
-
-        dialog.add(panel);
-
+        btn.setBackground(new Color(135, 100, 200));
+        btn.setForeground(Color.WHITE);
+        btn.setFocusPainted(false);
+        btn.setFont(new Font("Segoe UI", Font.BOLD, 14));
         btn.addActionListener(e -> {
             String username = tfUser.getText();
             String password = new String(pfPass.getPassword());
             modifyCustomerAction.accept(new String[]{username, password});
             dialog.dispose();
         });
+        panel.add(btn, gbc);
 
+        content.add(panel, BorderLayout.CENTER);
+        dialog.setContentPane(content);
         dialog.setVisible(true);
     }
+
 
     /**
      * Opens a file chooser to import customer accounts and invokes the provided action.
@@ -397,45 +417,69 @@ public class AdminView extends JDialog {
      * Dialog for displaying administrator personal information.
      */
     public class AdminInfoDialog extends JDialog {
-        /**
-         * Constructs an AdminInfoDialog to display the current administrator's details.
-         */
         public AdminInfoDialog() {
             super(AdminView.this, "Administrator Personal Information", true);
-            setSize(400, 300);
+            setSize(420, 340);
+            setUndecorated(true);
             setLocationRelativeTo(AdminView.this);
-            setLayout(new GridLayout(0, 2));
+            setBackground(new Color(0, 0, 0, 0));
 
-            String loggedInUsername = UserSession.getCurrentUsername();
+            RoundedShadowPanel content = new RoundedShadowPanel(18);
+            content.setLayout(new BorderLayout());
+            content.setBorder(BorderFactory.createEmptyBorder(0, 0, 18, 0)); // 底部多一点阴影空间
 
-            if (loggedInUsername == null || loggedInUsername.isEmpty()) {
-                LoginComponents.showCustomMessage(this, "Administrator login information not detected, please log in first", "Error", JOptionPane.ERROR_MESSAGE);
-                dispose();
-                return;
-            }
+            DialogTitleBar titleBar = new DialogTitleBar("Administrator Personal Information");
+            content.add(titleBar, BorderLayout.NORTH);
 
-            try {
-                String[][] adminInfo = new String[][]{{"Username:", "Password:", "Phone:", "Email:", "Gender:", "Address:", "Creation Time:", "Account Status:", "Account Type:", "Balance:"},
-                        {UserSession.getCurrentAccount().getUsername(), UserSession.getCurrentAccount().getPassword(), UserSession.getCurrentAccount().getPhone(), UserSession.getCurrentAccount().getEmail(), UserSession.getCurrentAccount().getGender(), UserSession.getCurrentAccount().getAddress(), UserSession.getCurrentAccount().getCreationTime(), UserSession.getCurrentAccount().getAccountStatus().toString(), UserSession.getCurrentAccount().getAccountType(), "%.2f".formatted(UserSession.getCurrentAccount().getBalance())}};
 
-                String[] headers = adminInfo[0];
-                String[] values = adminInfo[1];
+            JPanel infoPanel = new JPanel(new GridLayout(0, 2, 8, 8));
+            infoPanel.setOpaque(false);
+            infoPanel.setBorder(BorderFactory.createEmptyBorder(18, 28, 18, 28));
+            infoPanel.add(new JLabel("Username:"));
+            infoPanel.add(new JLabel(UserSession.getCurrentAccount().getUsername()));
 
-                for (int i = 0; i < headers.length; i++) {
-                    JLabel nameLabel = new JLabel(headers[i]);
-                    JLabel valueLabel = new JLabel(values[i]);
-                    add(nameLabel);
-                    add(valueLabel);
-                }
-            } catch (Exception e) {
-                LoginComponents.showCustomMessage(this, "Failed to load administrator information: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-                dispose();
-                return;
-            }
+            infoPanel.add(new JLabel("Password:"));
+            infoPanel.add(new JLabel(UserSession.getCurrentAccount().getPassword()));
 
+            infoPanel.add(new JLabel("Phone:"));
+            infoPanel.add(new JLabel(UserSession.getCurrentAccount().getPhone()));
+
+            infoPanel.add(new JLabel("Email:"));
+            infoPanel.add(new JLabel(UserSession.getCurrentAccount().getEmail()));
+
+            infoPanel.add(new JLabel("Gender:"));
+            infoPanel.add(new JLabel(UserSession.getCurrentAccount().getGender()));
+
+            infoPanel.add(new JLabel("Address:"));
+            infoPanel.add(new JLabel(UserSession.getCurrentAccount().getAddress()));
+
+            infoPanel.add(new JLabel("Creation Time:"));
+            infoPanel.add(new JLabel(UserSession.getCurrentAccount().getCreationTime()));
+
+            infoPanel.add(new JLabel("Account Status:"));
+            infoPanel.add(new JLabel(UserSession.getCurrentAccount().getAccountStatus().toString()));
+
+            infoPanel.add(new JLabel("Account Type:"));
+            infoPanel.add(new JLabel(UserSession.getCurrentAccount().getAccountType()));
+
+            infoPanel.add(new JLabel("Balance:"));
+            infoPanel.add(new JLabel(String.format("%.2f", UserSession.getCurrentAccount().getBalance())));
+
+            content.add(infoPanel, BorderLayout.CENTER);
+
+            JButton closeBtn = new JButton("✖");
+            closeBtn.setFocusPainted(false);
+            closeBtn.setBorderPainted(false);
+            closeBtn.setContentAreaFilled(false);
+            closeBtn.setForeground(Color.WHITE);
+            closeBtn.addActionListener(e -> dispose());
+            titleBar.add(closeBtn, BorderLayout.EAST);
+
+            setContentPane(content);
             setVisible(true);
         }
     }
+
 
     /**
      * Dialog for modifying customer account information.
@@ -447,85 +491,103 @@ public class AdminView extends JDialog {
         private JPasswordField pfAdminPassword;
         private Consumer<ModifyCustomerDialog> confirmCallback;
 
-        /**
-         * Constructs a ModifyCustomerDialog for editing a user's account details.
-         *
-         * @param account         the user account to modify
-         * @param confirmCallback the callback to handle confirmation
-         */
         public ModifyCustomerDialog(User account, Consumer<ModifyCustomerDialog> confirmCallback) {
             super(AdminView.this, "Modify Customer Information", true);
             this.confirmCallback = confirmCallback;
-            setSize(400, 500);
+            setSize(420, 520);
+            setUndecorated(true);
             setLocationRelativeTo(AdminView.this);
-            setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+            setBackground(new Color(0, 0, 0, 0));
 
-            JPanel panel = new JPanel(new GridBagLayout());
+            RoundedShadowPanel content = new RoundedShadowPanel(18);
+            content.setLayout(new BorderLayout());
+            content.setBorder(BorderFactory.createEmptyBorder(0, 0, 18, 0));
+
+            DialogTitleBar titleBar = new DialogTitleBar("Modify Customer Information");
+            JButton closeBtn = new JButton("✖");
+            closeBtn.setFocusPainted(false);
+            closeBtn.setBorderPainted(false);
+            closeBtn.setContentAreaFilled(false);
+            closeBtn.setForeground(Color.WHITE);
+            closeBtn.addActionListener(e -> dispose());
+            titleBar.add(closeBtn, BorderLayout.EAST);
+            content.add(titleBar, BorderLayout.NORTH);
+
+            JPanel formPanel = new JPanel(new GridBagLayout());
+            formPanel.setOpaque(false);
+            formPanel.setBorder(BorderFactory.createEmptyBorder(18, 28, 18, 28));
             GridBagConstraints gbc = new GridBagConstraints();
-            gbc.insets = new Insets(5, 5, 5, 5);
+            gbc.insets = new Insets(8, 8, 8, 8);
             gbc.fill = GridBagConstraints.HORIZONTAL;
+            gbc.weightx = 1;
 
-            gbc.gridx = 0; gbc.gridy = 0;
-            panel.add(new JLabel("Username:"), gbc);
+            int row = 0;
+            gbc.gridx = 0; gbc.gridy = row;
+            formPanel.add(new JLabel("Username:"), gbc);
             gbc.gridx = 1;
             tfUsername = new JTextField(20);
             tfUsername.setEditable(false);
-            panel.add(tfUsername, gbc);
+            formPanel.add(tfUsername, gbc);
 
-            gbc.gridx = 0; gbc.gridy = 1;
-            panel.add(new JLabel("Password:"), gbc);
+            gbc.gridx = 0; gbc.gridy = ++row;
+            formPanel.add(new JLabel("Password:"), gbc);
             gbc.gridx = 1;
             pfPassword = new JPasswordField(20);
-            panel.add(pfPassword, gbc);
+            formPanel.add(pfPassword, gbc);
 
-            gbc.gridx = 0; gbc.gridy = 2;
-            panel.add(new JLabel("Phone:"), gbc);
+            gbc.gridx = 0; gbc.gridy = ++row;
+            formPanel.add(new JLabel("Phone:"), gbc);
             gbc.gridx = 1;
             tfPhone = new JTextField(20);
-            panel.add(tfPhone, gbc);
+            formPanel.add(tfPhone, gbc);
 
-            gbc.gridx = 0; gbc.gridy = 3;
-            panel.add(new JLabel("Email:"), gbc);
+            gbc.gridx = 0; gbc.gridy = ++row;
+            formPanel.add(new JLabel("Email:"), gbc);
             gbc.gridx = 1;
             tfEmail = new JTextField(20);
-            panel.add(tfEmail, gbc);
+            formPanel.add(tfEmail, gbc);
 
-            gbc.gridx = 0; gbc.gridy = 4;
-            panel.add(new JLabel("Gender:"), gbc);
+            gbc.gridx = 0; gbc.gridy = ++row;
+            formPanel.add(new JLabel("Gender:"), gbc);
             gbc.gridx = 1;
             cbGender = new JComboBox<>(new String[]{"Male", "Female", "Other"});
-            panel.add(cbGender, gbc);
+            formPanel.add(cbGender, gbc);
 
-            gbc.gridx = 0; gbc.gridy = 5;
-            panel.add(new JLabel("Address:"), gbc);
+            gbc.gridx = 0; gbc.gridy = ++row;
+            formPanel.add(new JLabel("Address:"), gbc);
             gbc.gridx = 1;
             tfAddress = new JTextField(20);
-            panel.add(tfAddress, gbc);
+            formPanel.add(tfAddress, gbc);
 
-            gbc.gridx = 0; gbc.gridy = 6;
-            panel.add(new JLabel("Account Status:"), gbc);
+            gbc.gridx = 0; gbc.gridy = ++row;
+            formPanel.add(new JLabel("Account Status:"), gbc);
             gbc.gridx = 1;
             cbAccountStatus = new JComboBox<>(new String[]{"ACTIVE", "FROZEN"});
-            panel.add(cbAccountStatus, gbc);
+            formPanel.add(cbAccountStatus, gbc);
 
-            gbc.gridx = 0; gbc.gridy = 7;
-            panel.add(new JLabel("Admin Password:"), gbc);
+            gbc.gridx = 0; gbc.gridy = ++row;
+            formPanel.add(new JLabel("Admin Password:"), gbc);
             gbc.gridx = 1;
             pfAdminPassword = new JPasswordField(20);
-            panel.add(pfAdminPassword, gbc);
+            formPanel.add(pfAdminPassword, gbc);
 
-            gbc.gridx = 0; gbc.gridy = 8; gbc.gridwidth = 2;
+            gbc.gridx = 0; gbc.gridy = ++row; gbc.gridwidth = 2;
             JButton btnConfirm = new JButton("Confirm");
+            btnConfirm.setBackground(new Color(135, 100, 200));
+            btnConfirm.setForeground(Color.WHITE);
+            btnConfirm.setFocusPainted(false);
+            btnConfirm.setFont(new Font("Segoe UI", Font.BOLD, 14));
             btnConfirm.addActionListener(e -> confirmCallback.accept(this));
-            panel.add(btnConfirm, gbc);
+            formPanel.add(btnConfirm, gbc);
 
-            add(panel);
-
+            content.add(formPanel, BorderLayout.CENTER);
             setAccountInfo(account);
+            setContentPane(content);
             setVisible(true);
         }
 
-        /**
+
+    /**
          * Gets the username from the dialog.
          *
          * @return the username

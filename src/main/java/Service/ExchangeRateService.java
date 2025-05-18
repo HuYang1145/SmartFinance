@@ -25,7 +25,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 
 public class ExchangeRateService {
-    private final String exchangeApiKey = "111111ea7c697a26d9704cbef405f1";
+    private final String exchangeApiKey = "ea7c697a26d9704cbef405f1";
     private final String fixerApiKey = "aaaa9b67dd5bf75330aee3706632e0961743";
     private final String baseCurrency = "EUR";
     private final String targetBaseCurrency = "CNY";

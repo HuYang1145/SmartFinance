@@ -82,7 +82,7 @@ public class ExpenseDialogView extends JDialog {
      */
     private void layoutComponents() {
         setLayout(new BorderLayout(10, 10));
-        getContentPane().setBackground(new Color(245, 245, 245));
+        getContentPane().setBackground(Color.WHITE);
 
         // Title
         JLabel titleLabel = new JLabel("Add Expense Record");
@@ -93,7 +93,7 @@ public class ExpenseDialogView extends JDialog {
 
         // Form panel
         JPanel panel = new JPanel(new GridBagLayout());
-        panel.setBackground(new Color(245, 245, 245));
+        panel.setBackground(Color.WHITE);
         panel.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(8, 8, 8, 8);
@@ -134,7 +134,7 @@ public class ExpenseDialogView extends JDialog {
 
         // Button panel
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 15, 10));
-        buttonPanel.setBackground(new Color(245, 245, 245));
+        buttonPanel.setBackground(Color.WHITE);
         buttonPanel.add(confirmButton);
         buttonPanel.add(cancelButton);
         add(buttonPanel, BorderLayout.SOUTH);
