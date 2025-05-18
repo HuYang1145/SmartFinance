@@ -2,7 +2,9 @@ package Model;
 
 import java.util.List;
 
+import Service.BudgetService;
 import Service.BudgetService.BudgetRecommendation;
+import Service.BudgetService.LargeConsumptionItem; // 导入 LargeConsumptionItem
 
 /**
  * Represents a container for budget-related data in the Smart Finance Application.
@@ -26,7 +28,7 @@ public class BudgetDataContainer {
     private final String topCategory;
 
     /** A list of significant consumption transactions or items for the current month. */
-    private final List<String> largeConsumptions;
+    private List<LargeConsumptionItem> largeConsumptions; // 使用 LargeConsumptionItem
 
     /** The custom budget amount set by the user, or null if not specified. */
     private final Double customBudget;
@@ -42,8 +44,8 @@ public class BudgetDataContainer {
      * @param customBudget        The custom budget amount set by the user, or null if not specified.
      */
     public BudgetDataContainer(BudgetRecommendation recommendation, double currentMonthExpense,
-                              double currentMonthIncome, String topCategory, List<String> largeConsumptions,
-                              Double customBudget) {
+                               double currentMonthIncome, String topCategory, List<LargeConsumptionItem> largeConsumptions, // 使用 LargeConsumptionItem
+                               Double customBudget) {
         this.recommendation = recommendation;
         this.currentMonthExpense = currentMonthExpense;
         this.currentMonthIncome = currentMonthIncome;
@@ -93,7 +95,7 @@ public class BudgetDataContainer {
      *
      * @return A list of significant consumption details.
      */
-    public List<String> getLargeConsumptions() {
+    public List<LargeConsumptionItem> getLargeConsumptions() { // 返回 LargeConsumptionItem
         return largeConsumptions;
     }
 
