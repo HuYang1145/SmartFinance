@@ -1,331 +1,333 @@
 user,operation,amount,time,merchant,type,remark,category,payment_method,location,tag,attachment,recurrence
-2,Expense,88.50,2024/03/01,Ele.me,Food,"Weekend takeout","Food-Takeout","WeChat Pay","Online","Essential","[Attachment: Receipt image]","Non-recurring"
-2,Income,1500.00,2024/03/05,Employer,Salary,"March salary","Income-Salary","Bank Transfer","Online","Income","[Attachment: Payslip]","Non-recurring"
-2,Expense,45.20,2024/03/07,Taobao,Shopping,"New clothes","Shopping-Online","Alipay","Online","Non-essential","[Attachment: Invoice]","Non-recurring"
-2,Expense,200.00,2024/03/10,Landlord,Rent,"Monthly rent","Housing-Rent","WeChat Pay","Offline","Essential","[Attachment: Receipt]","Recurring"
-2,Expense,15.75,2024/03/15,Starbucks,Food,"Morning coffee","Food-Dining","Cash","In-store","Treat","[Attachment: Receipt]","Non-recurring"
-2,Income,2000.00,2025/01/05,Employer,Salary,"January salary","Income-Salary","Bank Transfer","Online","Income","[Attachment: Payslip]","Non-recurring"
-2,Expense,150.00,2025/01/10,Taobao,Shopping,"New clothes","Shopping-Online","Alipay","Online","Non-essential","[Attachment: Invoice]","Non-recurring"
-2,Expense,300.00,2025/01/15,Landlord,Rent,"January rent","Housing-Rent","WeChat Pay","Offline","Essential","[Attachment: Receipt]","Recurring"
-2,Expense,50.00,2025/01/20,Starbucks,Food,"Morning coffee","Food-Dining","Cash","In-store","Treat","[Attachment: Receipt]","Non-recurring"
-2,Income,500.00,2025/02/01,Freelance,Freelance,"Freelance work","Income-Freelance","PayPal","Online","Income","[Attachment: Invoice]","Non-recurring"
-2,Expense,200.00,2025/02/05,JD.com,Electronics,"New phone","Shopping-Electronics","Credit Card","Online","Non-essential","[Attachment: Receipt]","Non-recurring"
-2,Expense,100.00,2025/02/10,Gym,Fitness,"Gym membership","Health-Fitness","WeChat Pay","Offline","Essential","[Attachment: Receipt]","Recurring"
-2,Expense,20.00,2025/02/15,McDonald's,Food,"Fast food","Food-Fast Food","Cash","In-store","Treat","[Attachment: Receipt]","Non-recurring"
-2,Income,1000.00,2025/03/01,Investment,Investment,"Stock dividend","Income-Investment","Bank Transfer","Online","Income","[Attachment: Statement]","Non-recurring"
-2,Expense,50.00,2025/03/05,Uber,Transport,"Taxi ride","Transport-Taxi","WeChat Pay","Online","Essential","[Attachment: Receipt]","Non-recurring"
-2,Expense,200.00,2025/03/10,Airbnb,Travel,"Weekend trip","Travel-Accommodation","Credit Card","Online","Non-essential","[Attachment: Booking Confirmation]","Non-recurring"
-2,Expense,30.00,2025/03/15,Netflix,Entertainment,"Monthly subscription","Entertainment-Subscription","Credit Card","Online","Essential","[Attachment: Receipt]","Recurring"
-2,Income,1500.00,2025/04/01,Employer,Salary,"April salary","Income-Salary","Bank Transfer","Online","Income","[Attachment: Payslip]","Non-recurring"
-2,Expense,100.00,2025/04/05,Amazon,Shopping,"Books","Shopping-Books","Credit Card","Online","Non-essential","[Attachment: Receipt]","Non-recurring"
-2,Expense,50.00,2025/04/10,Grocery Store,Food,"Groceries","Food-Groceries","Cash","In-store","Essential","[Attachment: Receipt]","Non-recurring"
-2,Expense,20.00,2025/04/15,Bus,Transport,"Bus fare","Transport-Public","Cash","Offline","Essential","[Attachment: Ticket]","Non-recurring"
-2,Income,200.00,2025/05/01,Gift,Gift,"Birthday gift","Income-Gift","Cash","Offline","Income","[Attachment: None]","Non-recurring"
-2,Expense,300.00,2025/05/05,Hotel,Travel,"Business trip","Travel-Accommodation","Credit Card","Online","Essential","[Attachment: Booking Confirmation]","Non-recurring"
-2,Expense,100.00,2025/05/10,Restaurant,Food,"Dinner with friends","Food-Dining","WeChat Pay","In-store","Treat","[Attachment: Receipt]","Non-recurring"
-2,Expense,50.00,2025/05/15,Spotify,Entertainment,"Music subscription","Entertainment-Subscription","Credit Card","Online","Essential","[Attachment: Receipt]","Recurring"
-2,Income,1000.00,2025/06/01,Employer,Salary,"June salary","Income-Salary","Bank Transfer","Online","Income","[Attachment: Payslip]","Non-recurring"
-2,Expense,200.00,2025/06/05,Apple,Electronics,"New earphones","Shopping-Electronics","Credit Card","Online","Non-essential","[Attachment: Receipt]","Non-recurring"
-2,Expense,100.00,2025/06/10,Gym,Fitness,"Gym membership","Health-Fitness","WeChat Pay","Offline","Essential","[Attachment: Receipt]","Recurring"
-2,Expense,30.00,2025/06/15,Netflix,Entertainment,"Monthly subscription","Entertainment-Subscription","Credit Card","Online","Essential","[Attachment: Receipt]","Recurring"
-2,Income,500.00,2025/07/01,Freelance,Freelance,"Freelance work","Income-Freelance","PayPal","Online","Income","[Attachment: Invoice]","Non-recurring"
-2,Expense,150.00,2025/07/05,Taobao,Shopping,"New clothes","Shopping-Online","Alipay","Online","Non-essential","[Attachment: Invoice]","Non-recurring"
-2,Expense,300.00,2025/07/10,Landlord,Rent,"July rent","Housing-Rent","WeChat Pay","Offline","Essential","[Attachment: Receipt]","Recurring"
-2,Expense,50.00,2025/07/15,Starbucks,Food,"Morning coffee","Food-Dining","Cash","In-store","Treat","[Attachment: Receipt]","Non-recurring"
-2,Income,1000.00,2025/08/01,Investment,Investment,"Stock dividend","Income-Investment","Bank Transfer","Online","Income","[Attachment: Statement]","Non-recurring"
-2,Expense,50.00,2025/08/05,Uber,Transport,"Taxi ride","Transport-Taxi","WeChat Pay","Online","Essential","[Attachment: Receipt]","Non-recurring"
-2,Expense,88.50,2024/03/01,Ele.me,Food,"Weekend takeout","Food-Takeout","WeChat Pay","Online","Essential","[Attachment: Receipt image]","Non-recurring"
-2,Income,1500.00,2024/03/05,Employer,Salary,"March salary","Income-Salary","Bank Transfer","Online","Income","[Attachment: Payslip]","Non-recurring"
-2,Expense,45.20,2024/03/07,Taobao,Shopping,"New clothes","Shopping-Online","Alipay","Online","Non-essential","[Attachment: Invoice]","Non-recurring"
-2,Expense,200.00,2024/03/10,Landlord,Rent,"Monthly rent","Housing-Rent","WeChat Pay","Offline","Essential","[Attachment: Receipt]","Recurring"
-2,Expense,15.75,2024/03/15,Starbucks,Food,"Morning coffee","Food-Dining","Cash","In-store","Treat","[Attachment: Receipt]","Non-recurring"
-2,Income,2000.00,2025/01/05,Employer,Salary,"January salary","Income-Salary","Bank Transfer","Online","Income","[Attachment: Payslip]","Non-recurring"
-2,Expense,150.00,2025/01/10,Taobao,Shopping,"New clothes","Shopping-Online","Alipay","Online","Non-essential","[Attachment: Invoice]","Non-recurring"
-2,Expense,300.00,2025/01/15,Landlord,Rent,"January rent","Housing-Rent","WeChat Pay","Offline","Essential","[Attachment: Receipt]","Recurring"
-2,Expense,50.00,2025/01/20,Starbucks,Food,"Morning coffee","Food-Dining","Cash","In-store","Treat","[Attachment: Receipt]","Non-recurring"
-2,Income,500.00,2025/02/01,Freelance,Freelance,"Freelance work","Income-Freelance","PayPal","Online","Income","[Attachment: Invoice]","Non-recurring"
-2,Expense,200.00,2025/02/05,JD.com,Electronics,"New phone","Shopping-Electronics","Credit Card","Online","Non-essential","[Attachment: Receipt]","Non-recurring"
-2,Expense,100.00,2025/02/10,Gym,Fitness,"Gym membership","Health-Fitness","WeChat Pay","Offline","Essential","[Attachment: Receipt]","Recurring"
-2,Expense,20.00,2025/02/15,McDonald's,Food,"Fast food","Food-Fast Food","Cash","In-store","Treat","[Attachment: Receipt]","Non-recurring"
-2,Income,1000.00,2025/03/01,Investment,Investment,"Stock dividend","Income-Investment","Bank Transfer","Online","Income","[Attachment: Statement]","Non-recurring"
-2,Expense,50.00,2025/03/05,Uber,Transport,"Taxi ride","Transport-Taxi","WeChat Pay","Online","Essential","[Attachment: Receipt]","Non-recurring"
-2,Expense,200.00,2025/03/10,Airbnb,Travel,"Weekend trip","Travel-Accommodation","Credit Card","Online","Non-essential","[Attachment: Booking Confirmation]","Non-recurring"
-2,Expense,30.00,2025/03/15,Netflix,Entertainment,"Monthly subscription","Entertainment-Subscription","Credit Card","Online","Essential","[Attachment: Receipt]","Recurring"
-2,Income,1500.00,2025/04/01,Employer,Salary,"April salary","Income-Salary","Bank Transfer","Online","Income","[Attachment: Payslip]","Non-recurring"
-2,Expense,100.00,2025/04/05,Amazon,Shopping,"Books","Shopping-Books","Credit Card","Online","Non-essential","[Attachment: Receipt]","Non-recurring"
-2,Expense,50.00,2025/04/10,Grocery Store,Food,"Groceries","Food-Groceries","Cash","In-store","Essential","[Attachment: Receipt]","Non-recurring"
-2,Expense,20.00,2025/04/15,Bus,Transport,"Bus fare","Transport-Public","Cash","Offline","Essential","[Attachment: Ticket]","Non-recurring"
-2,Income,200.00,2025/05/01,Gift,Gift,"Birthday gift","Income-Gift","Cash","Offline","Income","[Attachment: None]","Non-recurring"
-2,Expense,300.00,2025/05/05,Hotel,Travel,"Business trip","Travel-Accommodation","Credit Card","Online","Essential","[Attachment: Booking Confirmation]","Non-recurring"
-2,Expense,100.00,2025/05/10,Restaurant,Food,"Dinner with friends","Food-Dining","WeChat Pay","In-store","Treat","[Attachment: Receipt]","Non-recurring"
-2,Expense,50.00,2025/05/15,Spotify,Entertainment,"Music subscription","Entertainment-Subscription","Credit Card","Online","Essential","[Attachment: Receipt]","Recurring"
-2,Income,1000.00,2025/06/01,Employer,Salary,"June salary","Income-Salary","Bank Transfer","Online","Income","[Attachment: Payslip]","Non-recurring"
-2,Expense,200.00,2025/06/05,Apple,Electronics,"New earphones","Shopping-Electronics","Credit Card","Online","Non-essential","[Attachment: Receipt]","Non-recurring"
-2,Expense,100.00,2025/06/10,Gym,Fitness,"Gym membership","Health-Fitness","WeChat Pay","Offline","Essential","[Attachment: Receipt]","Recurring"
-2,Expense,30.00,2025/06/15,Netflix,Entertainment,"Monthly subscription","Entertainment-Subscription","Credit Card","Online","Essential","[Attachment: Receipt]","Recurring"
-2,Income,500.00,2025/07/01,Freelance,Freelance,"Freelance work","Income-Freelance","PayPal","Online","Income","[Attachment: Invoice]","Non-recurring"
-2,Expense,150.00,2025/07/05,Taobao,Shopping,"New clothes","Shopping-Online","Alipay","Online","Non-essential","[Attachment: Invoice]","Non-recurring"
-2,Expense,300.00,2025/07/10,Landlord,Rent,"July rent","Housing-Rent","WeChat Pay","Offline","Essential","[Attachment: Receipt]","Recurring"
-2,Expense,50.00,2025/07/15,Starbucks,Food,"Morning coffee","Food-Dining","Cash","In-store","Treat","[Attachment: Receipt]","Non-recurring"
-2,Income,1000.00,2025/08/01,Investment,Investment,"Stock dividend","Income-Investment","Bank Transfer","Online","Income","[Attachment: Statement]","Non-recurring"
-2,Expense,50.00,2025/08/05,Uber,Transport,"Taxi ride","Transport-Taxi","WeChat Pay","Online","Essential","[Attachment: Receipt]","Non-recurring"
-2,Expense,200.00,2025/08/10,Airbnb,Travel,"Weekend trip","Travel-Accommodation","Credit Card","Online","Non-essential","[Attachment: Booking Confirmation]","Non-recurring"
-2,Expense,30.00,2025/08/15,Netflix,Entertainment,"Monthly subscription","Entertainment-Subscription","Credit Card","Online","Essential","[Attachment: Receipt]","Recurring"
-2,Income,1500.00,2025/09/01,Employer,Salary,"September salary","Income-Salary","Bank Transfer","Online","Income","[Attachment: Payslip]","Non-recurring"
-2,Expense,100.00,2025/09/05,Amazon,Shopping,"Books","Shopping-Books","Credit Card","Online","Non-essential","[Attachment: Receipt]","Non-recurring"
-2,Expense,50.00,2025/09/10,Grocery Store,Food,"Groceries","Food-Groceries","Cash","In-store","Essential","[Attachment: Receipt]","Non-recurring"
-2,Expense,20.00,2025/09/15,Bus,Transport,"Bus fare","Transport-Public","Cash","Offline","Essential","[Attachment: Ticket]","Non-recurring"
-2,Income,200.00,2025/10/01,Gift,Gift,"Birthday gift","Income-Gift","Cash","Offline","Income","[Attachment: None]","Non-recurring"
-2,Expense,300.00,2025/10/05,Hotel,Travel,"Business trip","Travel-Accommodation","Credit Card","Online","Essential","[Attachment: Booking Confirmation]","Non-recurring"
-2,Expense,100.00,2025/10/10,Restaurant,Food,"Dinner with friends","Food-Dining","WeChat Pay","In-store","Treat","[Attachment: Receipt]","Non-recurring"
-2,Expense,50.00,2025/10/15,Spotify,Entertainment,"Music subscription","Entertainment-Subscription","Credit Card","Online","Essential","[Attachment: Receipt]","Recurring"
-2,Income,1000.00,2025/11/01,Employer,Salary,"November salary","Income-Salary","Bank Transfer","Online","Income","[Attachment: Payslip]","Non-recurring"
-2,Expense,200.00,2025/11/05,Apple,Electronics,"New earphones","Shopping-Electronics","Credit Card","Online","Non-essential","[Attachment: Receipt]","Non-recurring"
-2,Expense,100.00,2025/11/10,Gym,Fitness,"Gym membership","Health-Fitness","WeChat Pay","Offline","Essential","[Attachment: Receipt]","Recurring"
-2,Expense,30.00,2025/11/15,Netflix,Entertainment,"Monthly subscription","Entertainment-Subscription","Credit Card","Online","Essential","[Attachment: Receipt]","Recurring"
-2,Income,500.00,2025/12/01,Freelance,Freelance,"Freelance work","Income-Freelance","PayPal","Online","Income","[Attachment: Invoice]","Non-recurring"
-2,Expense,150.00,2025/12/05,Taobao,Shopping,"New clothes","Shopping-Online","Alipay","Online","Non-essential","[Attachment: Invoice]","Non-recurring"
-2,Expense,300.00,2025/12/10,Landlord,Rent,"December rent","Housing-Rent","WeChat Pay","Offline","Essential","[Attachment: Receipt]","Recurring"
-2,Expense,50.00,2025/12/15,Starbucks,Food,"Morning coffee","Food-Dining","Cash","In-store","Treat","[Attachment: Receipt]","Non-recurring"
-2,Income,1000.00,2020/01/10,Investment,Investment,"Stock dividend","Income-Investment","Bank Transfer","Online","Income","[Attachment: Statement]","Non-recurring"
-2,Expense,75.00,2020/02/20,Supermarket,Food,"Weekly groceries","Food-Groceries","Debit Card","In-store","Essential","[Attachment: Receipt]","Recurring"
-2,Expense,40.00,2020/03/18,Cinema,Entertainment,"Movie ticket","Entertainment-Movies","Credit Card","In-store","Treat","[Attachment: Ticket]","Non-recurring"
-2,Income,300.00,2020/04/01,Bank,Investment,"Interest earned","Income-Investment","Bank Transfer","Online","Income","[Attachment: Statement]","Recurring"
-2,Expense,120.00,2020/05/15,Utility Company,Utilities,"Electricity bill","Housing-Utilities","Bank Transfer","Online","Essential","[Attachment: Bill]","Recurring"
-2,Expense,25.00,2020/06/08,Pharmacy,Health,"Medication","Health-Pharmacy","Cash","In-store","Essential","[Attachment: Receipt]","Non-recurring"
-2,Income,1800.00,2020/07/05,Employer,Salary,"July salary","Income-Salary","Bank Transfer","Online","Income","[Attachment: Payslip]","Non-recurring"
-2,Expense,60.00,2020/08/12,Bookstore,Shopping,"New book","Shopping-Books","Credit Card","In-store","Non-essential","[Attachment: Receipt]","Non-recurring"
-2,Expense,90.00,2020/09/25,Restaurant,Food,"Dinner with family","Food-Dining","WeChat Pay","In-store","Treat","[Attachment: Receipt]","Non-recurring"
-2,Income,400.00,2020/10/10,Freelance,Freelance,"Website design","Income-Freelance","PayPal","Online","Income","[Attachment: Invoice]","Non-recurring"
-2,Expense,150.00,2020/11/03,Clothing Store,Shopping,"Winter clothes","Shopping-Apparel","Alipay","In-store","Essential","[Attachment: Receipt]","Non-recurring"
-2,Expense,35.00,2020/12/01,Coffee Shop,Food,"Afternoon coffee","Food-Dining","Cash","In-store","Treat","[Attachment: Receipt]","Non-recurring"
-2,Income,2200.00,2021/01/05,Employer,Salary,"January salary","Income-Salary","Bank Transfer","Online","Income","[Attachment: Payslip]","Non-recurring"
-2,Expense,300.00,2021/02/14,Jewelry Store,Shopping,"Valentine's Day gift","Shopping-Jewelry","Credit Card","In-store","Treat","[Attachment: Receipt]","Non-recurring"
-2,Expense,50.00,2021/03/20,Transport Authority,Transport,"Monthly pass","Transport-Public","WeChat Pay","Offline","Essential","[Attachment: Receipt]","Recurring"
-2,Income,150.00,2021/04/18,Sale,Income,"Sold old items","Income-Sale","Alipay","Online","Income","[Attachment: None]","Non-recurring"
-2,Expense,80.00,2021/05/01,Online Service,Entertainment,"Online course subscription","Entertainment-Education","Credit Card","Online","Essential","[Attachment: Receipt]","Recurring"
-2,Expense,20.00,2021/06/05,Bakery,Food,"Bread and pastries","Food-Groceries","Cash","In-store","Essential","[Attachment: Receipt]","Non-recurring"
-2,Income,1900.00,2021/07/05,Employer,Salary,"July salary","Income-Salary","Bank Transfer","Online","Income","[Attachment: Payslip]","Non-recurring"
-2,Expense,100.00,2021/08/15,Electronics Store,Shopping,"USB drive","Shopping-Electronics","Debit Card","In-store","Essential","[Attachment: Receipt]","Non-recurring"
-2,Expense,45.00,2021/09/10,Bar,Food,"Drinks with friends","Food-Dining","WeChat Pay","In-store","Treat","[Attachment: Receipt]","Non-recurring"
-2,Income,600.00,2021/10/22,Freelance,Freelance,"Writing project","Income-Freelance","PayPal","Online","Income","[Attachment: Invoice]","Non-recurring"
-2,Expense,180.00,2021/11/11,Taobao,Shopping,"Singles' Day haul","Shopping-Online","Alipay","Online","Non-essential","[Attachment: Invoice]","Non-recurring"
-2,Expense,40.00,2021/12/24,Gift Shop,Shopping,"Christmas gift","Shopping-Gifts","Cash","In-store","Treat","[Attachment: Receipt]","Non-recurring"
-2,Income,2300.00,2022/01/05,Employer,Salary,"January salary","Income-Salary","Bank Transfer","Online","Income","[Attachment: Payslip]","Non-recurring"
-2,Expense,250.00,2022/02/01,Travel Agency,Travel,"Flight ticket","Travel-Flights","Credit Card","Online","Essential","[Attachment: Booking Confirmation]","Non-recurring"
-2,Expense,70.00,2022/03/12,Gym,Fitness,"Yoga class","Health-Fitness","WeChat Pay","In-store","Essential","[Attachment: Receipt]","Non-recurring"
-2,Income,100.00,2022/04/08,Refund,Income,"Item return refund","Income-Refund","Alipay","Online","Income","[Attachment: None]","Non-recurring"
-2,Expense,130.00,2022/05/20,Bookstore,Shopping,"Textbooks","Shopping-Books","Cash","In-store","Essential","[Attachment: Receipt]","Non-recurring"
-2,Expense,30.00,2022/06/18,Cinema,Entertainment,"Movie ticket","Entertainment-Movies","Credit Card","In-store","Treat","[Attachment: Ticket]","Non-recurring"
-2,Income,2000.00,2022/07/05,Employer,Salary,"July salary","Income-Salary","Bank Transfer","Online","Income","[Attachment: Payslip]","Non-recurring"
-2,Expense,85.00,2022/08/03,Supermarket,Food,"Weekly groceries","Food-Groceries","Debit Card","In-store","Essential","[Attachment: Receipt]","Recurring"
-2,Expense,110.00,2022/09/01,Utility Company,Utilities,"Water bill","Housing-Utilities","Bank Transfer","Online","Essential","[Attachment: Bill]","Recurring"
-2,Income,500.00,2022/10/15,Freelance,Freelance,"Consulting work","Income-Freelance","PayPal","Online","Income","[Attachment: Invoice]","Non-recurring"
-2,Expense,220.00,2022/11/28,Electronics Store,Shopping,"Power bank","Shopping-Electronics","Credit Card","Online","Non-essential","[Attachment: Receipt]","Non-recurring"
-2,Expense,55.00,2022/12/10,Restaurant,Food,"Lunch with colleague","Food-Dining","WeChat Pay","In-store","Essential","[Attachment: Receipt]","Non-recurring"
-2,Income,2400.00,2023/01/05,Employer,Salary,"January salary","Income-Salary","Bank Transfer","Online","Income","[Attachment: Payslip]","Non-recurring"
-2,Expense,400.00,2023/02/20,Hotel,Travel,"Weekend getaway","Travel-Accommodation","Credit Card","Online","Non-essential","[Attachment: Booking Confirmation]","Non-recurring"
-2,Expense,120.00,2023/03/08,Clothing Store,Shopping,"Spring outfit","Shopping-Apparel","Alipay","In-store","Non-essential","[Attachment: Receipt]","Non-recurring"
-2,Income,300.00,2023/04/01,Bank,Investment,"Interest earned","Income-Investment","Bank Transfer","Online","Income","[Attachment: Statement]","Recurring"
-2,Expense,95.00,2023/05/10,Grocery Store,Food,"Groceries","Food-Groceries","Cash","In-store","Essential","[Attachment: Receipt]","Non-recurring"
-2,Expense,25.00,2023/06/03,Coffee Shop,Food,"Morning boost","Food-Dining","Cash","In-store","Treat","[Attachment: Receipt]","Non-recurring"
-2,Income,2100.00,2023/07/05,Employer,Salary,"July salary","Income-Salary","Bank Transfer","Online","Income","[Attachment: Payslip]","Non-recurring"
-2,Expense,180.00,2023/08/18,Online Service,Entertainment,"Streaming service","Entertainment-Subscription","Credit Card","Online","Essential","[Attachment: Receipt]","Recurring"
-2,Expense,65.00,2023/09/14,Pharmacy,Health,"Vitamins","Health-Pharmacy","WeChat Pay","In-store","Essential","[Attachment: Receipt]","Non-recurring"
-2,Income,700.00,2023/10/01,Freelance,Freelance,"Translation work","Income-Freelance","PayPal","Online","Income","[Attachment: Invoice]","Non-recurring"
-2,Expense,130.00,2023/11/07,Bookstore,Shopping,"Novels","Shopping-Books","Credit Card","Online","Non-essential","[Attachment: Receipt]","Non-recurring"
-2,Expense,40.00,2023/12/05,Cinema,Entertainment,"Movie night","Entertainment-Movies","Credit Card","In-store","Treat","[Attachment: Ticket]","Non-recurring"
-2,Income,2500.00,2024/01/05,Employer,Salary,"January salary","Income-Salary","Bank Transfer","Online","Income","[Attachment: Payslip]","Non-recurring"
-2,Expense,350.00,2024/02/10,Department Store,Shopping,"Home goods","Shopping-Household","Alipay","In-store","Essential","[Attachment: Receipt]","Non-recurring"
-2,Expense,80.00,2024/03/16,Gym,Fitness,"Gym class","Health-Fitness","WeChat Pay","In-store","Essential","[Attachment: Receipt]","Non-recurring"
-2,Income,120.00,2024/04/25,Sale,Income,"Sold used books","Income-Sale","Cash","Offline","Income","[Attachment: None]","Non-recurring"
-2,Expense,105.00,2024/05/08,Supermarket,Food,"Weekly groceries","Food-Groceries","Debit Card","In-store","Essential","[Attachment: Receipt]","Recurring"
-2,Expense,30.00,2024/06/21,Restaurant,Food,"Lunchbreak","Food-Dining","Cash","In-store","Essential","[Attachment: Receipt]","Non-recurring"
-2,Income,2200.00,2024/07/05,Employer,Salary,"July salary","Income-Salary","Bank Transfer","Online","Income","[Attachment: Payslip]","Non-recurring"
-2,Expense,200.00,2024/08/01,Travel Agency,Travel,"Train ticket","Transport-Train","Credit Card","Online","Essential","[Attachment: Booking Confirmation]","Non-recurring"
-2,Expense,50.00,2024/09/09,Coffee Shop,Food,"Meeting coffee","Food-Dining","WeChat Pay","In-store","Essential","[Attachment: Receipt]","Non-recurring"
-2,Income,800.00,2024/10/12,Freelance,Freelance,"Editing work","Income-Freelance","PayPal","Online","Income","[Attachment: Invoice]","Non-recurring"
-2,Expense,160.00,2024/11/05,Clothing Store,Shopping,"Autumn wear","Shopping-Apparel","Alipay","Online","Non-essential","[Attachment: Invoice]","Non-recurring"
-2,Expense,45.00,2024/12/19,Bakery,Food,"Holiday treats","Food-Groceries","Cash","In-store","Treat","[Attachment: Receipt]","Non-recurring"
-2,Income,2600.00,2025/01/05,Employer,Salary,"January salary","Income-Salary","Bank Transfer","Online","Income","[Attachment: Payslip]","Non-recurring"
-2,Expense,320.00,2025/02/18,Electronics Store,Shopping,"Smartwatch","Shopping-Electronics","Credit Card","In-store","Non-essential","[Attachment: Receipt]","Non-recurring"
-2,Expense,90.00,2025/03/22,Gym,Fitness,"Pilates class","Health-Fitness","WeChat Pay","In-store","Essential","[Attachment: Receipt]","Non-recurring"
-2,Expense,75.20,2020/04/03,Grocery Store,Food,"Weekly groceries","Food-Groceries","Debit Card","In-store","Essential","[Attachment: Receipt]","Recurring"
-2,Income,1800.00,2020/04/05,Employer,Salary,"April salary","Income-Salary","Bank Transfer","Online","Income","[Attachment: Payslip]","Non-recurring"
-2,Expense,40.00,2020/04/08,Pharmacy,Health,"Prescription refill","Health-Pharmacy","WeChat Pay","In-store","Essential","[Attachment: Receipt]","Non-recurring"
-2,Expense,150.00,2020/04/12,Online Service,Entertainment,"Online course fee","Entertainment-Education","Credit Card","Online","Essential","[Attachment: Receipt]","Non-recurring"
-2,Expense,25.50,2020/04/15,Coffee Shop,Food,"Morning coffee","Food-Dining","Cash","In-store","Treat","[Attachment: Receipt]","Non-recurring"
-2,Income,100.00,2020/04/18,Sale,Income,"Sold old books","Income-Sale","Alipay","Online","Income","[Attachment: None]","Non-recurring"
-2,Expense,110.00,2020/04/20,Utility Company,Utilities,"Gas bill","Housing-Utilities","Bank Transfer","Online","Essential","[Attachment: Bill]","Recurring"
-2,Expense,60.00,2020/04/22,Bookstore,Shopping,"New release","Shopping-Books","Credit Card","Online","Non-essential","[Attachment: Receipt]","Non-recurring"
-2,Expense,88.00,2020/04/28,Restaurant,Food,"Takeout dinner","Food-Takeout","WeChat Pay","Online","Essential","[Attachment: Receipt]","Non-recurring"
-2,Expense,30.00,2020/04/30,Netflix,Entertainment,"Monthly subscription","Entertainment-Subscription","Credit Card","Online","Essential","[Attachment: Receipt]","Recurring"
-2,Expense,80.50,2021/04/02,Grocery Store,Food,"Weekly groceries","Food-Groceries","Debit Card","In-store","Essential","[Attachment: Receipt]","Recurring"
-2,Income,1900.00,2021/04/05,Employer,Salary,"April salary","Income-Salary","Bank Transfer","Online","Income","[Attachment: Payslip]","Non-recurring"
-2,Expense,35.00,2021/04/07,Pharmacy,Health,"Pain relievers","Health-Pharmacy","Cash","In-store","Essential","[Attachment: Receipt]","Non-recurring"
-2,Expense,120.00,2021/04/10,Gym,Fitness,"Membership fee","Health-Fitness","WeChat Pay","Offline","Essential","[Attachment: Receipt]","Recurring"
-2,Expense,20.00,2021/04/14,Bakery,Food,"Fresh bread","Food-Groceries","Cash","In-store","Essential","[Attachment: Receipt]","Non-recurring"
-2,Income,150.00,2021/04/16,Gift,Income,"Birthday gift","Income-Gift","Cash","Offline","Income","[Attachment: None]","Non-recurring"
-2,Expense,100.00,2021/04/19,Clothing Store,Shopping,"New socks","Shopping-Apparel","Alipay","Online","Non-essential","[Attachment: Invoice]","Non-recurring"
-2,Expense,55.00,2021/04/23,Restaurant,Food,"Lunch with friend","Food-Dining","WeChat Pay","In-store","Essential","[Attachment: Receipt]","Non-recurring"
-2,Expense,40.00,2021/04/26,Transport Authority,Transport,"Bus pass","Transport-Public","WeChat Pay","Offline","Essential","[Attachment: Receipt]","Recurring"
-2,Expense,50.00,2021/04/29,Spotify,Entertainment,"Music subscription","Entertainment-Subscription","Credit Card","Online","Essential","[Attachment: Receipt]","Recurring"
-2,Expense,78.90,2022/04/01,Grocery Store,Food,"Weekly groceries","Food-Groceries","Debit Card","In-store","Essential","[Attachment: Receipt]","Recurring"
-2,Income,2000.00,2022/04/05,Employer,Salary,"April salary","Income-Salary","Bank Transfer","Online","Income","[Attachment: Payslip]","Non-recurring"
-2,Expense,30.00,2022/04/06,Pharmacy,Health,"Cough drops","Health-Pharmacy","Cash","In-store","Essential","[Attachment: Receipt]","Non-recurring"
-2,Expense,200.00,2022/04/11,Electronics Store,Shopping,"Phone case","Shopping-Electronics","Credit Card","Online","Non-essential","[Attachment: Receipt]","Non-recurring"
-2,Expense,18.50,2022/04/13,Coffee Shop,Food,"Afternoon pick-me-up","Food-Dining","Cash","In-store","Treat","[Attachment: Receipt]","Non-recurring"
-2,Income,200.00,2022/04/17,Refund,Income,"Clothing return","Income-Refund","Alipay","Online","Income","[Attachment: None]","Non-recurring"
-2,Expense,130.00,2022/04/21,Utility Company,Utilities,"Internet bill","Housing-Utilities","Bank Transfer","Online","Essential","[Attachment: Bill]","Recurring"
-2,Expense,70.00,2022/04/24,Cinema,Entertainment,"Movie tickets","Entertainment-Movies","Credit Card","In-store","Treat","[Attachment: Ticket]","Non-recurring"
-2,Expense,95.00,2022/04/27,Restaurant,Food,"Dinner with family","Food-Dining","WeChat Pay","In-store","Treat","[Attachment: Receipt]","Non-recurring"
-2,Expense,30.00,2022/04/30,Netflix,Entertainment,"Monthly subscription","Entertainment-Subscription","Credit Card","Online","Essential","[Attachment: Receipt]","Recurring"
-2,Expense,82.10,2023/04/03,Grocery Store,Food,"Weekly groceries","Food-Groceries","Debit Card","In-store","Essential","[Attachment: Receipt]","Recurring"
-2,Income,2100.00,2023/04/05,Employer,Salary,"April salary","Income-Salary","Bank Transfer","Online","Income","[Attachment: Payslip]","Non-recurring"
-2,Expense,45.00,2023/04/09,Pharmacy,Health,"Cold medicine","Health-Pharmacy","WeChat Pay","In-store","Essential","[Attachment: Receipt]","Non-recurring"
-2,Expense,100.00,2023/04/15,Bookstore,Shopping,"New novel","Shopping-Books","Credit Card","Online","Non-essential","[Attachment: Receipt]","Non-recurring"
-2,Expense,22.00,2023/04/17,Coffee Shop,Food,"Morning routine","Food-Dining","Cash","In-store","Treat","[Attachment: Receipt]","Non-recurring"
-2,Income,300.00,2023/04/19,Investment,Income,"Stock dividend","Income-Investment","Bank Transfer","Online","Income","[Attachment: Statement]","Non-recurring"
-2,Expense,115.00,2023/04/24,Utility Company,Utilities,"Electricity bill","Housing-Utilities","Bank Transfer","Online","Essential","[Attachment: Bill]","Recurring"
-2,Expense,50.00,2023/04/26,Transport Authority,Transport,"Monthly pass","Transport-Public","WeChat Pay","Offline","Essential","[Attachment: Receipt]","Recurring"
-2,Expense,70.00,2023/04/28,Restaurant,Food,"Quick lunch","Food-Dining","Alipay","In-store","Essential","[Attachment: Receipt]","Non-recurring"
-2,Expense,50.00,2023/04/30,Spotify,Entertainment,"Music subscription","Entertainment-Subscription","Credit Card","Online","Essential","[Attachment: Receipt]","Recurring"
-2,Expense,85.60,2024/04/05,Grocery Store,Food,"Weekly groceries","Food-Groceries","Debit Card","In-store","Essential","[Attachment: Receipt]","Recurring"
-2,Income,2200.00,2024/04/05,Employer,Salary,"April salary","Income-Salary","Bank Transfer","Online","Income","[Attachment: Payslip]","Non-recurring"
-2,Expense,50.00,2024/04/08,Pharmacy,Health,"Vitamins","Health-Pharmacy","Cash","In-store","Essential","[Attachment: Receipt]","Non-recurring"
-2,Expense,180.00,2024/04/14,Travel Agency,Travel,"Bus ticket","Transport-Bus","Credit Card","Online","Essential","[Attachment: Booking Confirmation]","Non-recurring"
-2,Expense,28.00,2024/04/16,Bakery,Food,"Weekend treats","Food-Groceries","Cash","In-store","Treat","[Attachment: Receipt]","Non-recurring"
-2,Income,150.00,2024/04/20,Sale,Income,"Sold old electronics","Income-Sale","Alipay","Online","Income","[Attachment: None]","Non-recurring"
-2,Expense,120.00,2024/04/22,Clothing Store,Shopping,"Summer t-shirts","Shopping-Apparel","WeChat Pay","Online","Non-essential","[Attachment: Invoice]","Non-recurring"
-2,Expense,60.00,2024/04/25,Restaurant,Food,"Dinner with colleagues","Food-Dining","WeChat Pay","In-store","Essential","[Attachment: Receipt]","Non-recurring"
-2,Expense,40.00,2024/04/28,Transport Authority,Transport,"Bus fare","Transport-Public","Cash","Offline","Essential","[Attachment: Ticket]","Non-recurring"
-2,Expense,30.00,2024/04/30,Netflix,Entertainment,"Monthly subscription","Entertainment-Subscription","Credit Card","Online","Essential","[Attachment: Receipt]","Recurring"
-2,Expense,90.20,2025/04/01,Grocery Store,Food,"Weekly groceries","Food-Groceries","Debit Card","In-store","Essential","[Attachment: Receipt]","Recurring"
-2,Income,2700.00,2025/04/05,Employer,Salary,"April salary","Income-Salary","Bank Transfer","Online","Income","[Attachment: Payslip]","Non-recurring"
-2,Expense,38.00,2025/04/07,Pharmacy,Health,"Headache medicine","Health-Pharmacy","Cash","In-store","Essential","[Attachment: Receipt]","Non-recurring"
-2,Expense,160.00,2025/04/10,Online Service,Entertainment,"Software subscription","Entertainment-Software","Credit Card","Online","Essential","[Attachment: Receipt]","Recurring"
-2,Expense,27.50,2025/04/12,Coffee Shop,Food,"Morning coffee","Food-Dining","WeChat Pay","In-store","Treat","[Attachment: Receipt]","Non-recurring"
-2,Income,180.00,2025/04/15,Freelance,Income,"Small design gig","Income-Freelance","PayPal","Online","Income","[Attachment: Invoice]","Non-recurring"
-2,Expense,140.00,2025/04/18,Utility Company,Utilities,"Water bill","Housing-Utilities","Bank Transfer","Online","Essential","[Attachment: Bill]","Recurring"
-2,Expense,75.00,2025/04/20,Bookstore,Shopping,"E-books","Shopping-Books","Credit Card","Online","Non-essential","[Attachment: Receipt]","Non-recurring"
-2,Expense,110.00,2025/04/23,Restaurant,Food,"Dinner date","Food-Dining","Alipay","In-store","Treat","[Attachment: Receipt]","Non-recurring"
-2,Expense,30.00,2025/04/25,Netflix,Entertainment,"Monthly subscription","Entertainment-Subscription","Credit Card","Online","Essential","[Attachment: Receipt]","Recurring"
-2,Expense,92.80,2025/04/02,Supermarket,Food,"Bulk groceries","Food-Groceries","Debit Card","In-store","Essential","[Attachment: Receipt]","Non-recurring"
-2,Expense,42.00,2025/04/06,Pharmacy,Health,"Allergy medication","Health-Pharmacy","WeChat Pay","In-store","Essential","[Attachment: Receipt]","Non-recurring"
-2,Expense,220.00,2025/04/09,Electronics Store,Shopping,"New mouse","Shopping-Electronics","Credit Card","Online","Non-essential","[Attachment: Receipt]","Non-recurring"
-2,Expense,19.00,2025/04/11,Coffee Shop,Food,"Quick coffee","Food-Dining","Cash","In-store","Essential","[Attachment: Receipt]","Non-recurring"
-2,Income,250.00,2025/04/14,Gift,Income,"Gift from family","Income-Gift","Cash","Offline","Income","[Attachment: None]","Non-recurring"
-2,Expense,105.00,2025/04/17,Clothing Store,Shopping,"Summer shorts","Shopping-Apparel","Alipay","Online","Non-essential","[Attachment: Invoice]","Non-recurring"
-2,Expense,65.00,2025/04/19,Restaurant,Food,"Lunch with colleagues","Food-Dining","WeChat Pay","In-store","Essential","[Attachment: Receipt]","Non-recurring"
-2,Expense,45.00,2025/04/21,Transport Authority,Transport,"Train fare","Transport-Public","Credit Card","Offline","Essential","[Attachment: Ticket]","Non-recurring"
-2,Expense,50.00,2025/04/24,Spotify,Entertainment,"Music subscription","Entertainment-Subscription","Credit Card","Online","Essential","[Attachment: Receipt]","Recurring"
-2,Expense,88.00,2025/04/29,Restaurant,Food,"Impulse takeout","Food-Takeout","WeChat Pay","Online","Treat","[Attachment: Receipt]","Non-recurring"
-2,Expense,20.00,2025/04/21 18:12,bupt,Education,Education,Education,Education,Education,Education,Education,Education
-yaqi,Income,1000.00,2025/04/21 18:19,I,I,1,1,1,1,1,1,1
-yaqi,Expense,20.00,2025/04/21 18:19,bupt,Food,Food,Food,Food,Food,Food,Food,Food
-yaqi,Expense,30.00,2025/04/21 18:19,ali,Shopping,Shopping,Shopping,Shopping,Shopping,Shopping,Shopping,Shopping
-BigSpenderBob,Income,10000.00,2025/05/02 09:00,Employer,Salary,"May Salary","Income-Salary","Bank Transfer","Online","Income","Payslip.pdf","Non-recurring"
-BigSpenderBob,Expense,150.00,2025/05/03 12:30,Restaurant,Food,"Lunch out","Food-Dining","Credit Card","In-store","Treat","Receipt.jpg","Non-recurring"
-BigSpenderBob,Expense,200.00,2025/05/04 18:00,Amazon,Shopping,"Gadget","Shopping-Electronics","Credit Card","Online","Non-essential","Invoice.pdf","Non-recurring"
-BigSpenderBob,Expense,3500.00,2025/05/05 15:00,Luxury Store,Shopping,"Designer Watch","Shopping-Luxury","Credit Card","In-store","Treat","AuthCard.jpg","Non-recurring"
-BigSpenderBob,Expense,50.00,2025/05/06 08:00,Metro,Transport,"Commute ticket","Transport-Public","Cash","Offline","Essential","Ticket.png","Recurring"
-AverageJane,Expense,5000.00,2025/05/02 09:30,Company ABC,Salary,"May Salary","Income-Salary","Bank Transfer","Online","Income","Payslip.pdf","Non-recurring"
-AverageJane,Expense,100.00,2025/05/03 19:00,Supermarket,Food,"Groceries","Food-Groceries","Debit Card","In-store","Essential","Receipt.jpg","Recurring"
-AverageJane,Expense,80.00,2025/05/04 07:45,Gas Station,Transport,"Fuel","Transport-Car","Credit Card","Offline","Essential","Receipt.jpg","Recurring"
-AverageJane,Expense,120.00,2025/05/05 16:00,Online Retailer,Shopping,"Books","Shopping-Books","Credit Card","Online","Non-essential","Invoice.pdf","Non-recurring"
-AverageJane,Expense,150.00,2025/05/06 20:00,Cinema,Entertainment,"Movie night","Entertainment-Movies","Debit Card","In-store","Treat","Ticket.png","Non-recurring"
-AverageJane,Expense,90.00,2025/05/07 10:00,Utility Co,Utilities,"Electricity Bill","Housing-Utilities","Bank Transfer","Online","Essential","Bill.pdf","Recurring"
-AverageJane,Expense,400.00,2025/05/08 11:00,Airline,Travel,"Weekend flight","Travel-Flights","Credit Card","Online","Non-essential","BookingRef.txt","Non-recurring"
-AverageJane,Expense,110.00,2025/05/09 12:00,Cafe,Food,"Lunch","Food-Dining","Cash","In-store","Essential","Receipt.jpg","Non-recurring"
-RapidFireRita,Income,15000.00,2025/05/02 10:00,Tech Corp,Salary,"May Salary","Income-Salary","Bank Transfer","Online","Income","Payslip.pdf","Non-recurring"
-RapidFireRita,Expense,1100.00,2025/05/10 10:00,Apple Store,Electronics,"New Laptop","Shopping-Electronics","Credit Card","In-store","Non-essential","Receipt.jpg","Non-recurring"
-RapidFireRita,Expense,1200.00,2025/05/10 11:30,IKEA,Furniture,"Desk and Chair","Shopping-Household","Credit Card","In-store","Essential","Receipt.jpg","Non-recurring"
-RapidFireRita,Expense,1050.00,2025/05/10 14:15,Fashion Boutique,Shopping,"Designer Dress","Shopping-Apparel","Credit Card","In-store","Treat","Receipt.jpg","Non-recurring"
-RapidFireRita,Expense,1300.00,2025/05/10 16:45,Expedia,Travel,"Vacation Package Deposit","Travel-Package","Credit Card","Online","Non-essential","BookingConf.pdf","Non-recurring"
-RapidFireRita,Expense,50.00,2025/05/11 12:00,Grocery Store,Food,"Snacks","Food-Groceries","Debit Card","In-store","Essential","Receipt.jpg","Non-recurring"
-2,Income,1000.00,2025/04/23 01:08,I,I,,u,,,,,
-2,Expense,100.00,2025/04/23 01:08,Luckin,Food,,u,,,,,
-2,Expense,15000.00,2025/04/01,Luxury Store,Shopping,"High-end apparel",Shopping-Apparel,Credit Card,In-store,shopping,"[Attachment: Receipt]",Non-recurring
-2,Expense,25000.00,2025/04/05,Car Dealer,Investment,"Car down payment",Investment-Vehicle,Bank Transfer,Offline,investment,"[Attachment: Contract]",Non-recurring
-2,Expense,12000.00,2025/04/10,Travel Agency,Travel,"Holiday package booking",Travel-Package,Credit Card,Online,Travel,"[Attachment: Booking]",Non-recurring
-2,Expense,18000.00,2025/04/15,Jewelry Shop,Shopping,"Special gift purchase",Shopping-Jewelry,Credit Card,In-store,shopping,"[Attachment: Receipt]",Non-recurring
-2,Expense,30000.00,2025/04/20,Art Gallery,Investment,"Art piece acquisition",Investment-Art,Bank Transfer,Offline,investment,"[Attachment: Certificate]",Non-recurring
-2,Expense,11000.00,2025/04/25,Electronics Store,Shopping,"High-end computer",Shopping-Electronics,Credit Card,Online,Electronics,"[Attachment: Receipt]",Non-recurring
-2,Expense,20000.00,2025/04/28,Property Agency,Investment,"Property related fee",Investment-Real Estate,Bank Transfer,Offline,investment,"[Attachment: Invoice]",Non-recurring
-2,Expense,13500.00,2025/05/03,Furniture Store,Shopping,"Living room furniture",Shopping-Furniture,Credit Card,In-store,shopping,"[Attachment: Receipt]",Non-recurring
-2,Expense,16000.00,2025/05/07,Cruise Line,Travel,"Cruise vacation booking",Travel-Cruise,Credit Card,Online,Travel,"[Attachment: Booking]",Non-recurring
-2,Expense,22000.00,2025/05/12,Auction House,Investment,"Collectible item",Investment-Collectibles,Bank Transfer,Online,investment,"[Attachment: Invoice]",Non-recurring
-2,Expense,10500.00,2025/05/16,Gym Equipment Shop,Fitness,"Home gym equipment",Health-Fitness,Credit Card,Online,Fitness,"[Attachment: Receipt]",Non-recurring
-2,Expense,19000.00,2025/05/20,Training Institute,Investment,"Professional course fee",Investment-Education,Bank Transfer,Online,investment,"[Attachment: Invoice]",Non-recurring
-2,Expense,14000.00,2025/05/24,Watch Retailer,Shopping,"Luxury watch purchase",Shopping-Jewelry,Credit Card,In-store,shopping,"[Attachment: Receipt]",Non-recurring
-2,Expense,28000.00,2025/05/28,Car Service,Travel,"Major car repair",Travel-Vehicle,Credit Card,Offline,Travel,"[Attachment: Invoice]",Non-recurring
-2,Expense,11500.00,2025/05/30,Tech Gadget Store,Shopping,"High-performance laptop",Shopping-Electronics,Credit Card,Online,Electronics,"[Attachment: Receipt]",Non-recurring
-2,Expense,17000.00,2025/04/02,Home Improvement,Investment,"Partial renovation cost",Investment-Real Estate,Bank Transfer,Offline,investment,"[Attachment: Invoice]",Non-recurring
-2,Expense,10200.00,2025/04/06,Event Organizer,Other,"Event planning service",Life-Event,Credit Card,Online,Other,"[Attachment: Contract]",Non-recurring
-2,Expense,21000.00,2025/04/11,Medical Clinic,Health,"Minor medical procedure",Health-Medical,Credit Card,Offline,Health,"[Attachment: Invoice]",Non-recurring
-2,Expense,12500.00,2025/04/16,Online University,Investment,"Online degree payment",Investment-Education,Credit Card,Online,investment,"[Attachment: Receipt]",Non-recurring
-2,Expense,18500.00,2025/04/21,Legal Services,Professional Fee,"Legal case fee",Professional-Services,Bank Transfer,Offline,Other,"[Attachment: Invoice]",Non-recurring
-2,Expense,18500.00,2025/04/03,11:20,Luxury Boutique,Shopping,"High-end clothing",Shopping-Apparel,Credit Card,In-store,shopping,Non-recurring
-2,Expense,32000.00,2025/04/08,Brokerage Firm,Investment,"Stock purchase",Investment-Stocks,Bank Transfer,Online,investment,"[Attachment: Statement]",Non-recurring
-2,Expense,14500.00,2025/04/13,Airline Company,Travel,"Business class ticket",Travel-Air,Credit Card,Online,Travel,"[Attachment: E-ticket]",Non-recurring
-2,Expense,21000.00,2025/04/18,Antique Shop,Shopping,"Antique furniture",Shopping-Furniture,Bank Transfer,Offline,shopping,"[Attachment: Certificate]",Non-recurring
-2,Expense,40000.00,2025/04/23,Real Estate Agency,Investment,"Property deposit",Investment-Real Estate,Bank Transfer,Offline,investment,"[Attachment: Receipt]",Non-recurring
-2,Expense,16000.00,2025/04/27,Electronics Megastore,Shopping,"Home theater system",Shopping-Electronics,Credit Card,Online,Electronics,"[Attachment: Receipt]",Non-recurring
-2,Expense,28000.00,2025/05/01,Car Dealership,Travel,"Motorcycle purchase",Travel-Vehicle,Bank Transfer,Offline,Travel,"[Attachment: Contract]",Non-recurring
-2,Expense,11800.00,2025/05/06,High-End Restaurant,Food,"Special event dinner",Food-Dining,Credit Card,In-store,food,"[Attachment: Receipt]",Non-recurring
-2,Expense,19500.00,2025/05/10,Art Auction,Investment,"Limited edition print",Investment-Art,Bank Transfer,Online,investment,"[Attachment: Invoice]",Non-recurring
-2,Expense,13000.00,2025/05/15,Fitness Center,Fitness,"Annual membership fee",Health-Fitness,Credit Card,Offline,Fitness,"[Attachment: Receipt]",Recurring
-2,Expense,26000.00,2025/05/19,Training Academy,Investment,"Certification program",Investment-Education,Bank Transfer,Online,investment,"[Attachment: Invoice]",Non-recurring
-2,Expense,10500.00,2025/05/24,Jeweler,Shopping,"Accessory purchase",Shopping-Jewelry,Credit Card,In-store,shopping,"[Attachment: Receipt]",Non-recurring
-2,Expense,17500.00,2025/05/27,Travel Agency,Travel,"Extended trip package",Travel-Package,Credit Card,Online,Travel,"[Attachment: Booking]",Non-recurring
-2,Expense,35000.00,2025/05/29,Collectible Store,Investment,"Rare coin set",Investment-Collectibles,Bank Transfer,Offline,investment,"[Attachment: Certificate]",Non-recurring
-2,Expense,12200.00,2025/04/04,Home Appliances,Shopping,"New refrigerator",Shopping-Appliances,Credit Card,Offline,shopping,"[Attachment: Receipt]",Non-recurring
-2,Expense,15500.00,2025/04/09,Consulting Firm,Professional Fee,"Business consultation",Professional-Services,Bank Transfer,Online,Other,"[Attachment: Invoice]",Non-recurring
-2,Expense,23000.00,2025/04/14,Medical Specialist,Health,"Consultation and tests",Health-Medical,Credit Card,Offline,Health,"[Attachment: Invoice]",Non-recurring
-2,Expense,10800.00,2025/04/19,Online University,Investment,"Semester tuition",Investment-Education,Credit Card,Online,investment,"[Attachment: Receipt]",Non-recurring
-2,Expense,29000.00,2025/04/24,Car Repair Shop,Travel,"Major engine work",Travel-Vehicle,Bank Transfer,Offline,Travel,"[Attachment: Invoice]",Non-recurring
-2,Expense,14000.00,2025/04/28,Law Firm,Professional Fee,"Legal advice",Professional-Services,Credit Card,Offline,Other,"[Attachment: Invoice]",Non-recurring
-2,Expense,25.00,2025/05/05,Cafe A,Food,"Morning coffee 1",Food-Cafe,WeChat Pay,In-store,food,"[Attachment: Receipt]",Non-recurring
-2,Expense,30.00,2025/05/05,Cafe A,Food,"Morning coffee 2",Food-Cafe,WeChat Pay,In-store,food,"[Attachment: Receipt]",Non-recurring
-2,Expense,25.00,2025/05/05,Cafe A,Food,"Morning coffee 3",Food-Cafe,WeChat Pay,In-store,food,"[Attachment: Receipt]",Non-recurring
-2,Expense,10.00,2025/05/06,Bus Company,Transport,"Bus fare 1",Transport-Public,Cash,Offline,Transport,"[Attachment: None]",Non-recurring
-2,Expense,10.00,2025/05/06,Bus Company,Transport,"Bus fare 2",Transport-Public,Cash,Offline,Transport,"[Attachment: None]",Non-recurring
-2,Expense,10.00,2025/05/06,Bus Company,Transport,"Bus fare 3",Transport-Public,Cash,Offline,Transport,"[Attachment: None]",Non-recurring
-2,Expense,10.00,2025/05/06,Bus Company,Transport,"Bus fare 4",Transport-Public,Cash,Offline,Transport,"[Attachment: None]",Non-recurring
-2,Expense,40.00,2025/05/07,Snack Kiosk B,Food,"Lunch item 1",Food-Snacks,Alipay,In-store,food,"[Attachment: Receipt]",Non-recurring
-2,Expense,35.00,2025/05/07,Snack Kiosk B,Food,"Lunch item 2",Food-Snacks,Alipay,In-store,food,"[Attachment: Receipt]",Non-recurring
-2,Expense,40.00,2025/05/07,Snack Kiosk B,Food,"Lunch item 3",Food-Snacks,Alipay,In-store,food,"[Attachment: Receipt]",Non-recurring
-2,Expense,65.00,2025/05/08,Local Mini Mart C,Shopping,"Grocery item A",Shopping-Groceries,WeChat Pay,In-store,shopping,"[Attachment: Receipt]",Non-recurring
-2,Expense,60.00,2025/05/08,Local Mini Mart C,Shopping,"Grocery item B",Shopping-Groceries,WeChat Pay,In-store,shopping,"[Attachment: Receipt]",Non-recurring
-2,Expense,65.00,2025/05/08,Local Mini Mart C,Shopping,"Grocery item C",Shopping-Groceries,WeChat Pay,In-store,shopping,"[Attachment: Receipt]",Non-recurring
-2,Expense,18.00,2025/05/09,Vending Machine D,Food,"Drink 1",Food-Drinks,Cash,Offline,food,"[Attachment: None]",Non-recurring
-2,Expense,18.00,2025/05/09,Vending Machine D,Food,"Drink 2",Food-Drinks,Cash,Offline,food,"[Attachment: None]",Non-recurring
-2,Expense,18.00,2025/05/09,Vending Machine D,Food,"Drink 3",Food-Drinks,Cash,Offline,food,"[Attachment: None]",Non-recurring
-2,Expense,30.00,2025/05/10,Office Pantry E,Food,"Snack 1",Food-Cafe,WeChat Pay,In-store,food,"[Attachment: Receipt]",Non-recurring
-2,Expense,30.00,2025/05/10,Office Pantry E,Food,"Snack 2",Food-Cafe,WeChat Pay,In-store,food,"[Attachment: Receipt]",Non-recurring
-2,Expense,35.00,2025/05/10,Office Pantry E,Food,"Snack 3",Food-Cafe,WeChat Pay,In-store,food,"[Attachment: Receipt]",Non-recurring
-2,Expense,12.00,2025/05/11,Campus Bus,Transport,"Bus fare 1",Transport-Public,Cash,Offline,Transport,"[Attachment: None]",Non-recurring
-2,Expense,160.00,2025/04/12,Online Shop F,Shopping,"Late night purchase",Shopping-Online,Credit Card,Online,shopping,"[Attachment: Invoice]",Non-recurring
-2,Expense,55.00,2025/04/14,Streaming G,Entertainment,"Subscription fee",Entertainment-Subscription,Credit Card,Online,Entertainment,"[Attachment: Receipt]",Recurring
-2,Expense,220.00,2025/04/16,E-learning H,Investment,"Module payment",Investment-Education,Alipay,Online,investment,"[Attachment: Invoice]",Non-recurring
-2,Expense,85.00,2025/04/19,Gaming I,Entertainment,"In-game item",Entertainment-Gaming,WeChat Pay,Online,Entertainment,"[Attachment: Receipt]",Non-recurring
-2,Expense,130.00,2025/04/21,Software J,Other,"Software license",Professional-Services,Credit Card,Online,Other,"[Attachment: Invoice]",Non-recurring
-2,Expense,105.00,2025/04/24,Cloud K,Other,"Monthly fee",Technology-Services,Credit Card,Online,Other,"[Attachment: Receipt]",Recurring
-2,Expense,75.00,2025/04/26,Online Bookstore L,Shopping,"Digital book",Shopping-Books/Media,Alipay,Online,shopping,"[Attachment: Receipt]",Non-recurring
-2,Expense,95.00,2025/04/28,App Store M,Shopping,"App purchase",Shopping-Apps,WeChat Pay,Online,shopping,"[Attachment: Receipt]",Non-recurring
-2,Expense,190.00,2025/05/01,Online Service N,Professional Fee,"Service fee",Professional-Services,Credit Card,Online,Other,"[Attachment: Invoice]",Non-recurring
-2,Expense,65.00,2025/05/03,E-learning O,Investment,"Tutorial fee",Investment-Education,Credit Card,Online,investment,"[Attachment: Receipt]",Recurring
-2,Expense,140.00,2025/05/05,Online Market P,Shopping,"Gadget",Shopping-Online,Alipay,Online,Electronics,"[Attachment: Invoice]",Non-recurring
-2,Expense,45.00,2025/05/07,Music Streaming Q,Entertainment,"Subscription fee",Entertainment-Subscription,Credit Card,Online,Entertainment,"[Attachment: Receipt]",Recurring
-2,Expense,170.00,2025/05/09,Online Community R,Other,"Premium subscription",Technology-Services,WeChat Pay,Online,Other,"[Attachment: Receipt]",Recurring
-2,Expense,115.00,2025/05/12,Online Course S,Investment,"Course payment",Investment-Education,Credit Card,Online,investment,"[Attachment: Invoice]",Non-recurring
-2,Expense,200.00,2025/05/14,Online Electronics T,Shopping,"Computer accessory",Shopping-Online,Alipay,Online,Electronics,"[Attachment: Invoice]",Non-recurring
-2,Expense,80.00,2025/05/16,Game Platform U,Entertainment,"Game currency",Entertainment-Gaming,WeChat Pay,Online,Entertainment,"[Attachment: Receipt]",Non-recurring
-2,Expense,160.00,2025/05/19,Software License V,Other,"Annual license",Professional-Services,Credit Card,Online,Other,"[Attachment: Invoice]",Recurring
-2,Expense,100.00,2025/05/21,Online Fitness W,Health,"Coaching session",Health-Fitness,Alipay,Online,Fitness,"[Attachment: Receipt]",Non-recurring
-2,Expense,130.00,2025/05/24,Online Magazine X,Shopping,"Digital subscription",Shopping-Books/Media,Credit Card,Online,shopping,"[Attachment: Receipt]",Recurring
-2,Expense,190.00,2025/05/26,Online Store Y,Shopping,"Household item",Shopping-Online,WeChat Pay,Online,shopping,"[Attachment: Invoice]",Non-recurring
-2,Expense,200.00,2025/05/12 12:00,KFC,food,,,,Online,,,
-2,Expense,1000.00,2025/05/15 12:00,Amazon,shopping,,,,Online,,,
-2,Expense,500.00,2025/03/15 12:00,gym,Fitness,,,,Online,,,
-2,Expense,10000.00,2025/02/15 12:00,Tianjing,Travel,,,,Online,,,
+2,Expense,88.5,2024/3/1,Ele.me,Food,Weekend takeout,Food-Takeout,WeChat Pay,Online,Essential,[Attachment: Receipt image],Non-recurring
+2,Income,1500,2024/3/5,Employer,Salary,March salary,Income-Salary,Bank Transfer,Online,Income,[Attachment: Payslip],Non-recurring
+2,Expense,45.2,2024/3/7,Taobao,Shopping,New clothes,Shopping-Online,Alipay,Online,Non-essential,[Attachment: Invoice],Non-recurring
+2,Expense,200,2024/3/10,Landlord,Rent,Monthly rent,Housing-Rent,WeChat Pay,Offline,Essential,[Attachment: Receipt],Recurring
+2,Expense,15.75,2024/3/15,Starbucks,Food,Morning coffee,Food-Dining,Cash,In-store,Treat,[Attachment: Receipt],Non-recurring
+2,Income,2000,2025/1/5,Employer,Salary,January salary,Income-Salary,Bank Transfer,Online,Income,[Attachment: Payslip],Non-recurring
+2,Expense,150,2025/1/10,Taobao,Shopping,New clothes,Shopping-Online,Alipay,Online,Non-essential,[Attachment: Invoice],Non-recurring
+2,Expense,300,2025/1/15,Landlord,Rent,January rent,Housing-Rent,WeChat Pay,Offline,Essential,[Attachment: Receipt],Recurring
+2,Expense,50,2025/1/20,Starbucks,Food,Morning coffee,Food-Dining,Cash,In-store,Treat,[Attachment: Receipt],Non-recurring
+2,Income,500,2025/2/1,Freelance,Freelance,Freelance work,Income-Freelance,PayPal,Online,Income,[Attachment: Invoice],Non-recurring
+2,Expense,200,2025/2/5,JD.com,Electronics,New phone,Shopping-Electronics,Credit Card,Online,Non-essential,[Attachment: Receipt],Non-recurring
+2,Expense,100,2025/2/10,Gym,Fitness,Gym membership,Health-Fitness,WeChat Pay,Offline,Essential,[Attachment: Receipt],Recurring
+2,Expense,20,2025/2/15,McDonald's,Food,Fast food,Food-Fast Food,Cash,In-store,Treat,[Attachment: Receipt],Non-recurring
+2,Income,1000,2025/3/1,Investment,Investment,Stock dividend,Income-Investment,Bank Transfer,Online,Income,[Attachment: Statement],Non-recurring
+2,Expense,50,2025/3/5,Uber,Transport,Taxi ride,Transport-Taxi,WeChat Pay,Online,Essential,[Attachment: Receipt],Non-recurring
+2,Expense,200,2025/3/10,Airbnb,Travel,Weekend trip,Travel-Accommodation,Credit Card,Online,Non-essential,[Attachment: Booking Confirmation],Non-recurring
+2,Expense,30,2025/3/15,Netflix,Entertainment,Monthly subscription,Entertainment-Subscription,Credit Card,Online,Essential,[Attachment: Receipt],Recurring
+2,Income,1500,2025/4/1,Employer,Salary,April salary,Income-Salary,Bank Transfer,Online,Income,[Attachment: Payslip],Non-recurring
+2,Expense,100,2025/4/5,Amazon,Shopping,Books,Shopping-Books,Credit Card,Online,Non-essential,[Attachment: Receipt],Non-recurring
+2,Expense,50,2025/4/10,Grocery Store,Food,Groceries,Food-Groceries,Cash,In-store,Essential,[Attachment: Receipt],Non-recurring
+2,Expense,20,2025/4/15,Bus,Transport,Bus fare,Transport-Public,Cash,Offline,Essential,[Attachment: Ticket],Non-recurring
+2,Income,200,2025/5/1,Gift,Gift,Birthday gift,Income-Gift,Cash,Offline,Income,[Attachment: None],Non-recurring
+2,Expense,300,2025/5/5,Hotel,Travel,Business trip,Travel-Accommodation,Credit Card,Online,Essential,[Attachment: Booking Confirmation],Non-recurring
+2,Expense,100,2025/5/10,Restaurant,Food,Dinner with friends,Food-Dining,WeChat Pay,In-store,Treat,[Attachment: Receipt],Non-recurring
+2,Expense,50,2025/5/15,Spotify,Entertainment,Music subscription,Entertainment-Subscription,Credit Card,Online,Essential,[Attachment: Receipt],Recurring
+2,Income,1000,2025/6/1,Employer,Salary,June salary,Income-Salary,Bank Transfer,Online,Income,[Attachment: Payslip],Non-recurring
+2,Expense,200,2025/6/5,Apple,Electronics,New earphones,Shopping-Electronics,Credit Card,Online,Non-essential,[Attachment: Receipt],Non-recurring
+2,Expense,100,2025/6/10,Gym,Fitness,Gym membership,Health-Fitness,WeChat Pay,Offline,Essential,[Attachment: Receipt],Recurring
+2,Expense,30,2025/6/15,Netflix,Entertainment,Monthly subscription,Entertainment-Subscription,Credit Card,Online,Essential,[Attachment: Receipt],Recurring
+2,Income,500,2025/7/1,Freelance,Freelance,Freelance work,Income-Freelance,PayPal,Online,Income,[Attachment: Invoice],Non-recurring
+2,Expense,150,2025/7/5,Taobao,Shopping,New clothes,Shopping-Online,Alipay,Online,Non-essential,[Attachment: Invoice],Non-recurring
+2,Expense,300,2025/7/10,Landlord,Rent,July rent,Housing-Rent,WeChat Pay,Offline,Essential,[Attachment: Receipt],Recurring
+2,Expense,50,2025/7/15,Starbucks,Food,Morning coffee,Food-Dining,Cash,In-store,Treat,[Attachment: Receipt],Non-recurring
+2,Income,1000,2025/8/1,Investment,Investment,Stock dividend,Income-Investment,Bank Transfer,Online,Income,[Attachment: Statement],Non-recurring
+2,Expense,50,2025/8/5,Uber,Transport,Taxi ride,Transport-Taxi,WeChat Pay,Online,Essential,[Attachment: Receipt],Non-recurring
+2,Expense,88.5,2024/3/1,Ele.me,Food,Weekend takeout,Food-Takeout,WeChat Pay,Online,Essential,[Attachment: Receipt image],Non-recurring
+2,Income,1500,2024/3/5,Employer,Salary,March salary,Income-Salary,Bank Transfer,Online,Income,[Attachment: Payslip],Non-recurring
+2,Expense,45.2,2024/3/7,Taobao,Shopping,New clothes,Shopping-Online,Alipay,Online,Non-essential,[Attachment: Invoice],Non-recurring
+2,Expense,200,2024/3/10,Landlord,Rent,Monthly rent,Housing-Rent,WeChat Pay,Offline,Essential,[Attachment: Receipt],Recurring
+2,Expense,15.75,2024/3/15,Starbucks,Food,Morning coffee,Food-Dining,Cash,In-store,Treat,[Attachment: Receipt],Non-recurring
+2,Income,2000,2025/1/5,Employer,Salary,January salary,Income-Salary,Bank Transfer,Online,Income,[Attachment: Payslip],Non-recurring
+2,Expense,150,2025/1/10,Taobao,Shopping,New clothes,Shopping-Online,Alipay,Online,Non-essential,[Attachment: Invoice],Non-recurring
+2,Expense,300,2025/1/15,Landlord,Rent,January rent,Housing-Rent,WeChat Pay,Offline,Essential,[Attachment: Receipt],Recurring
+2,Expense,50,2025/1/20,Starbucks,Food,Morning coffee,Food-Dining,Cash,In-store,Treat,[Attachment: Receipt],Non-recurring
+2,Income,500,2025/2/1,Freelance,Freelance,Freelance work,Income-Freelance,PayPal,Online,Income,[Attachment: Invoice],Non-recurring
+2,Expense,200,2025/2/5,JD.com,Electronics,New phone,Shopping-Electronics,Credit Card,Online,Non-essential,[Attachment: Receipt],Non-recurring
+2,Expense,100,2025/2/10,Gym,Fitness,Gym membership,Health-Fitness,WeChat Pay,Offline,Essential,[Attachment: Receipt],Recurring
+2,Expense,20,2025/2/15,McDonald's,Food,Fast food,Food-Fast Food,Cash,In-store,Treat,[Attachment: Receipt],Non-recurring
+2,Income,1000,2025/3/1,Investment,Investment,Stock dividend,Income-Investment,Bank Transfer,Online,Income,[Attachment: Statement],Non-recurring
+2,Expense,50,2025/3/5,Uber,Transport,Taxi ride,Transport-Taxi,WeChat Pay,Online,Essential,[Attachment: Receipt],Non-recurring
+2,Expense,200,2025/3/10,Airbnb,Travel,Weekend trip,Travel-Accommodation,Credit Card,Online,Non-essential,[Attachment: Booking Confirmation],Non-recurring
+2,Expense,30,2025/3/15,Netflix,Entertainment,Monthly subscription,Entertainment-Subscription,Credit Card,Online,Essential,[Attachment: Receipt],Recurring
+2,Income,1500,2025/4/1,Employer,Salary,April salary,Income-Salary,Bank Transfer,Online,Income,[Attachment: Payslip],Non-recurring
+2,Expense,100,2025/4/5,Amazon,Shopping,Books,Shopping-Books,Credit Card,Online,Non-essential,[Attachment: Receipt],Non-recurring
+2,Expense,50,2025/4/10,Grocery Store,Food,Groceries,Food-Groceries,Cash,In-store,Essential,[Attachment: Receipt],Non-recurring
+2,Expense,20,2025/4/15,Bus,Transport,Bus fare,Transport-Public,Cash,Offline,Essential,[Attachment: Ticket],Non-recurring
+2,Income,200,2025/5/1,Gift,Gift,Birthday gift,Income-Gift,Cash,Offline,Income,[Attachment: None],Non-recurring
+2,Expense,300,2025/5/5,Hotel,Travel,Business trip,Travel-Accommodation,Credit Card,Online,Essential,[Attachment: Booking Confirmation],Non-recurring
+2,Expense,100,2025/5/10,Restaurant,Food,Dinner with friends,Food-Dining,WeChat Pay,In-store,Treat,[Attachment: Receipt],Non-recurring
+2,Expense,50,2025/5/15,Spotify,Entertainment,Music subscription,Entertainment-Subscription,Credit Card,Online,Essential,[Attachment: Receipt],Recurring
+2,Income,1000,2025/6/1,Employer,Salary,June salary,Income-Salary,Bank Transfer,Online,Income,[Attachment: Payslip],Non-recurring
+2,Expense,200,2025/6/5,Apple,Electronics,New earphones,Shopping-Electronics,Credit Card,Online,Non-essential,[Attachment: Receipt],Non-recurring
+2,Expense,100,2025/6/10,Gym,Fitness,Gym membership,Health-Fitness,WeChat Pay,Offline,Essential,[Attachment: Receipt],Recurring
+2,Expense,30,2025/6/15,Netflix,Entertainment,Monthly subscription,Entertainment-Subscription,Credit Card,Online,Essential,[Attachment: Receipt],Recurring
+2,Income,500,2025/7/1,Freelance,Freelance,Freelance work,Income-Freelance,PayPal,Online,Income,[Attachment: Invoice],Non-recurring
+2,Expense,150,2025/7/5,Taobao,Shopping,New clothes,Shopping-Online,Alipay,Online,Non-essential,[Attachment: Invoice],Non-recurring
+2,Expense,300,2025/7/10,Landlord,Rent,July rent,Housing-Rent,WeChat Pay,Offline,Essential,[Attachment: Receipt],Recurring
+2,Expense,50,2025/7/15,Starbucks,Food,Morning coffee,Food-Dining,Cash,In-store,Treat,[Attachment: Receipt],Non-recurring
+2,Income,1000,2025/8/1,Investment,Investment,Stock dividend,Income-Investment,Bank Transfer,Online,Income,[Attachment: Statement],Non-recurring
+2,Expense,50,2025/8/5,Uber,Transport,Taxi ride,Transport-Taxi,WeChat Pay,Online,Essential,[Attachment: Receipt],Non-recurring
+2,Expense,200,2025/8/10,Airbnb,Travel,Weekend trip,Travel-Accommodation,Credit Card,Online,Non-essential,[Attachment: Booking Confirmation],Non-recurring
+2,Expense,30,2025/8/15,Netflix,Entertainment,Monthly subscription,Entertainment-Subscription,Credit Card,Online,Essential,[Attachment: Receipt],Recurring
+2,Income,1500,2025/9/1,Employer,Salary,September salary,Income-Salary,Bank Transfer,Online,Income,[Attachment: Payslip],Non-recurring
+2,Expense,100,2025/9/5,Amazon,Shopping,Books,Shopping-Books,Credit Card,Online,Non-essential,[Attachment: Receipt],Non-recurring
+2,Expense,50,2025/9/10,Grocery Store,Food,Groceries,Food-Groceries,Cash,In-store,Essential,[Attachment: Receipt],Non-recurring
+2,Expense,20,2025/9/15,Bus,Transport,Bus fare,Transport-Public,Cash,Offline,Essential,[Attachment: Ticket],Non-recurring
+2,Income,200,2025/10/1,Gift,Gift,Birthday gift,Income-Gift,Cash,Offline,Income,[Attachment: None],Non-recurring
+2,Expense,300,2025/10/5,Hotel,Travel,Business trip,Travel-Accommodation,Credit Card,Online,Essential,[Attachment: Booking Confirmation],Non-recurring
+2,Expense,100,2025/10/10,Restaurant,Food,Dinner with friends,Food-Dining,WeChat Pay,In-store,Treat,[Attachment: Receipt],Non-recurring
+2,Expense,50,2025/10/15,Spotify,Entertainment,Music subscription,Entertainment-Subscription,Credit Card,Online,Essential,[Attachment: Receipt],Recurring
+2,Income,1000,2025/11/1,Employer,Salary,November salary,Income-Salary,Bank Transfer,Online,Income,[Attachment: Payslip],Non-recurring
+2,Expense,200,2025/11/5,Apple,Electronics,New earphones,Shopping-Electronics,Credit Card,Online,Non-essential,[Attachment: Receipt],Non-recurring
+2,Expense,100,2025/11/10,Gym,Fitness,Gym membership,Health-Fitness,WeChat Pay,Offline,Essential,[Attachment: Receipt],Recurring
+2,Expense,30,2025/11/15,Netflix,Entertainment,Monthly subscription,Entertainment-Subscription,Credit Card,Online,Essential,[Attachment: Receipt],Recurring
+2,Income,500,2025/12/1,Freelance,Freelance,Freelance work,Income-Freelance,PayPal,Online,Income,[Attachment: Invoice],Non-recurring
+2,Expense,150,2025/12/5,Taobao,Shopping,New clothes,Shopping-Online,Alipay,Online,Non-essential,[Attachment: Invoice],Non-recurring
+2,Expense,300,2025/12/10,Landlord,Rent,December rent,Housing-Rent,WeChat Pay,Offline,Essential,[Attachment: Receipt],Recurring
+2,Expense,50,2025/12/15,Starbucks,Food,Morning coffee,Food-Dining,Cash,In-store,Treat,[Attachment: Receipt],Non-recurring
+2,Income,1000,2020/1/10,Investment,Investment,Stock dividend,Income-Investment,Bank Transfer,Online,Income,[Attachment: Statement],Non-recurring
+2,Expense,75,2020/2/20,Supermarket,Food,Weekly groceries,Food-Groceries,Debit Card,In-store,Essential,[Attachment: Receipt],Recurring
+2,Expense,40,2020/3/18,Cinema,Entertainment,Movie ticket,Entertainment-Movies,Credit Card,In-store,Treat,[Attachment: Ticket],Non-recurring
+2,Income,300,2020/4/1,Bank,Investment,Interest earned,Income-Investment,Bank Transfer,Online,Income,[Attachment: Statement],Recurring
+2,Expense,120,2020/5/15,Utility Company,Utilities,Electricity bill,Housing-Utilities,Bank Transfer,Online,Essential,[Attachment: Bill],Recurring
+2,Expense,25,2020/6/8,Pharmacy,Health,Medication,Health-Pharmacy,Cash,In-store,Essential,[Attachment: Receipt],Non-recurring
+2,Income,1800,2020/7/5,Employer,Salary,July salary,Income-Salary,Bank Transfer,Online,Income,[Attachment: Payslip],Non-recurring
+2,Expense,60,2020/8/12,Bookstore,Shopping,New book,Shopping-Books,Credit Card,In-store,Non-essential,[Attachment: Receipt],Non-recurring
+2,Expense,90,2020/9/25,Restaurant,Food,Dinner with family,Food-Dining,WeChat Pay,In-store,Treat,[Attachment: Receipt],Non-recurring
+2,Income,400,2020/10/10,Freelance,Freelance,Website design,Income-Freelance,PayPal,Online,Income,[Attachment: Invoice],Non-recurring
+2,Expense,150,2020/11/3,Clothing Store,Shopping,Winter clothes,Shopping-Apparel,Alipay,In-store,Essential,[Attachment: Receipt],Non-recurring
+2,Expense,35,2020/12/1,Coffee Shop,Food,Afternoon coffee,Food-Dining,Cash,In-store,Treat,[Attachment: Receipt],Non-recurring
+2,Income,2200,2021/1/5,Employer,Salary,January salary,Income-Salary,Bank Transfer,Online,Income,[Attachment: Payslip],Non-recurring
+2,Expense,300,2021/2/14,Jewelry Store,Shopping,Valentine's Day gift,Shopping-Jewelry,Credit Card,In-store,Treat,[Attachment: Receipt],Non-recurring
+2,Expense,50,2021/3/20,Transport Authority,Transport,Monthly pass,Transport-Public,WeChat Pay,Offline,Essential,[Attachment: Receipt],Recurring
+2,Income,150,2021/4/18,Sale,Income,Sold old items,Income-Sale,Alipay,Online,Income,[Attachment: None],Non-recurring
+2,Expense,80,2021/5/1,Online Service,Entertainment,Online course subscription,Entertainment-Education,Credit Card,Online,Essential,[Attachment: Receipt],Recurring
+2,Expense,20,2021/6/5,Bakery,Food,Bread and pastries,Food-Groceries,Cash,In-store,Essential,[Attachment: Receipt],Non-recurring
+2,Income,1900,2021/7/5,Employer,Salary,July salary,Income-Salary,Bank Transfer,Online,Income,[Attachment: Payslip],Non-recurring
+2,Expense,100,2021/8/15,Electronics Store,Shopping,USB drive,Shopping-Electronics,Debit Card,In-store,Essential,[Attachment: Receipt],Non-recurring
+2,Expense,45,2021/9/10,Bar,Food,Drinks with friends,Food-Dining,WeChat Pay,In-store,Treat,[Attachment: Receipt],Non-recurring
+2,Income,600,2021/10/22,Freelance,Freelance,Writing project,Income-Freelance,PayPal,Online,Income,[Attachment: Invoice],Non-recurring
+2,Expense,180,2021/11/11,Taobao,Shopping,Singles' Day haul,Shopping-Online,Alipay,Online,Non-essential,[Attachment: Invoice],Non-recurring
+2,Expense,40,2021/12/24,Gift Shop,Shopping,Christmas gift,Shopping-Gifts,Cash,In-store,Treat,[Attachment: Receipt],Non-recurring
+2,Income,2300,2022/1/5,Employer,Salary,January salary,Income-Salary,Bank Transfer,Online,Income,[Attachment: Payslip],Non-recurring
+2,Expense,250,2022/2/1,Travel Agency,Travel,Flight ticket,Travel-Flights,Credit Card,Online,Essential,[Attachment: Booking Confirmation],Non-recurring
+2,Expense,70,2022/3/12,Gym,Fitness,Yoga class,Health-Fitness,WeChat Pay,In-store,Essential,[Attachment: Receipt],Non-recurring
+2,Income,100,2022/4/8,Refund,Income,Item return refund,Income-Refund,Alipay,Online,Income,[Attachment: None],Non-recurring
+2,Expense,130,2022/5/20,Bookstore,Shopping,Textbooks,Shopping-Books,Cash,In-store,Essential,[Attachment: Receipt],Non-recurring
+2,Expense,30,2022/6/18,Cinema,Entertainment,Movie ticket,Entertainment-Movies,Credit Card,In-store,Treat,[Attachment: Ticket],Non-recurring
+2,Income,2000,2022/7/5,Employer,Salary,July salary,Income-Salary,Bank Transfer,Online,Income,[Attachment: Payslip],Non-recurring
+2,Expense,85,2022/8/3,Supermarket,Food,Weekly groceries,Food-Groceries,Debit Card,In-store,Essential,[Attachment: Receipt],Recurring
+2,Expense,110,2022/9/1,Utility Company,Utilities,Water bill,Housing-Utilities,Bank Transfer,Online,Essential,[Attachment: Bill],Recurring
+2,Income,500,2022/10/15,Freelance,Freelance,Consulting work,Income-Freelance,PayPal,Online,Income,[Attachment: Invoice],Non-recurring
+2,Expense,220,2022/11/28,Electronics Store,Shopping,Power bank,Shopping-Electronics,Credit Card,Online,Non-essential,[Attachment: Receipt],Non-recurring
+2,Expense,55,2022/12/10,Restaurant,Food,Lunch with colleague,Food-Dining,WeChat Pay,In-store,Essential,[Attachment: Receipt],Non-recurring
+2,Income,2400,2023/1/5,Employer,Salary,January salary,Income-Salary,Bank Transfer,Online,Income,[Attachment: Payslip],Non-recurring
+2,Expense,400,2023/2/20,Hotel,Travel,Weekend getaway,Travel-Accommodation,Credit Card,Online,Non-essential,[Attachment: Booking Confirmation],Non-recurring
+2,Expense,120,2023/3/8,Clothing Store,Shopping,Spring outfit,Shopping-Apparel,Alipay,In-store,Non-essential,[Attachment: Receipt],Non-recurring
+2,Income,300,2023/4/1,Bank,Investment,Interest earned,Income-Investment,Bank Transfer,Online,Income,[Attachment: Statement],Recurring
+2,Expense,95,2023/5/10,Grocery Store,Food,Groceries,Food-Groceries,Cash,In-store,Essential,[Attachment: Receipt],Non-recurring
+2,Expense,25,2023/6/3,Coffee Shop,Food,Morning boost,Food-Dining,Cash,In-store,Treat,[Attachment: Receipt],Non-recurring
+2,Income,2100,2023/7/5,Employer,Salary,July salary,Income-Salary,Bank Transfer,Online,Income,[Attachment: Payslip],Non-recurring
+2,Expense,180,2023/8/18,Online Service,Entertainment,Streaming service,Entertainment-Subscription,Credit Card,Online,Essential,[Attachment: Receipt],Recurring
+2,Expense,65,2023/9/14,Pharmacy,Health,Vitamins,Health-Pharmacy,WeChat Pay,In-store,Essential,[Attachment: Receipt],Non-recurring
+2,Income,700,2023/10/1,Freelance,Freelance,Translation work,Income-Freelance,PayPal,Online,Income,[Attachment: Invoice],Non-recurring
+2,Expense,130,2023/11/7,Bookstore,Shopping,Novels,Shopping-Books,Credit Card,Online,Non-essential,[Attachment: Receipt],Non-recurring
+2,Expense,40,2023/12/5,Cinema,Entertainment,Movie night,Entertainment-Movies,Credit Card,In-store,Treat,[Attachment: Ticket],Non-recurring
+2,Income,2500,2024/1/5,Employer,Salary,January salary,Income-Salary,Bank Transfer,Online,Income,[Attachment: Payslip],Non-recurring
+2,Expense,350,2024/2/10,Department Store,Shopping,Home goods,Shopping-Household,Alipay,In-store,Essential,[Attachment: Receipt],Non-recurring
+2,Expense,80,2024/3/16,Gym,Fitness,Gym class,Health-Fitness,WeChat Pay,In-store,Essential,[Attachment: Receipt],Non-recurring
+2,Income,120,2024/4/25,Sale,Income,Sold used books,Income-Sale,Cash,Offline,Income,[Attachment: None],Non-recurring
+2,Expense,105,2024/5/8,Supermarket,Food,Weekly groceries,Food-Groceries,Debit Card,In-store,Essential,[Attachment: Receipt],Recurring
+2,Expense,30,2024/6/21,Restaurant,Food,Lunchbreak,Food-Dining,Cash,In-store,Essential,[Attachment: Receipt],Non-recurring
+2,Income,2200,2024/7/5,Employer,Salary,July salary,Income-Salary,Bank Transfer,Online,Income,[Attachment: Payslip],Non-recurring
+2,Expense,200,2024/8/1,Travel Agency,Travel,Train ticket,Transport-Train,Credit Card,Online,Essential,[Attachment: Booking Confirmation],Non-recurring
+2,Expense,50,2024/9/9,Coffee Shop,Food,Meeting coffee,Food-Dining,WeChat Pay,In-store,Essential,[Attachment: Receipt],Non-recurring
+2,Income,800,2024/10/12,Freelance,Freelance,Editing work,Income-Freelance,PayPal,Online,Income,[Attachment: Invoice],Non-recurring
+2,Expense,160,2024/11/5,Clothing Store,Shopping,Autumn wear,Shopping-Apparel,Alipay,Online,Non-essential,[Attachment: Invoice],Non-recurring
+2,Expense,45,2024/12/19,Bakery,Food,Holiday treats,Food-Groceries,Cash,In-store,Treat,[Attachment: Receipt],Non-recurring
+2,Income,2600,2025/1/5,Employer,Salary,January salary,Income-Salary,Bank Transfer,Online,Income,[Attachment: Payslip],Non-recurring
+2,Expense,320,2025/2/18,Electronics Store,Shopping,Smartwatch,Shopping-Electronics,Credit Card,In-store,Non-essential,[Attachment: Receipt],Non-recurring
+2,Expense,90,2025/3/22,Gym,Fitness,Pilates class,Health-Fitness,WeChat Pay,In-store,Essential,[Attachment: Receipt],Non-recurring
+2,Expense,75.2,2020/4/3,Grocery Store,Food,Weekly groceries,Food-Groceries,Debit Card,In-store,Essential,[Attachment: Receipt],Recurring
+2,Income,1800,2020/4/5,Employer,Salary,April salary,Income-Salary,Bank Transfer,Online,Income,[Attachment: Payslip],Non-recurring
+2,Expense,40,2020/4/8,Pharmacy,Health,Prescription refill,Health-Pharmacy,WeChat Pay,In-store,Essential,[Attachment: Receipt],Non-recurring
+2,Expense,150,2020/4/12,Online Service,Entertainment,Online course fee,Entertainment-Education,Credit Card,Online,Essential,[Attachment: Receipt],Non-recurring
+2,Expense,25.5,2020/4/15,Coffee Shop,Food,Morning coffee,Food-Dining,Cash,In-store,Treat,[Attachment: Receipt],Non-recurring
+2,Income,100,2020/4/18,Sale,Income,Sold old books,Income-Sale,Alipay,Online,Income,[Attachment: None],Non-recurring
+2,Expense,110,2020/4/20,Utility Company,Utilities,Gas bill,Housing-Utilities,Bank Transfer,Online,Essential,[Attachment: Bill],Recurring
+2,Expense,60,2020/4/22,Bookstore,Shopping,New release,Shopping-Books,Credit Card,Online,Non-essential,[Attachment: Receipt],Non-recurring
+2,Expense,88,2020/4/28,Restaurant,Food,Takeout dinner,Food-Takeout,WeChat Pay,Online,Essential,[Attachment: Receipt],Non-recurring
+2,Expense,30,2020/4/30,Netflix,Entertainment,Monthly subscription,Entertainment-Subscription,Credit Card,Online,Essential,[Attachment: Receipt],Recurring
+2,Expense,80.5,2021/4/2,Grocery Store,Food,Weekly groceries,Food-Groceries,Debit Card,In-store,Essential,[Attachment: Receipt],Recurring
+2,Income,1900,2021/4/5,Employer,Salary,April salary,Income-Salary,Bank Transfer,Online,Income,[Attachment: Payslip],Non-recurring
+2,Expense,35,2021/4/7,Pharmacy,Health,Pain relievers,Health-Pharmacy,Cash,In-store,Essential,[Attachment: Receipt],Non-recurring
+2,Expense,120,2021/4/10,Gym,Fitness,Membership fee,Health-Fitness,WeChat Pay,Offline,Essential,[Attachment: Receipt],Recurring
+2,Expense,20,2021/4/14,Bakery,Food,Fresh bread,Food-Groceries,Cash,In-store,Essential,[Attachment: Receipt],Non-recurring
+2,Income,150,2021/4/16,Gift,Income,Birthday gift,Income-Gift,Cash,Offline,Income,[Attachment: None],Non-recurring
+2,Expense,100,2021/4/19,Clothing Store,Shopping,New socks,Shopping-Apparel,Alipay,Online,Non-essential,[Attachment: Invoice],Non-recurring
+2,Expense,55,2021/4/23,Restaurant,Food,Lunch with friend,Food-Dining,WeChat Pay,In-store,Essential,[Attachment: Receipt],Non-recurring
+2,Expense,40,2021/4/26,Transport Authority,Transport,Bus pass,Transport-Public,WeChat Pay,Offline,Essential,[Attachment: Receipt],Recurring
+2,Expense,50,2021/4/29,Spotify,Entertainment,Music subscription,Entertainment-Subscription,Credit Card,Online,Essential,[Attachment: Receipt],Recurring
+2,Expense,78.9,2022/4/1,Grocery Store,Food,Weekly groceries,Food-Groceries,Debit Card,In-store,Essential,[Attachment: Receipt],Recurring
+2,Income,2000,2022/4/5,Employer,Salary,April salary,Income-Salary,Bank Transfer,Online,Income,[Attachment: Payslip],Non-recurring
+2,Expense,30,2022/4/6,Pharmacy,Health,Cough drops,Health-Pharmacy,Cash,In-store,Essential,[Attachment: Receipt],Non-recurring
+2,Expense,200,2022/4/11,Electronics Store,Shopping,Phone case,Shopping-Electronics,Credit Card,Online,Non-essential,[Attachment: Receipt],Non-recurring
+2,Expense,18.5,2022/4/13,Coffee Shop,Food,Afternoon pick-me-up,Food-Dining,Cash,In-store,Treat,[Attachment: Receipt],Non-recurring
+2,Income,200,2022/4/17,Refund,Income,Clothing return,Income-Refund,Alipay,Online,Income,[Attachment: None],Non-recurring
+2,Expense,130,2022/4/21,Utility Company,Utilities,Internet bill,Housing-Utilities,Bank Transfer,Online,Essential,[Attachment: Bill],Recurring
+2,Expense,70,2022/4/24,Cinema,Entertainment,Movie tickets,Entertainment-Movies,Credit Card,In-store,Treat,[Attachment: Ticket],Non-recurring
+2,Expense,95,2022/4/27,Restaurant,Food,Dinner with family,Food-Dining,WeChat Pay,In-store,Treat,[Attachment: Receipt],Non-recurring
+2,Expense,30,2022/4/30,Netflix,Entertainment,Monthly subscription,Entertainment-Subscription,Credit Card,Online,Essential,[Attachment: Receipt],Recurring
+2,Expense,82.1,2023/4/3,Grocery Store,Food,Weekly groceries,Food-Groceries,Debit Card,In-store,Essential,[Attachment: Receipt],Recurring
+2,Income,2100,2023/4/5,Employer,Salary,April salary,Income-Salary,Bank Transfer,Online,Income,[Attachment: Payslip],Non-recurring
+2,Expense,45,2023/4/9,Pharmacy,Health,Cold medicine,Health-Pharmacy,WeChat Pay,In-store,Essential,[Attachment: Receipt],Non-recurring
+2,Expense,100,2023/4/15,Bookstore,Shopping,New novel,Shopping-Books,Credit Card,Online,Non-essential,[Attachment: Receipt],Non-recurring
+2,Expense,22,2023/4/17,Coffee Shop,Food,Morning routine,Food-Dining,Cash,In-store,Treat,[Attachment: Receipt],Non-recurring
+2,Income,300,2023/4/19,Investment,Income,Stock dividend,Income-Investment,Bank Transfer,Online,Income,[Attachment: Statement],Non-recurring
+2,Expense,115,2023/4/24,Utility Company,Utilities,Electricity bill,Housing-Utilities,Bank Transfer,Online,Essential,[Attachment: Bill],Recurring
+2,Expense,50,2023/4/26,Transport Authority,Transport,Monthly pass,Transport-Public,WeChat Pay,Offline,Essential,[Attachment: Receipt],Recurring
+2,Expense,70,2023/4/28,Restaurant,Food,Quick lunch,Food-Dining,Alipay,In-store,Essential,[Attachment: Receipt],Non-recurring
+2,Expense,50,2023/4/30,Spotify,Entertainment,Music subscription,Entertainment-Subscription,Credit Card,Online,Essential,[Attachment: Receipt],Recurring
+2,Expense,85.6,2024/4/5,Grocery Store,Food,Weekly groceries,Food-Groceries,Debit Card,In-store,Essential,[Attachment: Receipt],Recurring
+2,Income,2200,2024/4/5,Employer,Salary,April salary,Income-Salary,Bank Transfer,Online,Income,[Attachment: Payslip],Non-recurring
+2,Expense,50,2024/4/8,Pharmacy,Health,Vitamins,Health-Pharmacy,Cash,In-store,Essential,[Attachment: Receipt],Non-recurring
+2,Expense,180,2024/4/14,Travel Agency,Travel,Bus ticket,Transport-Bus,Credit Card,Online,Essential,[Attachment: Booking Confirmation],Non-recurring
+2,Expense,28,2024/4/16,Bakery,Food,Weekend treats,Food-Groceries,Cash,In-store,Treat,[Attachment: Receipt],Non-recurring
+2,Income,150,2024/4/20,Sale,Income,Sold old electronics,Income-Sale,Alipay,Online,Income,[Attachment: None],Non-recurring
+2,Expense,120,2024/4/22,Clothing Store,Shopping,Summer t-shirts,Shopping-Apparel,WeChat Pay,Online,Non-essential,[Attachment: Invoice],Non-recurring
+2,Expense,60,2024/4/25,Restaurant,Food,Dinner with colleagues,Food-Dining,WeChat Pay,In-store,Essential,[Attachment: Receipt],Non-recurring
+2,Expense,40,2024/4/28,Transport Authority,Transport,Bus fare,Transport-Public,Cash,Offline,Essential,[Attachment: Ticket],Non-recurring
+2,Expense,30,2024/4/30,Netflix,Entertainment,Monthly subscription,Entertainment-Subscription,Credit Card,Online,Essential,[Attachment: Receipt],Recurring
+2,Expense,90.2,2025/4/1,Grocery Store,Food,Weekly groceries,Food-Groceries,Debit Card,In-store,Essential,[Attachment: Receipt],Recurring
+2,Income,2700,2025/4/5,Employer,Salary,April salary,Income-Salary,Bank Transfer,Online,Income,[Attachment: Payslip],Non-recurring
+2,Expense,38,2025/4/7,Pharmacy,Health,Headache medicine,Health-Pharmacy,Cash,In-store,Essential,[Attachment: Receipt],Non-recurring
+2,Expense,160,2025/4/10,Online Service,Entertainment,Software subscription,Entertainment-Software,Credit Card,Online,Essential,[Attachment: Receipt],Recurring
+2,Expense,27.5,2025/4/12,Coffee Shop,Food,Morning coffee,Food-Dining,WeChat Pay,In-store,Treat,[Attachment: Receipt],Non-recurring
+2,Income,180,2025/4/15,Freelance,Income,Small design gig,Income-Freelance,PayPal,Online,Income,[Attachment: Invoice],Non-recurring
+2,Expense,140,2025/4/18,Utility Company,Utilities,Water bill,Housing-Utilities,Bank Transfer,Online,Essential,[Attachment: Bill],Recurring
+2,Expense,75,2025/4/20,Bookstore,Shopping,E-books,Shopping-Books,Credit Card,Online,Non-essential,[Attachment: Receipt],Non-recurring
+2,Expense,110,2025/4/23,Restaurant,Food,Dinner date,Food-Dining,Alipay,In-store,Treat,[Attachment: Receipt],Non-recurring
+2,Expense,30,2025/4/25,Netflix,Entertainment,Monthly subscription,Entertainment-Subscription,Credit Card,Online,Essential,[Attachment: Receipt],Recurring
+2,Expense,92.8,2025/4/2,Supermarket,Food,Bulk groceries,Food-Groceries,Debit Card,In-store,Essential,[Attachment: Receipt],Non-recurring
+2,Expense,42,2025/4/6,Pharmacy,Health,Allergy medication,Health-Pharmacy,WeChat Pay,In-store,Essential,[Attachment: Receipt],Non-recurring
+2,Expense,220,2025/4/9,Electronics Store,Shopping,New mouse,Shopping-Electronics,Credit Card,Online,Non-essential,[Attachment: Receipt],Non-recurring
+2,Expense,19,2025/4/11,Coffee Shop,Food,Quick coffee,Food-Dining,Cash,In-store,Essential,[Attachment: Receipt],Non-recurring
+2,Income,250,2025/4/14,Gift,Income,Gift from family,Income-Gift,Cash,Offline,Income,[Attachment: None],Non-recurring
+2,Expense,105,2025/4/17,Clothing Store,Shopping,Summer shorts,Shopping-Apparel,Alipay,Online,Non-essential,[Attachment: Invoice],Non-recurring
+2,Expense,65,2025/4/19,Restaurant,Food,Lunch with colleagues,Food-Dining,WeChat Pay,In-store,Essential,[Attachment: Receipt],Non-recurring
+2,Expense,45,2025/4/21,Transport Authority,Transport,Train fare,Transport-Public,Credit Card,Offline,Essential,[Attachment: Ticket],Non-recurring
+2,Expense,50,2025/4/24,Spotify,Entertainment,Music subscription,Entertainment-Subscription,Credit Card,Online,Essential,[Attachment: Receipt],Recurring
+2,Expense,88,2025/4/29,Restaurant,Food,Impulse takeout,Food-Takeout,WeChat Pay,Online,Treat,[Attachment: Receipt],Non-recurring
+2,Expense,20,2025/4/21 18:12,bupt,Education,Education,Education,Education,Education,Education,Education,Education
+yaqi,Income,1000,2025/4/21 18:19,I,I,1,1,1,1,1,1,1
+yaqi,Expense,20,2025/4/21 18:19,bupt,Food,Food,Food,Food,Food,Food,Food,Food
+yaqi,Expense,30,2025/4/21 18:19,ali,Shopping,Shopping,Shopping,Shopping,Shopping,Shopping,Shopping,Shopping
+BigSpenderBob,Income,10000,2025/5/2 09:00,Employer,Salary,May Salary,Income-Salary,Bank Transfer,Online,Income,Payslip.pdf,Non-recurring
+BigSpenderBob,Expense,150,2025/5/3 12:30,Restaurant,Food,Lunch out,Food-Dining,Credit Card,In-store,Treat,Receipt.jpg,Non-recurring
+BigSpenderBob,Expense,200,2025/5/4 18:00,Amazon,Shopping,Gadget,Shopping-Electronics,Credit Card,Online,Non-essential,Invoice.pdf,Non-recurring
+BigSpenderBob,Expense,3500,2025/5/5 15:00,Luxury Store,Shopping,Designer Watch,Shopping-Luxury,Credit Card,In-store,Treat,AuthCard.jpg,Non-recurring
+BigSpenderBob,Expense,50,2025/5/6 08:00,Metro,Transport,Commute ticket,Transport-Public,Cash,Offline,Essential,Ticket.png,Recurring
+AverageJane,Expense,5000,2025/5/2 09:30,Company ABC,Salary,May Salary,Income-Salary,Bank Transfer,Online,Income,Payslip.pdf,Non-recurring
+AverageJane,Expense,100,2025/5/3 19:00,Supermarket,Food,Groceries,Food-Groceries,Debit Card,In-store,Essential,Receipt.jpg,Recurring
+AverageJane,Expense,80,2025/5/4 07:45,Gas Station,Transport,Fuel,Transport-Car,Credit Card,Offline,Essential,Receipt.jpg,Recurring
+AverageJane,Expense,120,2025/5/5 16:00,Online Retailer,Shopping,Books,Shopping-Books,Credit Card,Online,Non-essential,Invoice.pdf,Non-recurring
+AverageJane,Expense,150,2025/5/6 20:00,Cinema,Entertainment,Movie night,Entertainment-Movies,Debit Card,In-store,Treat,Ticket.png,Non-recurring
+AverageJane,Expense,90,2025/5/7 10:00,Utility Co,Utilities,Electricity Bill,Housing-Utilities,Bank Transfer,Online,Essential,Bill.pdf,Recurring
+AverageJane,Expense,400,2025/5/8 11:00,Airline,Travel,Weekend flight,Travel-Flights,Credit Card,Online,Non-essential,BookingRef.txt,Non-recurring
+AverageJane,Expense,110,2025/5/9 12:00,Cafe,Food,Lunch,Food-Dining,Cash,In-store,Essential,Receipt.jpg,Non-recurring
+RapidFireRita,Income,15000,2025/5/2 10:00,Tech Corp,Salary,May Salary,Income-Salary,Bank Transfer,Online,Income,Payslip.pdf,Non-recurring
+RapidFireRita,Expense,1100,2025/5/10 10:00,Apple Store,Electronics,New Laptop,Shopping-Electronics,Credit Card,In-store,Non-essential,Receipt.jpg,Non-recurring
+RapidFireRita,Expense,1200,2025/5/10 11:30,IKEA,Furniture,Desk and Chair,Shopping-Household,Credit Card,In-store,Essential,Receipt.jpg,Non-recurring
+RapidFireRita,Expense,1050,2025/5/10 14:15,Fashion Boutique,Shopping,Designer Dress,Shopping-Apparel,Credit Card,In-store,Treat,Receipt.jpg,Non-recurring
+RapidFireRita,Expense,1300,2025/5/10 16:45,Expedia,Travel,Vacation Package Deposit,Travel-Package,Credit Card,Online,Non-essential,BookingConf.pdf,Non-recurring
+RapidFireRita,Expense,50,2025/5/11 12:00,Grocery Store,Food,Snacks,Food-Groceries,Debit Card,In-store,Essential,Receipt.jpg,Non-recurring
+2,Income,1000,2025/4/23 01:08,I,I,,u,,,,,
+2,Expense,100,2025/4/23 01:08,Luckin,Food,,u,,,,,
+2,Expense,15000,2025/4/1,Luxury Store,Shopping,High-end apparel,Shopping-Apparel,Credit Card,In-store,shopping,[Attachment: Receipt],Non-recurring
+2,Expense,25000,2025/4/5,Car Dealer,Investment,Car down payment,Investment-Vehicle,Bank Transfer,Offline,investment,[Attachment: Contract],Non-recurring
+2,Expense,12000,2025/4/10,Travel Agency,Travel,Holiday package booking,Travel-Package,Credit Card,Online,Travel,[Attachment: Booking],Non-recurring
+2,Expense,18000,2025/4/15,Jewelry Shop,Shopping,Special gift purchase,Shopping-Jewelry,Credit Card,In-store,shopping,[Attachment: Receipt],Non-recurring
+2,Expense,30000,2025/4/20,Art Gallery,Investment,Art piece acquisition,Investment-Art,Bank Transfer,Offline,investment,[Attachment: Certificate],Non-recurring
+2,Expense,11000,2025/4/25,Electronics Store,Shopping,High-end computer,Shopping-Electronics,Credit Card,Online,Electronics,[Attachment: Receipt],Non-recurring
+2,Expense,20000,2025/4/28,Property Agency,Investment,Property related fee,Investment-Real Estate,Bank Transfer,Offline,investment,[Attachment: Invoice],Non-recurring
+2,Expense,13500,2025/5/3,Furniture Store,Shopping,Living room furniture,Shopping-Furniture,Credit Card,In-store,shopping,[Attachment: Receipt],Non-recurring
+2,Expense,16000,2025/5/7,Cruise Line,Travel,Cruise vacation booking,Travel-Cruise,Credit Card,Online,Travel,[Attachment: Booking],Non-recurring
+2,Expense,22000,2025/5/12,Auction House,Investment,Collectible item,Investment-Collectibles,Bank Transfer,Online,investment,[Attachment: Invoice],Non-recurring
+2,Expense,10500,2025/5/16,Gym Equipment Shop,Fitness,Home gym equipment,Health-Fitness,Credit Card,Online,Fitness,[Attachment: Receipt],Non-recurring
+2,Expense,19000,2025/5/20,Training Institute,Investment,Professional course fee,Investment-Education,Bank Transfer,Online,investment,[Attachment: Invoice],Non-recurring
+2,Expense,14000,2025/5/24,Watch Retailer,Shopping,Luxury watch purchase,Shopping-Jewelry,Credit Card,In-store,shopping,[Attachment: Receipt],Non-recurring
+2,Expense,28000,2025/5/28,Car Service,Travel,Major car repair,Travel-Vehicle,Credit Card,Offline,Travel,[Attachment: Invoice],Non-recurring
+2,Expense,11500,2025/5/30,Tech Gadget Store,Shopping,High-performance laptop,Shopping-Electronics,Credit Card,Online,Electronics,[Attachment: Receipt],Non-recurring
+2,Expense,17000,2025/4/2,Home Improvement,Investment,Partial renovation cost,Investment-Real Estate,Bank Transfer,Offline,investment,[Attachment: Invoice],Non-recurring
+2,Expense,10200,2025/4/6,Event Organizer,Other,Event planning service,Life-Event,Credit Card,Online,Other,[Attachment: Contract],Non-recurring
+2,Expense,21000,2025/4/11,Medical Clinic,Health,Minor medical procedure,Health-Medical,Credit Card,Offline,Health,[Attachment: Invoice],Non-recurring
+2,Expense,12500,2025/4/16,Online University,Investment,Online degree payment,Investment-Education,Credit Card,Online,investment,[Attachment: Receipt],Non-recurring
+2,Expense,18500,2025/4/21,Legal Services,Professional Fee,Legal case fee,Professional-Services,Bank Transfer,Offline,Other,[Attachment: Invoice],Non-recurring
+2,Expense,18500,2025/4/3,11:20,Luxury Boutique,Shopping,High-end clothing,Shopping-Apparel,Credit Card,In-store,shopping,Non-recurring
+2,Expense,32000,2025/4/8,Brokerage Firm,Investment,Stock purchase,Investment-Stocks,Bank Transfer,Online,investment,[Attachment: Statement],Non-recurring
+2,Expense,14500,2025/4/13,Airline Company,Travel,Business class ticket,Travel-Air,Credit Card,Online,Travel,[Attachment: E-ticket],Non-recurring
+2,Expense,21000,2025/4/18,Antique Shop,Shopping,Antique furniture,Shopping-Furniture,Bank Transfer,Offline,shopping,[Attachment: Certificate],Non-recurring
+2,Expense,40000,2025/4/23,Real Estate Agency,Investment,Property deposit,Investment-Real Estate,Bank Transfer,Offline,investment,[Attachment: Receipt],Non-recurring
+2,Expense,16000,2025/4/27,Electronics Megastore,Shopping,Home theater system,Shopping-Electronics,Credit Card,Online,Electronics,[Attachment: Receipt],Non-recurring
+2,Expense,28000,2025/5/1,Car Dealership,Travel,Motorcycle purchase,Travel-Vehicle,Bank Transfer,Offline,Travel,[Attachment: Contract],Non-recurring
+2,Expense,11800,2025/5/6,High-End Restaurant,Food,Special event dinner,Food-Dining,Credit Card,In-store,food,[Attachment: Receipt],Non-recurring
+2,Expense,19500,2025/5/10,Art Auction,Investment,Limited edition print,Investment-Art,Bank Transfer,Online,investment,[Attachment: Invoice],Non-recurring
+2,Expense,13000,2025/5/15,Fitness Center,Fitness,Annual membership fee,Health-Fitness,Credit Card,Offline,Fitness,[Attachment: Receipt],Recurring
+2,Expense,26000,2025/5/19,Training Academy,Investment,Certification program,Investment-Education,Bank Transfer,Online,investment,[Attachment: Invoice],Non-recurring
+2,Expense,10500,2025/5/24,Jeweler,Shopping,Accessory purchase,Shopping-Jewelry,Credit Card,In-store,shopping,[Attachment: Receipt],Non-recurring
+2,Expense,17500,2025/5/27,Travel Agency,Travel,Extended trip package,Travel-Package,Credit Card,Online,Travel,[Attachment: Booking],Non-recurring
+2,Expense,35000,2025/5/29,Collectible Store,Investment,Rare coin set,Investment-Collectibles,Bank Transfer,Offline,investment,[Attachment: Certificate],Non-recurring
+2,Expense,12200,2025/4/4,Home Appliances,Shopping,New refrigerator,Shopping-Appliances,Credit Card,Offline,shopping,[Attachment: Receipt],Non-recurring
+2,Expense,15500,2025/4/9,Consulting Firm,Professional Fee,Business consultation,Professional-Services,Bank Transfer,Online,Other,[Attachment: Invoice],Non-recurring
+2,Expense,23000,2025/4/14,Medical Specialist,Health,Consultation and tests,Health-Medical,Credit Card,Offline,Health,[Attachment: Invoice],Non-recurring
+2,Expense,10800,2025/4/19,Online University,Investment,Semester tuition,Investment-Education,Credit Card,Online,investment,[Attachment: Receipt],Non-recurring
+2,Expense,29000,2025/4/24,Car Repair Shop,Travel,Major engine work,Travel-Vehicle,Bank Transfer,Offline,Travel,[Attachment: Invoice],Non-recurring
+2,Expense,14000,2025/4/28,Law Firm,Professional Fee,Legal advice,Professional-Services,Credit Card,Offline,Other,[Attachment: Invoice],Non-recurring
+2,Expense,25,2025/5/5,Cafe A,Food,Morning coffee 1,Food-Cafe,WeChat Pay,In-store,food,[Attachment: Receipt],Non-recurring
+2,Expense,30,2025/5/5,Cafe A,Food,Morning coffee 2,Food-Cafe,WeChat Pay,In-store,food,[Attachment: Receipt],Non-recurring
+2,Expense,25,2025/5/5,Cafe A,Food,Morning coffee 3,Food-Cafe,WeChat Pay,In-store,food,[Attachment: Receipt],Non-recurring
+2,Expense,10,2025/5/6,Bus Company,Transport,Bus fare 1,Transport-Public,Cash,Offline,Transport,[Attachment: None],Non-recurring
+2,Expense,10,2025/5/6,Bus Company,Transport,Bus fare 2,Transport-Public,Cash,Offline,Transport,[Attachment: None],Non-recurring
+2,Expense,10,2025/5/6,Bus Company,Transport,Bus fare 3,Transport-Public,Cash,Offline,Transport,[Attachment: None],Non-recurring
+2,Expense,10,2025/5/6,Bus Company,Transport,Bus fare 4,Transport-Public,Cash,Offline,Transport,[Attachment: None],Non-recurring
+2,Expense,40,2025/5/7,Snack Kiosk B,Food,Lunch item 1,Food-Snacks,Alipay,In-store,food,[Attachment: Receipt],Non-recurring
+2,Expense,35,2025/5/7,Snack Kiosk B,Food,Lunch item 2,Food-Snacks,Alipay,In-store,food,[Attachment: Receipt],Non-recurring
+2,Expense,40,2025/5/7,Snack Kiosk B,Food,Lunch item 3,Food-Snacks,Alipay,In-store,food,[Attachment: Receipt],Non-recurring
+2,Expense,65,2025/5/8,Local Mini Mart C,Shopping,Grocery item A,Shopping-Groceries,WeChat Pay,In-store,shopping,[Attachment: Receipt],Non-recurring
+2,Expense,60,2025/5/8,Local Mini Mart C,Shopping,Grocery item B,Shopping-Groceries,WeChat Pay,In-store,shopping,[Attachment: Receipt],Non-recurring
+2,Expense,65,2025/5/8,Local Mini Mart C,Shopping,Grocery item C,Shopping-Groceries,WeChat Pay,In-store,shopping,[Attachment: Receipt],Non-recurring
+2,Expense,18,2025/5/9,Vending Machine D,Food,Drink 1,Food-Drinks,Cash,Offline,food,[Attachment: None],Non-recurring
+2,Expense,18,2025/5/9,Vending Machine D,Food,Drink 2,Food-Drinks,Cash,Offline,food,[Attachment: None],Non-recurring
+2,Expense,18,2025/5/9,Vending Machine D,Food,Drink 3,Food-Drinks,Cash,Offline,food,[Attachment: None],Non-recurring
+2,Expense,30,2025/5/10,Office Pantry E,Food,Snack 1,Food-Cafe,WeChat Pay,In-store,food,[Attachment: Receipt],Non-recurring
+2,Expense,30,2025/5/10,Office Pantry E,Food,Snack 2,Food-Cafe,WeChat Pay,In-store,food,[Attachment: Receipt],Non-recurring
+2,Expense,35,2025/5/10,Office Pantry E,Food,Snack 3,Food-Cafe,WeChat Pay,In-store,food,[Attachment: Receipt],Non-recurring
+2,Expense,12,2025/5/11,Campus Bus,Transport,Bus fare 1,Transport-Public,Cash,Offline,Transport,[Attachment: None],Non-recurring
+2,Expense,160,2025/4/12,Online Shop F,Shopping,Late night purchase,Shopping-Online,Credit Card,Online,shopping,[Attachment: Invoice],Non-recurring
+2,Expense,55,2025/4/14,Streaming G,Entertainment,Subscription fee,Entertainment-Subscription,Credit Card,Online,Entertainment,[Attachment: Receipt],Recurring
+2,Expense,220,2025/4/16,E-learning H,Investment,Module payment,Investment-Education,Alipay,Online,investment,[Attachment: Invoice],Non-recurring
+2,Expense,85,2025/4/19,Gaming I,Entertainment,In-game item,Entertainment-Gaming,WeChat Pay,Online,Entertainment,[Attachment: Receipt],Non-recurring
+2,Expense,130,2025/4/21,Software J,Other,Software license,Professional-Services,Credit Card,Online,Other,[Attachment: Invoice],Non-recurring
+2,Expense,105,2025/4/24,Cloud K,Other,Monthly fee,Technology-Services,Credit Card,Online,Other,[Attachment: Receipt],Recurring
+2,Expense,75,2025/4/26,Online Bookstore L,Shopping,Digital book,Shopping-Books/Media,Alipay,Online,shopping,[Attachment: Receipt],Non-recurring
+2,Expense,95,2025/4/28,App Store M,Shopping,App purchase,Shopping-Apps,WeChat Pay,Online,shopping,[Attachment: Receipt],Non-recurring
+2,Expense,190,2025/5/1,Online Service N,Professional Fee,Service fee,Professional-Services,Credit Card,Online,Other,[Attachment: Invoice],Non-recurring
+2,Expense,65,2025/5/3,E-learning O,Investment,Tutorial fee,Investment-Education,Credit Card,Online,investment,[Attachment: Receipt],Recurring
+2,Expense,140,2025/5/5,Online Market P,Shopping,Gadget,Shopping-Online,Alipay,Online,Electronics,[Attachment: Invoice],Non-recurring
+2,Expense,45,2025/5/7,Music Streaming Q,Entertainment,Subscription fee,Entertainment-Subscription,Credit Card,Online,Entertainment,[Attachment: Receipt],Recurring
+2,Expense,170,2025/5/9,Online Community R,Other,Premium subscription,Technology-Services,WeChat Pay,Online,Other,[Attachment: Receipt],Recurring
+2,Expense,115,2025/5/12,Online Course S,Investment,Course payment,Investment-Education,Credit Card,Online,investment,[Attachment: Invoice],Non-recurring
+2,Expense,200,2025/5/14,Online Electronics T,Shopping,Computer accessory,Shopping-Online,Alipay,Online,Electronics,[Attachment: Invoice],Non-recurring
+2,Expense,80,2025/5/16,Game Platform U,Entertainment,Game currency,Entertainment-Gaming,WeChat Pay,Online,Entertainment,[Attachment: Receipt],Non-recurring
+2,Expense,160,2025/5/19,Software License V,Other,Annual license,Professional-Services,Credit Card,Online,Other,[Attachment: Invoice],Recurring
+2,Expense,100,2025/5/21,Online Fitness W,Health,Coaching session,Health-Fitness,Alipay,Online,Fitness,[Attachment: Receipt],Non-recurring
+2,Expense,130,2025/5/24,Online Magazine X,Shopping,Digital subscription,Shopping-Books/Media,Credit Card,Online,shopping,[Attachment: Receipt],Recurring
+2,Expense,190,2025/5/26,Online Store Y,Shopping,Household item,Shopping-Online,WeChat Pay,Online,shopping,[Attachment: Invoice],Non-recurringuser
+1,Income,100,2024/5/18,market,Income,,Income,,,,,
+1,Income,100,2024/5/18,market,Income,,Income,,,,,
+2,Expense,200,2025/5/12,KFC,food,,,,Online,,,
+2,Expense,1000,2025/5/15,Amazon,shopping,,,,Online,,,
+2,Expense,500,2025/3/15,gym,Fitness,,,,Online,,,
+2,Expense,10000,2025/2/15,Tianjing,Travel,,,,Online,,,
