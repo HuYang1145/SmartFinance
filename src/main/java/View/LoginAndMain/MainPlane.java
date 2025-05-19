@@ -17,10 +17,13 @@ import java.util.List;
 import javax.swing.*; // Consolidated Swing imports
 
 import Controller.BillController; // Keep import
+import Controller.LoginController;
 import Controller.MainPanelController; // Keep import
 import Controller.PersonCenterController; // Keep import
 import Model.UserSession; // Keep import
 // Keep imports for custom components and services
+import Repository.AccountRepository;
+import Repository.TransactionRepository;
 import View.LoginAndMain.LoginRoundedInputField.*;
 import View.LoginAndMain.NavItemPanel.*;
 import Service.BudgetService;
@@ -243,11 +246,24 @@ public class MainPlane extends JFrame {
                                  JOptionPane.QUESTION_MESSAGE // Use question icon
                          );
                          if (choice == JOptionPane.YES_OPTION) {
-                             UserSession.clearSession(); // Clear the user session
-                             MainPlane.this.dispose(); // Close the main application window
+                             UserSession.clearSession();
+                             MainPlane.this.dispose();
+
+                             String accountsFilePath = "accounts.csv";
+
+                             AccountRepository accountRepository = new AccountRepository(accountsFilePath);
+
+                             TransactionRepository transactionRepository = new TransactionRepository();
+
+                             BudgetService budgetService = new BudgetService(transactionRepository);
+
+                             TransactionService transactionService = new TransactionService(transactionRepository, budgetService);
+
+                             LoginController loginController = new LoginController(accountRepository, transactionService, budgetService);
+
+                             new Login(loginController).setVisible(true);
                              System.out.println("User " + username + " logged out. MainPlane disposed.");
-                             // Optional: Code to show the login window again could go here,
-                             // or be handled by the main application entry point.
+
                          }
                      }
                  });

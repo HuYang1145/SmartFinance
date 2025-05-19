@@ -13,8 +13,13 @@ import javax.swing.JOptionPane;
 import Model.User;
 import Model.UserSession;
 import Repository.AccountRepository;
+import Repository.TransactionRepository;
+import Service.BudgetService;
+import Service.TransactionService;
 import View.Administrator.AdminView;
+import View.LoginAndMain.Login;
 import View.LoginAndMain.LoginComponents;
+import View.LoginAndMain.MainPlane;
 
 /**
  * Manages administrator operations for the finance management system, including user account modification,
@@ -238,6 +243,21 @@ public class AdminController {
      */
     private void handleLogout() {
         view.dispose();
+        UserSession.clearSession();
+
+        String accountsFilePath = "accounts.csv";
+
+        AccountRepository accountRepository = new AccountRepository(accountsFilePath);
+
+        TransactionRepository transactionRepository = new TransactionRepository();
+
+        BudgetService budgetService = new BudgetService(transactionRepository);
+
+        TransactionService transactionService = new TransactionService(transactionRepository, budgetService);
+
+        LoginController loginController = new LoginController(accountRepository, transactionService, budgetService);
+
+        new Login(loginController).setVisible(true);
     }
 
     /**

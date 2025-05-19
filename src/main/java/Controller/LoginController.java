@@ -126,8 +126,30 @@ public class LoginController {
      */
     public void handleRegister(String username, String password, String phone, String email,
                                String gender, String address, String accountType, Login loginFrame) {
-        if (username.isEmpty() || password.isEmpty()) {
-            LoginComponents.showCustomMessage(loginFrame, "Username and password are required", "Error", JOptionPane.ERROR_MESSAGE);
+
+        if (username == null || username.trim().isEmpty() || username.length() < 4 || username.length() > 16) {
+            LoginComponents.showCustomMessage(loginFrame, "Username must be 4-16 characters", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        if (password == null || password.trim().isEmpty() || password.length() < 6 || password.length() > 20) {
+            LoginComponents.showCustomMessage(loginFrame, "Password must be 6-20 characters", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        if (phone == null || !phone.matches("^1[3-9]\\d{9}$")) {
+            LoginComponents.showCustomMessage(loginFrame, "Invalid phone number", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        if (email == null || !email.matches("^[\\w.-]+@[\\w.-]+\\.[A-Za-z]{2,}$")) {
+            LoginComponents.showCustomMessage(loginFrame, "Invalid email format", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+
+        if (address != null && address.length() > 50) {
+            LoginComponents.showCustomMessage(loginFrame, "Address is too long (max 50 characters)", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
@@ -146,6 +168,7 @@ public class LoginController {
         LoginComponents.showCustomMessage(loginFrame, "Registration successful! Please log in.", "Success", JOptionPane.INFORMATION_MESSAGE);
         loginFrame.switchToLoginPanel();
     }
+
 
     /**
      * Initializes and displays the main interface for ordinary users.

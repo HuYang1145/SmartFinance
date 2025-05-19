@@ -646,7 +646,7 @@ public class TransactionSystemController {
                 System.err.println("Conversion failed: rate for " + targetCurrency + " is " + rateCnyPerTarget);
                 return;
             }
-            double result = amount / rateCnyPerTarget; // Corrected calculation: Amount in CNY / (CNY per Target)
+            double result = amount * rateCnyPerTarget; // Corrected calculation: Amount in CNY / (CNY per Target)
 
             view.getConversionResultLabel().setText(String.format("Result: %.2f %s", result, targetCurrency));
             System.out.println("Updated conversion: " + amount + " CNY = " + result + " " + targetCurrency + " (Rate: 1 " + targetCurrency + " = " + String.format("%.4f", rateCnyPerTarget) + " CNY)");
