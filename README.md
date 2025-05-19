@@ -6,10 +6,13 @@ Please type **java -jar group19-1.0.0.jar** at the command line to run the progr
 # Folder Structure
 ## AI模型文件  
 链接: https://pan.baidu.com/s/1BtfvfBs5vu2cl-zU0EoHsA 提取码: bupt  
-下载解压后放入项目根目录下，如SmartFinance/dist,与src同级,**运行前请确保dist文件夹中只有predict文件夹,predict目录下一定要有predict.exe文件**。  
+下载解压后放入项目根目录下，如SmartFinance/dist,与src同级,  
+**运行前请确保dist文件夹中只有predict文件夹,predict目录下一定要有predict.exe文件**。  
 ## AI Model File  
-https://drive.google.com/file/d/1DvQfCYMQAfIce5ShoMvyfGju0eFL-D72/view?usp=drive_link  
-Download and unzip it into the root directory of the project, e.g. SmartFinance/dist, same level as src, ,**Before running, please make sure that there is only the predict folder in the dist folder, and there must be a predict.exe file in the predict directory.**.
+
+https://drive.google.com/file/d/1DvQfCYMQAfIce5ShoMvyfGju0eFL-D72/view?usp=drive_link    
+Download and unzip it into the root directory of the project, e.g. SmartFinance/dist, same level as src,  
+**Before running, please make sure that there is only the predict folder in the dist folder, and there must be a predict.exe file in the predict directory.**.
 ---
 
 
