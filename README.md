@@ -1,19 +1,104 @@
-# 运行命令  
-请在命令行输入**java -jar group19-1.0.0.jar**运行程序  
-# Run command    
-Please type **java -jar group19-1.0.0.jar** at the command line to run the program  
 
-# Folder Structure
-## AI模型文件  
-链接: https://pan.baidu.com/s/1BtfvfBs5vu2cl-zU0EoHsA 提取码: bupt  
-下载解压后放入项目根目录下，如SmartFinance/dist,与src同级,**运行前请确保dist文件夹中只有predict文件夹,predict目录下一定要有predict.exe文件**。  
-## AI Model File  
-https://drive.google.com/file/d/1DvQfCYMQAfIce5ShoMvyfGju0eFL-D72/view?usp=drive_link  
-Download and unzip it into the root directory of the project, e.g. SmartFinance/dist, same level as src, ,**Before running, please make sure that there is only the predict folder in the dist folder, and there must be a predict.exe file in the predict directory.**.
+---
+# SmartFinance — AI-Empowered Personal Finance Tracker
+
+## Introduction
+
+SmartFinance is a stand-alone personal finance management application developed in Java, designed to help users track expenses, categorize spending, set savings goals, and receive intelligent financial insights using AI models.
+
 ---
 
+## 1. Prerequisites
 
+* **JDK Version**: 21 or above (recommended)
+* **Operating System**: Windows / macOS / Linux (tested on Windows 11)
+* **Maven**: All dependencies are managed via Maven, and bundled in the final JAR.
+* **AI Model**: The AI-assisted functions rely on a packaged model executable. See below for setup.
 
+---
+
+## 2. Folder Structure
+
+```
+SmartFinance/
+├── src/               # Source code
+├── dist/              # Place for AI model (see below)
+│   └── predict/
+│       │── _internal/
+│       └── predict.exe
+├── group19-1.0.0.jar  # Main application JAR
+├── README.md
+├── transaction.csv
+└── ...
+```
+
+### AI Model File Setup(If you don't have a ‘dist’ folder under the project, please download one.)
+* **dist.zip**:  
+  If you see `dist.zip` in the project root directory, you can unzip it directly, but note that you can't set another `dist` folder in `dist` after unzipping.
+
+* **Baidu Netdisk** :
+   [https://pan.baidu.com/s/1BtfvfBs5vu2cl-zU0EoHsA](https://pan.baidu.com/s/1BtfvfBs5vu2cl-zU0EoHsA)
+   code: bupt
+* **Google Drive** :
+  [https://drive.google.com/file/d/1DvQfCYMQAfIce5ShoMvyfGju0eFL-D72/view?usp=drive\_link](https://drive.google.com/file/d/1DvQfCYMQAfIce5ShoMvyfGju0eFL-D72/view?usp=drive_link)
+
+**Steps**.
+
+1. Download and unzip the above AI model zip file. 2.
+2. Put the unpacked `predict` folder into the `dist` folder in the project root directory (same level as `src`).
+3. Before running **Please make sure that there is only predict folder in the dist folder and predict.exe file under predict folder**.
+
+---
+
+## 3. Running the Application
+
+### Command Line Run
+
+Go to the project root directory (on the same level as `group19-1.0.0.jar`) and enter the following command:
+
+```bash
+java -jar group19-1.0.0.jar
+```
+
+## 4. User Accounts for Testing
+
+* **User Account** (Normal User):
+
+    * Username: `2`
+    * Password: `2222aaaa`
+      *This account contains rich example data and is recommended for experience and viewing various features.*
+
+* **Admin Account**:
+
+    * Username: `1`
+    * Password: `1111eeee`
+      *This account has administrator privileges.*
+
+---
+
+## 5. Notes
+
+* **Maven Dependencies**:
+  All dependencies are bundled in the JAR. You do not need to install them manually.
+* **Data Storage**:
+  All user data is stored in local text files (CSV). No database is required.
+* **AI Model Requirements**:
+  Before running, ensure that only the correct `predict` folder and `predict.exe` exist in `dist/`.
+* **GUI**:
+  The program provides a graphical interface for operation; no command line interaction is required after startup.
+
+---
+
+## 6. Troubleshooting
+
+* If the program fails to start, check:
+
+    * The presence of `predict.exe` in `dist/predict/`
+    * That you are in the correct directory (`group19-1.0.0.jar` present)
+
+* For more questions, please refer to the User Manual.
+
+---
 ## 任务分配
 ## Task Allocation
 
