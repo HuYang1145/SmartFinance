@@ -13,7 +13,9 @@ New: AI dialog model training dataset -> json format changed to huggingface form
 Model version1 trained to recognize ** time/amount/category ** based on self-collected dataset 
 
 # Model files 
-Files shared via Netflix: dist.zip 
-Link: 通过网盘分享的文件：dist.zip
-链接: https://pan.baidu.com/s/1-KS5m-kMqiNnixVpC1V_og code: bupt
-Download and unzip into coursework directory, same level as src.
+* **Baidu Netdisk** :
+   [https://pan.baidu.com/s/1BtfvfBs5vu2cl-zU0EoHsA](https://pan.baidu.com/s/1BtfvfBs5vu2cl-zU0EoHsA)
+   code: bupt
+* **Google Drive** :
+  [https://drive.google.com/file/d/1DvQfCYMQAfIce5ShoMvyfGju0eFL-D72/view?usp=drive\_link](https://drive.google.com/file/d/1DvQfCYMQAfIce5ShoMvyfGju0eFL-D72/view?usp=drive_link)
+
