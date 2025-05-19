@@ -1,0 +1,3 @@
+user,operation,amount,time,merchant,type,remark,category,payment_method,location,tag,attachment,recurrence
+user1,Transfer In,600.00,2024/05/15 10:00,merchant,Transfer,,,,,,,
+user1,Deposit,300.00,2024/05/16 12:00,merchant,Deposit,,,,,,,

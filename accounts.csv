@@ -1,3 +1,47 @@
-用户名,密码,手机号,邮箱,性别,地址,创建时间,账号状态,账户类型,金额
-yaqi,1,1,1,女,1,2025-04-01 19:19:01,正常,personal,0.0
-1,1,1,1,女,1,2025-04-01 19:32:14,正常,Admin,0.0
+username,password,phone,email,gender,address,creationTime,accountStatus,accountType,balance
+yaqi,1234abcd,18087112456,1asd@1.com,Female,1,2025/4/1 19:19,ACTIVE,Personal,950.00
+1,1111eeee,13546534624,sdf@sl.com,Female,1,2025/4/1 19:32,ACTIVE,Admin,0.00
+3,3333tttt,13029584735,3ske@soj.com,Female,3,2025/4/14 23:14,ACTIVE,Personal,50000.00
+Coca-Cola,9999jjjj,18333344455,cocacola@example.com,Male,Atlanta,2023/9/15 21:45,ACTIVE,Personal,9876.54
+Pepsi,9999jjjj,18244455566,pepsi@example.com,Female,New York City,2023/8/1 10:00,ACTIVE,Personal,5432.10
+Siemens,9999jjjj,17977788899,siemens@example.com,Male,Munich,2022/6/20 9:45,ACTIVE,Personal,7654.32
+Bosch,9999jjjj,17888899900,bosch@example.com,Female,Stuttgart,2022/5/1 20:00,ACTIVE,Personal,4321.09
+Volkswagen,9999jjjj,17799900011,volkswagen@example.com,Male,Wolfsburg,2024/8/15 11:15,ACTIVE,Admin,98765.43
+BMW,9999jjjj,17600011122,bmw@example.com,Female,Munich,2019/12/15 16:30,ACTIVE,Personal,3210.98
+Toyota,9999jjjj,17511122233,toyota@example.com,Male,Toyota City,2023/4/10 8:45,ACTIVE,Personal,6543.21
+Honda,9999jjjj,17422233344,honda@example.com,Female,Tokyo,2023/3/1 19:00,ACTIVE,Personal,9012.34
+Sony,9999jjjj,17333344455,sony@example.com,Male,Tokyo,2021/7/20 13:15,ACTIVE,Admin,456789.01
+Samsung,9999jjjj,17244455566,samsung@example.com,Female,Seoul,2024/5/25 17:30,ACTIVE,Personal,2345.67
+Apple,9999jjjj,17155566677,apple@example.com,Male,Cupertino,2020/11/15 9:00,ACTIVE,Personal,87654.32
+Microsoft,9999jjjj,17066677788,microsoft@example.com,Female,Redmond,2020/10/1 20:15,ACTIVE,Personal,54321.09
+Amazon,9999jjjj,16977788899,amazon@example.com,Male,Seattle,2022/3/10 14:45,ACTIVE,Admin,198765.43
+Google,9999jjjj,16888899900,google@example.com,Female,Mountain View,2023/10/20 11:00,ACTIVE,Personal,65432.10
+Tesla,9999jjjj,16799900011,tesla@example.com,Male,Austin,2025/4/1 22:30,ACTIVE,Personal,32109.87
+Kweichow Moutai,9999jjjj,16333344455,moutai@example.com,Male,Maotai Town,2022/5/20 10:45,ACTIVE,Personal,23456.78
+Wuliangye,9999jjjj,16244455566,wuliangye@example.com,Female,Yibin City,2022/4/1 21:00,ACTIVE,Personal,12345.67
+Walmart,9999jjjj,15600011122,walmart@example.com,Female,Bentonville,2022/11/25 20:15,ACTIVE,Personal,23456.78
+Carrefour,9999jjjj,15511122233,carrefour@example.com,Male,Paris,2022/10/1 11:45,ACTIVE,Personal,6789.01
+Shell,9999jjjj,15244455566,shell@example.com,Female,The Hague,2024/4/20 19:45,ACTIVE,Personal,34567.89
+Nestlé,9999jjjj,15155566677,nestle@example.com,Male,Vevey,2020/12/25 13:00,ACTIVE,Personal,67890.12
+Unilever,9999jjjj,15066677788,unilever@example.com,Female,London,2025/3/20 17:15,ACTIVE,Personal,2345.67
+General Electric,9999jjjj,14977788899,ge@example.com,Male,Boston,2022/9/30 10:30,ACTIVE,Personal,90123.45
+Boeing,9999jjjj,14888899900,boeing@example.com,Female,Chicago,2023/5/10 21:00,ACTIVE,Admin,456789.01
+Airbus,9999jjjj,14799900011,airbus@example.com,Male,Toulouse,2020/10/25 14:45,ACTIVE,Personal,12345.67
+Nissan,9999jjjj,14600011122,nissan@example.com,Female,Yokohama,2024/1/15 8:00,ACTIVE,Personal,78901.23
+LG,9999jjjj,14511122233,lg@example.com,Male,Seoul,2023/8/25 19:15,ACTIVE,Personal,34567.89
+Facebook,9999jjjj,14422233344,facebook@example.com,Female,Menlo Park,2022/4/10 12:30,ACTIVE,Personal,901234.56
+Twitter,9999jjjj,14333344455,twitter@example.com,Male,San Francisco,2020/3/15 16:00,ACTIVE,Personal,54321.09
+Intel,9999jjjj,14244455566,intel@example.com,Female,Santa Clara,2023/10/30 9:45,ACTIVE,Personal,12345.67
+Nvidia,9999jjjj,14155566677,nvidia@example.com,Male,Santa Clara,2023/11/1 20:00,ACTIVE,Personal,67890.12
+JPMorgan Chase,9999jjjj,18600011122,jpmorgan@example.com,Female,New York City,2024/11/1 20:45,ACTIVE,Personal,45678.90
+Goldman Sachs,9999jjjj,18511122233,goldmansachs@example.com,Male,New York City,2021/4/25 13:00,ACTIVE,Personal,78901.23
+Morgan Stanley,9999jjjj,18422233344,morganstanley@example.com,Female,New York City,2025/1/5 17:15,ACTIVE,Personal,34567.89
+huyang,1111eeee,12839293483,1qw@qwe.com,Male,1,2025/4/17 16:29,ACTIVE,Personal,7647522.00
+4,4444ssss,14439485039,awe4@qwe.com,Female,4,2025/1/1 0:00,ACTIVE,Personal,27785.00
+5,5555wwww,15238473829,ser@s5.com,Male,5,2025-04-20 23:40,ACTIVE,Personal,0.00
+BigSpenderBob,BigSpenderBob,1234567890,bob@example.com,Male,123 Main St,2025/05/01 10:00,ACTIVE,Personal,15000.00
+AverageJane,AverageJane,0987654321,jane@example.com,Female,456 Oak Ave,2025/05/01 10:05,ACTIVE,Personal,18000.00
+RapidFireRita,RapidFireRita,1122334455,rita@example.com,Female,789 Pine Rd,2025/05/01 10:10,ACTIVE,Personal,20000.00
+7,7777qqqq,12723243547,se7@qw.com,Male,7,2025/04/25 09:08,ACTIVE,Personal,0.00
+8,8888bbbb,18283749382,er8@qow.com,Male,8,2025/04/25 09:37,ACTIVE,Personal,0.01
+2,2222aaaa,13176587292,im2@123.com,Male,bupt,2025/4/14 23:14,ACTIVE,Personal,70684.54
