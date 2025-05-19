@@ -134,9 +134,9 @@ public class BillPanel extends TransactionSystemComponents.MidGradientPanel {
                 JLabel lbl = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
                 if (isSelected) {
                     lbl.setBackground(new Color(100, 149, 237));
-                    lbl.setForeground(Color.black);
+                    lbl.setForeground(Color.WHITE);
                 } else {
-                    lbl.setBackground(Color.BLACK);
+                    lbl.setBackground(Color.WHITE);
                     lbl.setForeground(new Color(50, 50, 50));
                 }
                 lbl.setBorder(BorderFactory.createEmptyBorder(2, 10, 2, 10));
@@ -177,9 +177,9 @@ public class BillPanel extends TransactionSystemComponents.MidGradientPanel {
                 JLabel lbl = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
                 if (isSelected) {
                     lbl.setBackground(new Color(100, 149, 237));
-                    lbl.setForeground(Color.BLACK);
+                    lbl.setForeground(Color.WHITE);
                 } else {
-                    lbl.setBackground(Color.BLUE);
+                    lbl.setBackground(Color.white);
                     lbl.setForeground(new Color(50, 50, 50));
                 }
                 lbl.setBorder(BorderFactory.createEmptyBorder(2, 10, 2, 10));
@@ -227,9 +227,9 @@ public class BillPanel extends TransactionSystemComponents.MidGradientPanel {
                 JLabel lbl = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
                 if (isSelected) {
                     lbl.setBackground(new Color(100, 149, 237));
-                    lbl.setForeground(Color.BLACK);
+                    lbl.setForeground(Color.WHITE);
                 } else {
-                    lbl.setBackground(Color.BLACK);
+                    lbl.setBackground(Color.WHITE);
                     lbl.setForeground(new Color(50, 50, 50));
                 }
                 lbl.setBorder(BorderFactory.createEmptyBorder(2, 10, 2, 10));
@@ -269,9 +269,9 @@ public class BillPanel extends TransactionSystemComponents.MidGradientPanel {
                 JLabel lbl = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
                 if (isSelected) {
                     lbl.setBackground(new Color(100, 149, 237));
-                    lbl.setForeground(Color.BLACK);
+                    lbl.setForeground(Color.WHITE);
                 } else {
-                    lbl.setBackground(Color.BLACK);
+                    lbl.setBackground(Color.WHITE);
                     lbl.setForeground(new Color(50, 50, 50));
                 }
                 lbl.setBorder(BorderFactory.createEmptyBorder(2, 10, 2, 10));
@@ -317,9 +317,9 @@ public class BillPanel extends TransactionSystemComponents.MidGradientPanel {
                 JLabel lbl = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
                 if (isSelected) {
                     lbl.setBackground(new Color(100, 149, 237));
-                    lbl.setForeground(Color.BLACK);
+                    lbl.setForeground(Color.WHITE);
                 } else {
-                    lbl.setBackground(Color.BLACK);
+                    lbl.setBackground(Color.WHITE);
                     lbl.setForeground(new Color(50, 50, 50));
                 }
                 lbl.setBorder(BorderFactory.createEmptyBorder(2, 10, 2, 10));
@@ -1093,4 +1093,9 @@ public class BillPanel extends TransactionSystemComponents.MidGradientPanel {
             return new Dimension(THUMB_WIDTH, THUMB_WIDTH);
         }
     }
+
+    public void refreshData() {
+        updateChart();
+    }
+
 }

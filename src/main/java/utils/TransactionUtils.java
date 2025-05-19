@@ -59,13 +59,13 @@ public class TransactionUtils {
         if (unit.contains("DOLLAR") || unit.equals("USD") || unit.equals("$")) {
             Double usd2cny = rateService.getExchangeRates().get("USD");
             if (usd2cny == null) throw new RuntimeException("USD exchange rate not available");
-            return value * usd2cny;
+            return value / usd2cny;
         }
         // 2. Euro
         if (unit.contains("EUR") || unit.equals("€")) {
             Double eur2cny = rateService.getExchangeRates().get("EUR");
             if (eur2cny == null) throw new RuntimeException("EUR exchange rate not available");
-            return value * eur2cny;
+            return value / eur2cny;
         }
         // 3. Other supported currencies
         if (!unit.isEmpty() && rateService.getExchangeRates().containsKey(unit)) {

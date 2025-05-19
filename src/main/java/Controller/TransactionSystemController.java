@@ -451,7 +451,7 @@ public class TransactionSystemController {
             // Note: TransactionController handles file writing. This is fine.
             boolean transactionAdded = transactionController.addTransaction(
                     account.getUsername(), operation, amount, timeText.trim(), merchantText.trim(), type,
-                    remark, category, paymentMethod, location, tag, attachment, recurrence
+                    remark, category, paymentMethod, location, tag, attachment, recurrence,account
             );
 
             if (transactionAdded) {

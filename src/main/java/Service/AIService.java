@@ -92,13 +92,31 @@ public class AIService {
                     PredictResult pr = callPredict(userInput);
                     String slot = ctx.getMissingSlots().get(0);
                     String val = pr.getEntities().get(slot);
+                    if ("amount".equals(slot) && (val == null || val.isBlank())) {
+                        Pattern p = Pattern.compile("([0-9]+(?:\\.[0-9]+)?)(?:\\s*)([a-zA-Z$¥]*)");
+                        Matcher m = p.matcher(userInput.trim());
+                        if (m.matches()) {
+                            val = userInput;
+                        }
+                    }
+                    if (("time".equals(slot) || "date".equals(slot)) && (val == null || val.isBlank())) {
+                        if (userInput.matches(".*(today|yesterday|tomorrow|\\b\\d{1,2}/\\d{1,2}\\b|\\b\\d{4}-\\d{1,2}-\\d{1,2}\\b|\\b(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Sept|Oct|Nov|Dec)[a-z]*\\.?\\s+\\d{1,2}(,\\s*\\d{4})?\\b).*")) {
+                            val = userInput;
+                        }
+                    }
+
                     if ("merchant".equals(slot)|| "category".equals(slot)) {
                         val = userInput;
                     }
                     if (val != null && !val.isBlank()) {
                         if ("amount".equals(slot)) {
-                            double amt = txUtils.normalizeAmount(val);
-                            ctx.getSlots().put("amount", String.format("%.2f", amt));
+                            try {
+                                double amt = txUtils.normalizeAmount(val);
+                                ctx.getSlots().put("amount", String.format("%.2f", amt));
+                            } catch (Exception e) {
+                                return new AIResponse("Sorry, I couldn't understand the amount. Please enter a number like 3000 or 3000 CNY.", null);
+                            }
+
                         } else if ("time".equals(slot)) {
                             ctx.getSlots().put("time", TransactionUtils.normalizeTime(val));
                         } else {
@@ -118,24 +136,31 @@ public class AIService {
                             .map(e -> e.getKey() + ": " + e.getValue())
                             .collect(Collectors.joining("\n"));
                     return new AIResponse(
-                            "Please confirm the transaction:\n" + preview + "\nReply 'yes' to confirm, or tell me what to change.",
+                            "Please confirm the transaction:\n" + preview + "\nReply 'yes' to confirm, 'no' to cancel"
+                                    + "\nor tell me what to change like \"change category to **\"",
                             null
                     );
                 }
                 if (!ctx.isConfirmed()) {
-                    if ("yes".equalsIgnoreCase(userInput.trim()) || "confirm".equalsIgnoreCase(userInput.trim())) {
+                    String input = userInput.trim().toLowerCase();
+                    if ("yes".equals(input) || "confirm".equals(input)) {
                         ctx.setConfirmed(true);
+                    } else if ("no".equals(input) || "cancel".equals(input)) {
+                        sessions.remove(userKey);
+                        return new AIResponse("Transaction canceled.", null);
                     } else {
                         tryModifySlot(ctx, userInput);
                         String preview = ctx.getSlots().entrySet().stream()
                                 .map(e -> e.getKey() + ": " + e.getValue())
                                 .collect(Collectors.joining("\n"));
                         return new AIResponse(
-                                "Updated transaction:\n" + preview + "\nReply 'yes' to confirm, or tell me what to change.",
+                                "Updated transaction:\n" + preview + "\nReply 'yes' to confirm, 'no' to cancel"
+                                        + "\nor tell me what to change like \"change category to **\".",
                                 null
                         );
                     }
                 }
+
                 ctx.getSlots().put("operation",
                         ctx.getIntent().equals("RecordExpense") ? "Expense" : "Income");
                 transactionController.addTransactionFromEntities(user, ctx.getSlots());

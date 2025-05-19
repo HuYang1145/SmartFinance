@@ -56,6 +56,7 @@ public class TransactionController {
     /** Index of the operation field in a CSV record. */
     private static final int OPERATION_FIELD_INDEX = 1;
 
+    private static MainPanelController mainPanelController;
     /**
      * Ensures the transaction CSV file exists, creating it with the header if it does not.
      * Displays an error message if file creation fails.
@@ -177,6 +178,20 @@ public class TransactionController {
         return importedCount;
     }
 
+    public static double calculateUserBalance(String username) {
+        List<Transaction> txs = readTransactions(username);
+        double balance = 0;
+        for (Transaction tx : txs) {
+            if ("Income".equalsIgnoreCase(tx.getOperation())) {
+                balance += tx.getAmount();
+            } else if ("Expense".equalsIgnoreCase(tx.getOperation())) {
+                balance -= tx.getAmount();
+            }
+        }
+        return balance;
+    }
+
+
     /**
      * Adds a transaction with minimal required fields to the CSV file.
      *
@@ -264,7 +279,20 @@ public class TransactionController {
             JOptionPane.showMessageDialog(null, "Failed to record transaction: " + e.getMessage(), "Transaction Error", JOptionPane.ERROR_MESSAGE);
             return false;
         }
+
     }
+
+    public static boolean addTransaction(String username, String operation, double amount, String time, String merchant, String type,
+                                         String remark, String category, String paymentMethod, String location, String tag,
+                                         String attachment, String recurrence, User user) {
+        boolean ok = addTransaction(username, operation, amount, time, merchant, type, remark, category, paymentMethod, location, tag, attachment, recurrence);
+        if (ok && user != null) {
+            double newBalance = calculateUserBalance(username);
+            user.setBalance(newBalance);
+        }
+        return ok;
+    }
+
 
     /**
      * Adds a transaction to the CSV file by mapping entities extracted from external input.
@@ -281,6 +309,7 @@ public class TransactionController {
         String operation = entities.get("operation");
         String amtStr = entities.get("amount");
         String time = entities.get("time");
+        String type = entities.get("category");
         if (username == null || operation == null || amtStr == null || time == null) {
             throw new IllegalArgumentException("Missing required fields");
         }
@@ -293,7 +322,6 @@ public class TransactionController {
 
         // Extract optional fields
         String merchant = entities.getOrDefault("merchant", "");
-        String type = entities.getOrDefault("type", "");
         String remark = entities.getOrDefault("remark", "");
         String category = entities.getOrDefault("category", "");
         String paymentMethod = entities.getOrDefault("paymentMethod", "");
@@ -322,6 +350,11 @@ public class TransactionController {
         if (!ok) {
             throw new RuntimeException("Failed to record transaction: " + entities);
         }
+        double newBalance = TransactionController.calculateUserBalance(username);
+        user.setBalance(newBalance);
+        if (mainPanelController != null) {
+            mainPanelController.reloadAllPanels();
+        }
         return true;
     }
 
@@ -332,7 +365,7 @@ public class TransactionController {
      * @param time     The timestamp of the transaction to remove.
      * @return {@code true} if the transaction was removed successfully, {@code false} otherwise.
      */
-    public static boolean removeTransaction(String username, String time) {
+    public static boolean removeTransaction(String username, String time,User user) {
         ensureFileExists();
         File file = new File(CSV_FILE_PATH);
         File tempFile = new File("transactions_temp.csv");
@@ -374,8 +407,13 @@ public class TransactionController {
             }
         } else {
             tempFile.delete();
-        }
 
+        }
+        double newBalance = TransactionController.calculateUserBalance(username);
+        user.setBalance(newBalance);
+        if (mainPanelController != null) {
+            mainPanelController.reloadAllPanels();
+        }
         return removed;
     }
 
@@ -527,4 +565,7 @@ public class TransactionController {
     }
 
     public static void setCsvFilePathForTest(String path) { CSV_FILE_PATH = path; }
+    public static void setMainPanelController(MainPanelController ctrl) {
+        mainPanelController = ctrl;
+    }
 }

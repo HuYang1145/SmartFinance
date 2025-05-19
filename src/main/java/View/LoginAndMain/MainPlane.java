@@ -1,10 +1,6 @@
 package View.LoginAndMain;
 
-import java.awt.BorderLayout;
-import java.awt.CardLayout;
-import java.awt.Color;
-import java.awt.Cursor;
-import java.awt.Dimension;
+import java.awt.*;
 // Removed unnecessary imports related to Graphics/Shape/RoundRectangle2D/BufferedImage/File/IOException/ImageIO
 // import java.awt.Graphics;
 // import java.awt.Graphics2D;
@@ -30,7 +26,6 @@ import View.LoginAndMain.NavItemPanel.*;
 import Service.BudgetService;
 import Service.TransactionService;
 
-import java.awt.Font;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.MouseAdapter;
@@ -107,7 +102,11 @@ public class MainPlane extends JFrame {
          }
 
         setTitle("Smart Finance - Personal Dashboard");
-        setSize(1920, 1080);
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        int width = Math.min(1920, screenSize.width - 100);
+        int height = Math.min(1080, screenSize.height - 100);
+        setSize(width, height);
+
         setLocationRelativeTo(null); // Center the frame on the screen
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE); // Close only this window on exit
 

@@ -114,6 +114,34 @@ public class AccountRepository {
     }
 
     /**
+     * Updates the balance of a specific user in the accounts CSV.
+     * If the user is found, updates their balance to newBalance.
+     */
+    public void updateBalance(String username, double newBalance) {
+        lock.writeLock().lock();
+        try {
+            List<User> users = readFromCSV();
+            boolean found = false;
+            for (User user : users) {
+                if (user.getUsername().equals(username)) {
+                    user.setBalance(newBalance);
+                    found = true;
+                    break;
+                }
+            }
+            if (found) {
+                // 覆盖写回所有用户
+                saveToCSV(users, false); // false: overwrite
+            } else {
+                System.out.println("User not found when updating balance: " + username);
+            }
+        } finally {
+            lock.writeLock().unlock();
+        }
+    }
+
+
+    /**
      * Saves a list of users to the CSV file, with an option to append or overwrite.
      *
      * @param users  The list of {@link User} objects to save.

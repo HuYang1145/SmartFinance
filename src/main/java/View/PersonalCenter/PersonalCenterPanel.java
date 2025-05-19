@@ -48,6 +48,7 @@ import Service.PersonChartDataService;
 import Service.PersonFinancialService;
 import View.LoginAndMain.GradientComponents.*;
 import View.Transaction.TransactionSystemComponents;
+import utils.Refreshable;
 
 /**
  * A JPanel that displays a user's financial overview, including income and expense categories,
@@ -56,7 +57,7 @@ import View.Transaction.TransactionSystemComponents;
  * @author Group 19
  * @version 1.0
  */
-public class PersonalCenterPanel extends TransactionSystemComponents.MidGradientPanel {
+public class PersonalCenterPanel extends TransactionSystemComponents.MidGradientPanel implements Refreshable {
     private JLabel totalIncomeYearLabel, totalExpenseYearLabel, totalBalanceYearLabel;
     private JLabel accountBalanceLabel, incomeChangeLabel, expenseChangeLabel;
     private JTextArea paymentLocationSummary;
@@ -987,4 +988,29 @@ public class PersonalCenterPanel extends TransactionSystemComponents.MidGradient
     public JComboBox<Integer> getYearComboBox() {
         return yearComboBox;
     }
+
+    private void buildYearPanel() {
+        remove(yearComboBox.getParent());
+        JPanel yearPanel = new JPanel();
+        yearPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
+        yearPanel.setOpaque(false);
+        JLabel yearLabel = new JLabel("Select Year:");
+        yearLabel.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        yearLabel.setForeground(Color.WHITE);
+        yearPanel.add(yearLabel);
+        yearPanel.add(yearComboBox);
+        add(yearPanel, BorderLayout.NORTH);
+    }
+
+    @Override
+    public void refreshData() {
+        removeAll();
+        buildYearPanel();
+        isUILoaded = false;
+        buildUI();
+        revalidate();
+        repaint();
+    }
+
+
 }

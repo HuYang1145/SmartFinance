@@ -278,7 +278,7 @@ public class BillController {
                 transactionCache.remove(currentUsername);
                 cacheTimestamps.remove(currentUsername);
             } else {
-                TransactionController.removeTransaction(currentUsername, timeText.trim());
+                TransactionController.removeTransaction(currentUsername, timeText.trim(),currentUserAccount);
                 currentUserAccount.setBalance(originalBalance);
                 view.showError("Expense recorded successfully, but failed to update account balance file.");
             }
@@ -371,7 +371,7 @@ public class BillController {
                 transactionCache.remove(currentUsername);
                 cacheTimestamps.remove(currentUsername);
             } else {
-                TransactionController.removeTransaction(currentUsername, timeText.trim());
+                TransactionController.removeTransaction(currentUsername, timeText.trim(),currentUserAccount);
                 currentUserAccount.setBalance(originalBalance);
                 view.showError("Income recorded, but failed to update account balance file.");
             }

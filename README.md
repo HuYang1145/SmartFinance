@@ -1,16 +1,15 @@
 # 运行命令  
-请在命令行输入**java -jar target/group19-1.0.0.jar**运行程序  
+请在命令行输入**java -jar group19-1.0.0.jar**运行程序  
+# Run command    
+Please type **java -jar group19-1.0.0.jar** at the command line to run the program  
 
 # Folder Structure
-## AI模型文件
-通过网盘分享的文件：dist.zip
-链接: https://pan.baidu.com/s/1M3x8FVq7p5cE0sdAx2x9UA 提取码: pgpp
-下载解压后放入coursework目录下，与src同级。
-## AI Model File
-Shared file via cloud disk: dist.zip
-Link: https://pan.baidu.com/s/1M3x8FVq7p5cE0sdAx2x9UA
-Extraction code: pgpp
-After downloading and decompressing, place it in the coursework directory at the same level as src.
+## AI模型文件  
+链接: https://pan.baidu.com/s/1BtfvfBs5vu2cl-zU0EoHsA 提取码: bupt  
+下载解压后放入项目根目录下，如SmartFinance/dist,与src同级,**运行前请确保dist文件夹中只有predict文件夹,predict目录下一定要有predict.exe文件**。  
+## AI Model File  
+https://drive.google.com/file/d/1DvQfCYMQAfIce5ShoMvyfGju0eFL-D72/view?usp=drive_link  
+Download and unzip it into the root directory of the project, e.g. SmartFinance/dist, same level as src, ,**Before running, please make sure that there is only the predict folder in the dist folder, and there must be a predict.exe file in the predict directory.**.
 ---
 
 

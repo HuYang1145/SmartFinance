@@ -69,13 +69,22 @@ public class LoginController {
             }
             UserSession.setCurrentAccount(user); // Sets both account and username
             loginFrame.closeWindow();
-
-            // --- Added Abnormal Transaction Check on Login ---
             // Fetch all transactions and filter for the current user
-            List<Model.Transaction> allTransactions = transactionService.getTransactionRepository().readAllTransactions(); // Use service's exposed repository or pass service to read
-             List<Model.Transaction> currentUserTransactions = allTransactions.stream()
-                 .filter(tx -> user.getUsername().equals(tx.getAccountUsername()))
-                 .collect(Collectors.toList());
+            List<Model.Transaction> allTransactions = transactionService.getTransactionRepository().readAllTransactions();
+            List<Model.Transaction> currentUserTransactions = allTransactions.stream()
+                    .filter(tx -> user.getUsername().equals(tx.getAccountUsername()))
+                    .collect(Collectors.toList());
+            double calculatedBalance = 0.0;
+            for (Model.Transaction tx : currentUserTransactions) {
+                if ("Income".equalsIgnoreCase(tx.getOperation())) {
+                    calculatedBalance += tx.getAmount();
+                } else if ("Expense".equalsIgnoreCase(tx.getOperation())) {
+                    calculatedBalance -= tx.getAmount();
+                }
+            }
+            user.setBalance(calculatedBalance);
+            accountRepository.updateBalance(user.getUsername(), calculatedBalance);
+            // --- Added Abnormal Transaction Check on Login ---
 
             List<String> warnings = transactionService.checkAbnormalTransactions(user.getUsername(), currentUserTransactions);
 

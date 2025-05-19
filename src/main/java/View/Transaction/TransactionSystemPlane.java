@@ -31,6 +31,7 @@ import org.jfree.data.time.TimeSeriesCollection;
 import Controller.TransactionController;
 import Model.Transaction;
 import View.LoginAndMain.LoginRoundedInputField;
+import utils.Refreshable;
 
 /**
  * A JPanel that serves as the main interface for the transaction system, providing modules for
@@ -40,7 +41,7 @@ import View.LoginAndMain.LoginRoundedInputField;
  * @author Group 19
  * @version 1.0
  */
-public class TransactionSystemPlane extends JPanel {
+public class TransactionSystemPlane extends JPanel implements Refreshable {
     private final String username;
     private final String[] currencies = {"USD", "EUR", "GBP", "JPY", "AUD", "CAD", "CHF", "HKD", "SGD", "NZD", "CNY"};
     private JTable rateTable;
@@ -55,7 +56,9 @@ public class TransactionSystemPlane extends JPanel {
     private ActionListener transactionActionListener;
     private ActionListener conversionActionListener;
     private ActionListener historicalTrendActionListener;
-
+    private JLabel lbl;
+    private DefaultListModel<Transaction> model;
+    private JList<Transaction> list;
     /**
      * Constructs a TransactionSystemPlane for the specified user.
      * 
@@ -596,7 +599,7 @@ public class TransactionSystemPlane extends JPanel {
         header.setPreferredSize(new Dimension(0, 120));
         header.setLayout(null);
         User acct = UserSession.getCurrentAccount();
-        JLabel lbl = new JLabel(
+        lbl = new JLabel(
                 String.format("Your Balance: %.2f CNY", acct.getBalance()),
                 SwingConstants.LEFT
         );
@@ -612,14 +615,14 @@ public class TransactionSystemPlane extends JPanel {
                 cal.get(Calendar.MONTH) + 1
         );
         List<Transaction> all = TransactionController.readTransactions(username);
-        DefaultListModel<Transaction> model = new DefaultListModel<>();
+        model = new DefaultListModel<>();
         for (Transaction t : all) {
             if (t.getTimestamp().startsWith(ym)) {
                 model.addElement(t);
             }
         }
 
-        JList<Transaction> list = new JList<>(model);
+        list = new JList<>(model);
         list.setCellRenderer(new ListCellRenderer<Transaction>() {
             @Override
             public Component getListCellRendererComponent(JList<? extends Transaction> list,
@@ -929,4 +932,24 @@ public class TransactionSystemPlane extends JPanel {
     public void updateTransactionList(List<Transaction> transactions) {
         // Implementation removed; transaction history loaded in createTransactionHistoryPanel
     }
+    @Override
+    public void refreshData() {
+        User acct = UserSession.getCurrentAccount();
+        if (lbl != null && acct != null) {
+            lbl.setText(String.format("Your Balance: %.2f CNY", acct.getBalance()));
+        }
+        if (model != null) {
+            model.clear();
+            Calendar cal = Calendar.getInstance();
+            String ym = String.format("%d/%02d", cal.get(Calendar.YEAR), cal.get(Calendar.MONTH) + 1);
+            List<Transaction> all = TransactionController.readTransactions(username);
+            for (Transaction t : all) {
+                if (t.getTimestamp().startsWith(ym)) {
+                    model.addElement(t);
+                }
+            }
+        }
+    }
+
+
 }

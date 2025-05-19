@@ -49,6 +49,8 @@ public class MainPanelController {
     private PersonalCenterPanel personalCenterPanel;
     private TransactionSystemController transactionSystemController;
     private AIController aiController;
+    private TransactionSystemPlane transactionSystemPlane;
+    private BillPanel billPanel;
 
     /**
      * Constructs a MainPanelController with the specified parameters and dependencies.
@@ -72,6 +74,7 @@ public class MainPanelController {
         this.transactionService = transactionService;
         this.cardLayout = cardLayout;
         System.out.println("MainPanelController initialized for user: " + username);
+        TransactionController.setMainPanelController(this);
     }
 
     /**
@@ -145,7 +148,7 @@ public class MainPanelController {
                     return aiPanel;
                 case "Transaction System":
                     System.out.println("Loading Transaction System panel");
-                    TransactionSystemPlane transactionSystemPlane = new TransactionSystemPlane(username);
+                    transactionSystemPlane = new TransactionSystemPlane(username);
                     // TransactionSystemController needs BudgetService and TransactionService
                     transactionSystemController = new TransactionSystemController(
                             transactionSystemPlane, new ExchangeRateService(), new TransactionController(),
@@ -155,7 +158,7 @@ public class MainPanelController {
                 case "Bill Statistics":
                     System.out.println("Loading Bill Statistics panel");
                     // BillController needs AccountRepository (already a field in MainPanelController)
-                    BillPanel billPanel = new BillPanel(username, personCenterController, billController);
+                    billPanel = new BillPanel(username, personCenterController, billController);
                     // Initialize chart on a background thread
                     SwingWorker<Void, Void> worker = new SwingWorker<>() {
                         @Override
@@ -288,4 +291,15 @@ public class MainPanelController {
         contentPanel.revalidate();
         contentPanel.repaint();
     }
+    public void reloadAllPanels() {
+            if (personalCenterPanel != null) {
+                personalCenterPanel.refreshData();
+            }
+            if (transactionSystemPlane != null) {
+                transactionSystemPlane.refreshData();
+            }
+            if(billPanel !=null){
+                billPanel.refreshData();
+            }
+        }
 }

@@ -3,6 +3,7 @@ package Controller;
 import static org.junit.jupiter.api.Assertions.*;
 
 import Model.Transaction;
+import Model.User;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -55,24 +56,22 @@ class TransactionControllerTest {
         File src = new File(System.getProperty("user.dir"), "src.csv");
         File dest = new File(System.getProperty("user.dir"), "dest.csv");
 
-        // 写入测试CSV数据
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(src, StandardCharsets.UTF_8))) {
             bw.write(TransactionController.CSV_HEADER); bw.newLine();
             bw.write("user1,Transfer In,600.00,2024/05/15 10:00,merchant,Transfer,,,,,,,"); bw.newLine();
             bw.write("user1,Deposit,300.00,2024/05/16 12:00,merchant,Deposit,,,,,,,"); bw.newLine();
         }
 
-        // 保证目标文件为空
         if (dest.exists()) dest.delete();
 
         int imported = TransactionController.importTransactions(src, dest.getAbsolutePath());
-        assertEquals(2, imported); // 允许导入 Transfer In 和 Deposit
+        assertEquals(2, imported);
 
         List<String> lines = new ArrayList<>();
         try (BufferedReader br = new BufferedReader(new FileReader(dest, StandardCharsets.UTF_8))) {
             String line; while ((line = br.readLine()) != null) lines.add(line);
         }
-        // 只断言有效数据行
+        // Assert only valid data rows
         long dataLineCount = lines.stream()
                 .filter(l -> !l.trim().isEmpty() && !l.equals(TransactionController.CSV_HEADER))
                 .count();
@@ -83,11 +82,9 @@ class TransactionControllerTest {
 
     @Test
     void testAddAndReadTransaction() throws Exception {
-        // 添加一条数据
         boolean ok = TransactionController.addTransaction("user1", "Income", 500.0, "2024/05/17 13:00", "shop", "Transfer In");
         assertTrue(ok);
 
-        // 读取回数据
         List<Transaction> txs = TransactionController.readTransactions("user1");
         assertEquals(1, txs.size());
         assertEquals("user1", txs.get(0).getAccountUsername());
@@ -98,7 +95,7 @@ class TransactionControllerTest {
 
     @Test
     void testAddTransaction_invalid() {
-        // 金额负数、无operation、不合规字段
+        // Negative amount, no operation, non-compliant fields
         assertFalse(TransactionController.addTransaction(null, "Income", 500.0, "2024/05/17 13:00", "shop", "Income"));
         assertFalse(TransactionController.addTransaction("user1", "Other", 500.0, "2024/05/17 13:00", "shop", "Income"));
         assertFalse(TransactionController.addTransaction("user1", "Income", -1, "2024/05/17 13:00", "shop", "Income"));
@@ -107,11 +104,12 @@ class TransactionControllerTest {
 
     @Test
     void testRemoveTransaction() throws Exception {
-        // 添加两条
         TransactionController.addTransaction("user1", "Income", 100.0, "2024/05/18 10:00", "market", "Income");
         TransactionController.addTransaction("user1", "Income", 200.0, "2024/05/19 10:00", "market", "Income");
-        // 删除一条
-        boolean removed = TransactionController.removeTransaction("user1", "2024/05/18 10:00");
+        User user = new User();
+        user.setUsername("user1");
+        user.setBalance(300.0);
+        boolean removed = TransactionController.removeTransaction("user1", "2024/05/18 10:00", user);
         System.out.println("Removed? " + removed);
         List<Transaction> txs = TransactionController.readTransactions("user1");
         for (Transaction t : txs) {
@@ -120,6 +118,7 @@ class TransactionControllerTest {
         assertTrue(removed);
         assertEquals(1, txs.size());
         assertEquals("2024/05/19 10:00", txs.get(0).getTimestamp());
-
+        double expected = TransactionController.calculateUserBalance("user1");
+        assertEquals(expected, user.getBalance(), 1e-6);
     }
 }
