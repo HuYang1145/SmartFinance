@@ -20,7 +20,6 @@ class LoginServiceTest {
         loginService = new LoginService(mockAccountRepo);
     }
 
-    // --- 登录相关测试 ---
     @Test
     void loginUser_usernameEmpty_throwsException() {
         Exception e = assertThrows(IllegalArgumentException.class, () -> loginService.loginUser(" ", "123"));
@@ -70,7 +69,6 @@ class LoginServiceTest {
         }
     }
 
-    // --- 注册相关测试 ---
     @Test
     void registerUser_anyFieldEmpty_throwsException() {
         Exception e = assertThrows(IllegalArgumentException.class, () ->

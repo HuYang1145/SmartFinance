@@ -19,7 +19,6 @@ class AccountRepositoryTest {
     @BeforeEach
     void setup(@TempDir Path tempDir) throws IOException {
         accountFile = tempDir.resolve("accounts.csv").toFile();
-        // 写入表头（避免初次读取抛空）
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(accountFile, StandardCharsets.UTF_8))) {
             bw.write(AccountRepository.EXPECTED_ACCOUNT_HEADER);
             bw.newLine();
@@ -57,7 +56,6 @@ class AccountRepositoryTest {
         User u1 = new User("a", "1", "p", "e", "M", "ad", "2024/01/01 11:00", User.AccountStatus.ACTIVE, "P", 123.0);
         User u2 = new User("b", "2", "p2", "e2", "F", "ad2", "2024/01/02 12:00", User.AccountStatus.FROZEN, "A", 88.6);
 
-        // 覆盖写
         boolean ok = repo.saveToCSV(List.of(u1, u2), false);
         assertTrue(ok);
 
@@ -66,7 +64,6 @@ class AccountRepositoryTest {
         assertTrue(users.stream().anyMatch(u -> u.getUsername().equals("a")));
         assertTrue(users.stream().anyMatch(u -> u.getUsername().equals("b")));
 
-        // 检查数据内容
         User u = users.get(1);
         assertNotNull(u.getCreationTime());
         assertTrue(u.getBalance() > 0);
@@ -74,7 +71,6 @@ class AccountRepositoryTest {
 
     @Test
     void readFromCSV_emptyFile_returnsEmptyList() throws IOException {
-        // 新建一个无内容文件
         File emptyFile = File.createTempFile("empty", ".csv");
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(emptyFile, StandardCharsets.UTF_8))) {
             bw.write(AccountRepository.EXPECTED_ACCOUNT_HEADER);

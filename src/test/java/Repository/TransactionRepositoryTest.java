@@ -22,7 +22,6 @@ class TransactionRepositoryTest {
         txFile = tempDir.resolve("transactions.csv").toFile();
 
 
-        // 写入表头和测试数据
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(txFile, StandardCharsets.UTF_8))) {
             bw.write("user,operation,amount,time,merchant,type,remark,category,payment_method,location,tag,attachment,recurrence");
             bw.newLine();
@@ -38,7 +37,6 @@ class TransactionRepositoryTest {
         TransactionRepository repo = new TransactionRepository() {
             @Override
             public List<Transaction> findTransactionsByUsername(String username) {
-                // 用 setup 写入的文件
                 return super.findTransactionsByUsername(username);
             }
             @Override
@@ -46,7 +44,6 @@ class TransactionRepositoryTest {
                 return super.findAllTransactions();
             }
         };
-        // 覆盖静态字段（如果不能，需调整实现支持自定义文件）
         List<Transaction> zhang = repo.findTransactionsByUsername("zhangsan");
         assertEquals(2, zhang.size());
         assertTrue(zhang.stream().anyMatch(tx -> tx.getOperation().equals("Expense")));

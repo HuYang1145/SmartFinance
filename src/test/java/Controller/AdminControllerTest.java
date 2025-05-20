@@ -29,17 +29,14 @@ class AdminControllerTest {
     @Mock
     private AdminView adminView;
 
-    // 用于捕获静态提示框调用
     private MockedStatic<LoginComponents> loginComponentsMock;
 
     private AdminController controller;
 
     @BeforeEach
     void setUp() throws Exception {
-        // 1. Mock 静态方法
         loginComponentsMock = Mockito.mockStatic(LoginComponents.class);
 
-        // 2. 实例化控制器，并通过反射注入 mockView
         controller = new AdminController(accountRepository);
         Field viewField = AdminController.class.getDeclaredField("view");
         viewField.setAccessible(true);
@@ -52,8 +49,8 @@ class AdminControllerTest {
     }
 
     /**
-     * 测试 handleCustomerInquiry 成功分支，
-     * 应调用 view.updateAccountTable(accounts)
+     * To test the handleCustomerInquiry success branch, * the view.updateAccountTable(accounts) should be called.
+     * view.updateAccountTable(accounts) should be called.
      */
     @Test
     void testHandleCustomerInquirySuccess() throws Exception {
@@ -65,15 +62,14 @@ class AdminControllerTest {
 
         Method m = AdminController.class.getDeclaredMethod("handleCustomerInquiry", List.class);
         m.setAccessible(true);
-        // 传入 null 参数（方法内部并未使用）
         m.invoke(controller, (Object) null);
 
         verify(adminView).updateAccountTable(accounts);
     }
 
     /**
-     * 测试 handleCustomerInquiry 异常分支，
-     * 仓库抛异常时应调 showCustomMessage
+     * Testing the handleCustomerInquiry exception branch.
+     * ShowCustomMessage should be called when the warehouse throws an exception.
      */
     @Test
     void testHandleCustomerInquiryFailure() throws Exception {
@@ -94,8 +90,8 @@ class AdminControllerTest {
     }
 
     /**
-     * 测试 handleDeleteUsers 的空集合分支，
-     * 应提示“未选中用户”
+     * Tests for an empty collection branch of handleDeleteUsers, * which should prompt for ‘Unchecked Users’.
+     * should prompt ‘unchecked user’.
      */
     @Test
     void testHandleDeleteUsersEmpty() throws Exception {
@@ -111,17 +107,15 @@ class AdminControllerTest {
                         eq(JOptionPane.INFORMATION_MESSAGE)
                 ), times(1)
         );
-        // 不应调用保存
         verify(accountRepository, never()).saveToCSV(anyList(), anyBoolean());
     }
 
     /**
-     * 测试 handleDeleteUsers 的非空集合分支，
-     * 应过滤指定用户并保存剩余列表，然后提示成功
+     * Tests handleDeleteUsers for a non-empty set branch that
+     * should filter the specified users and save the remaining list, then prompt for success
      */
     @Test
     void testHandleDeleteUsersNonEmpty() throws Exception {
-        // 原始列表包含 u1、u2
         List<User> accounts = new ArrayList<>(Arrays.asList(
                 new User("u1","p","ph","e","M","addr","ts",User.AccountStatus.ACTIVE,"Personal",0.0),
                 new User("u2","p","ph","e","F","addr","ts",User.AccountStatus.ACTIVE,"Personal",0.0)
@@ -135,7 +129,6 @@ class AdminControllerTest {
         m.setAccessible(true);
         m.invoke(controller, toDelete);
 
-        // 保存时只剩 u2
         verify(accountRepository).saveToCSV(
                 argThat(savedList ->
                         savedList.size() == 1 &&
@@ -143,7 +136,6 @@ class AdminControllerTest {
                 ),
                 eq(false)
         );
-        // 并提示成功
         loginComponentsMock.verify(() ->
                 LoginComponents.showCustomMessage(
                         eq(adminView),
@@ -155,7 +147,7 @@ class AdminControllerTest {
     }
 
     /**
-     * 测试 handleLogout，应该调用 view.dispose()
+     * Test handleLogout, should call view.dispose()
      */
     @Test
     void testHandleLogout() throws Exception {

@@ -38,7 +38,6 @@ class LoginControllerTest {
 
     @BeforeEach
     void setup() {
-        // 1. 打开对静态方法的 Mock
         loginComponentsMock = Mockito.mockStatic(LoginComponents.class);
 
         lenient().when(transactionService.getTransactionRepository())
@@ -62,7 +61,6 @@ class LoginControllerTest {
         );
         when(accountRepo.findByUsername("user1")).thenReturn(user);
 
-        // Spy 控制器，拦截 showMainInterface
         LoginController spyCtrl = spy(controller);
         doNothing().when(spyCtrl).showMainInterface("user1");
 
@@ -82,7 +80,6 @@ class LoginControllerTest {
 
         controller.handleLogin("unknown", "any", loginFrame);
 
-        // 验证：弹出用户名或密码无效的错误提示，不关闭窗口
         loginComponentsMock.verify(() ->
                 LoginComponents.showCustomMessage(
                         eq(loginFrame),
@@ -96,7 +93,6 @@ class LoginControllerTest {
 
     @Test
     void testFrozenAccountShowsFrozenMessage() {
-        // 准备：账户状态为 FROZEN
         User frozen = new User(
                 "userX", "pwd", "phone", "email", "M", "addr",
                 "2025/05/01 10:00", AccountStatus.FROZEN, "Personal", 0.0
@@ -105,7 +101,6 @@ class LoginControllerTest {
 
         controller.handleLogin("userX", "pwd", loginFrame);
 
-        // 验证：弹出账户冻结提示，不关闭窗口
         loginComponentsMock.verify(() ->
                 LoginComponents.showCustomMessage(
                         eq(loginFrame),
@@ -117,5 +112,4 @@ class LoginControllerTest {
         verify(loginFrame, never()).closeWindow();
     }
 
-    // 这里可以继续添加其他分支覆盖，比如管理员登录、密码错误、交易告警等
 }

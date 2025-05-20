@@ -40,10 +40,10 @@ class AIControllerTest {
 
         controller.onSendMessage("hi");
 
-        // 校验流程
+
         verify(mockView).addMessage(argThat(msg -> msg.getContent().equals("hi")));
         verify(mockView).setLoadingState(true);
-        // 由于SwingWorker异步，需要稍等
+
         Thread.sleep(100);
         verify(mockView).setLoadingState(false);
         verify(mockView).addMessage(argThat(msg -> msg.getContent().equals("HI! I can tell you your balance, monthly spending, or record expense/income and give you some suggestion.")));

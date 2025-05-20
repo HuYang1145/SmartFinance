@@ -49,7 +49,6 @@ class MainPanelControllerTest {
     void testInitializeContentPanels() {
         controller.initializeContentPanels();
 
-        // 检查是否初始化了 "Personal Center" 和其他5个占位符
         Component[] comps = contentPanel.getComponents();
         boolean hasPersonalCenter = false;
         int labelCount = 0;
@@ -63,12 +62,9 @@ class MainPanelControllerTest {
 
     @Test
     void testShowPanel_loadsAndShowsPanel() {
-        // 1. 先初始化
         controller.initializeContentPanels();
-        // 2. 模拟点击“Personal Center”
         controller.showPanel("Personal Center");
 
-        // 断言 cardLayout 正在显示“Personal Center”面板
         Component[] comps = contentPanel.getComponents();
         boolean found = false;
         for (Component comp : comps) {
@@ -82,7 +78,6 @@ class MainPanelControllerTest {
     @Test
     void testShowPanel_replacePlaceholderWithRealPanel() {
         controller.initializeContentPanels();
-        // 先保证"Budget Management"还只是一个JLabel
         Component[] compsBefore = contentPanel.getComponents();
         boolean hasLabel = false;
         for (Component comp : compsBefore) {
@@ -92,9 +87,7 @@ class MainPanelControllerTest {
         }
         assertTrue(hasLabel, "Budget Management placeholder should exist");
 
-        // 触发showPanel加载
         controller.showPanel("Budget Management");
-        // BudgetManagementPanel加载后，占位符会被panel取代
         boolean hasPanel = false;
         for (Component comp : contentPanel.getComponents()) {
             if ("Budget Management".equals(comp.getName()) && !(comp instanceof JLabel)) {
@@ -107,9 +100,7 @@ class MainPanelControllerTest {
     @Test
     void testShowPanel_panelNotFoundShouldCreateNew() {
         controller.initializeContentPanels();
-        // 触发一个不存在的面板
         controller.showPanel("NotExistPanel");
-        // 结果应该有一个名为 NotExistPanel 的占位符面板
         boolean hasPlaceholder = false;
         for (Component comp : contentPanel.getComponents()) {
             if ("NotExistPanel".equals(comp.getName())) {

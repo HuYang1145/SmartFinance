@@ -71,7 +71,6 @@ class TransactionControllerTest {
         try (BufferedReader br = new BufferedReader(new FileReader(dest, StandardCharsets.UTF_8))) {
             String line; while ((line = br.readLine()) != null) lines.add(line);
         }
-        // Assert only valid data rows
         long dataLineCount = lines.stream()
                 .filter(l -> !l.trim().isEmpty() && !l.equals(TransactionController.CSV_HEADER))
                 .count();

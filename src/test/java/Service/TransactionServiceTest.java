@@ -75,9 +75,6 @@ class TransactionServiceTest {
 
     @Test
     void checkAbnormalTransactions_allPatternsDetected() {
-        // Pattern 1: 一天内有 3 笔 >=5000
-        // Pattern 2: 单笔大额支出 > 3*avg_daily
-        // Pattern 3: 单笔支出 > 50000
         when(mockBudgetService.calculateAverageDailyExpense(anyString(), anyInt())).thenReturn(100.0);
 
         List<Transaction> txs = new ArrayList<>();

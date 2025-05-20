@@ -39,7 +39,7 @@ class PersonCenterControllerTest {
     }
 
     /**
-     * 测试正常加载数据流程
+     * Test normal load data flow
      */
     @Test
     void testLoadData_success() throws Exception {
@@ -48,7 +48,6 @@ class PersonCenterControllerTest {
 
             userSessionMock.when(UserSession::getCurrentUsername).thenReturn("testUser");
 
-            // 让 invokeLater 直接执行
             swingMock.when(() -> SwingUtilities.invokeLater(any(Runnable.class)))
                     .thenAnswer(invocation -> {
                         ((Runnable)invocation.getArgument(0)).run();
@@ -65,7 +64,6 @@ class PersonCenterControllerTest {
 
             controller.loadData(2024);
 
-            // 立即校验
             verify(view).updateFinancialSummary(summary);
             verify(view).updatePaymentLocationSummary("Shanghai, Beijing");
             verify(view).updateAnnualChartData(annualChart);
@@ -77,7 +75,7 @@ class PersonCenterControllerTest {
 
 
     /**
-     * 测试：未登录时不调用任何view方法
+     * Test: no view method is called when not logged in
      */
     @Test
     void testLoadData_notLoggedIn() throws Exception {
@@ -87,15 +85,13 @@ class PersonCenterControllerTest {
             controller.loadData(2024);
             Thread.sleep(50);
 
-            // 不会更新view
             verifyNoInteractions(view);
-            // 状态未加载成功
             assertFalse(controller.isDataLoadedSuccessfully());
         }
     }
 
     /**
-     * 测试服务抛异常
+     * The test service throws an exception
      */
     @Test
     void testLoadData_serviceThrows() throws Exception {
@@ -108,7 +104,6 @@ class PersonCenterControllerTest {
             controller.loadData(2024);
             Thread.sleep(50);
 
-            // 发生异常不更新view，且状态为失败
             verifyNoInteractions(view);
             assertFalse(controller.isDataLoadedSuccessfully());
         }
