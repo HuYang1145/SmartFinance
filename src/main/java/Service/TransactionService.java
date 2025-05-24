@@ -21,10 +21,10 @@ public class TransactionService {
     private final BudgetService budgetService; // Marked as final, initialized in constructor
 
     // Define the thresholds for new abnormal checks
-    private static final double FREQUENT_LARGE_TRANSACTION_AMOUNT = 5000.0; // 一天内转账或收支>=5000的阈值
-    private static final int FREQUENT_LARGE_TRANSACTION_COUNT = 3; // 一天内转账或收支 >= 5000 的次数阈值
-    private static final double LARGE_EXPENSE_MULTIPLIER = 3.0; // 单笔支出 > 平均支出倍数
-    private static final double LARGE_TRANSFER_OUT_AMOUNT = 50000.0; // 单笔转出或消费金额大于阈值
+    private static final double FREQUENT_LARGE_TRANSACTION_AMOUNT = 5000.0;
+    private static final int FREQUENT_LARGE_TRANSACTION_COUNT = 3;
+    private static final double LARGE_EXPENSE_MULTIPLIER = 3.0;
+    private static final double LARGE_TRANSFER_OUT_AMOUNT = 50000.0;
 
     /**
      * Constructs a TransactionService instance with the specified dependencies.

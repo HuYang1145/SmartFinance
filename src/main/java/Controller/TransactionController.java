@@ -27,6 +27,7 @@ import javax.swing.JOptionPane;
 import Model.Transaction;
 import Model.User;
 import Service.BudgetService;
+import Service.DeepSeekService;
 
 /**
  * Controller class for managing transactions in a financial management application.
@@ -237,6 +238,7 @@ public class TransactionController {
             return false;
         }
 
+
         String normalizedTime;
         try {
             LocalDateTime dateTime;
@@ -310,6 +312,7 @@ public class TransactionController {
         String amtStr = entities.get("amount");
         String time = entities.get("time");
         String type = entities.get("category");
+        String category = entities.get("category");
         if (username == null || operation == null || amtStr == null || time == null) {
             throw new IllegalArgumentException("Missing required fields");
         }
@@ -323,7 +326,6 @@ public class TransactionController {
         // Extract optional fields
         String merchant = entities.getOrDefault("merchant", "");
         String remark = entities.getOrDefault("remark", "");
-        String category = entities.getOrDefault("category", "");
         String paymentMethod = entities.getOrDefault("paymentMethod", "");
         String location = entities.getOrDefault("location", "");
         String tag = entities.getOrDefault("tag", "");

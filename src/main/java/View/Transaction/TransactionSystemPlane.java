@@ -511,14 +511,6 @@ public class TransactionSystemPlane extends JPanel implements Refreshable {
                 "Enter merchant (e.g., Amazon)"), gbc);
         y++;
 
-        gbc.gridx = 0; gbc.gridy = y;
-        form.add(createWhiteLabel("Type:"), gbc);
-        gbc.gridx = 1;
-        form.add(typeComboBox = new LoginRoundedInputField.RoundedComboBox<>(
-                new String[]{"food", "salary", "rent", "freelance", "investment",
-                        "shopping", "Electronics", "Fitness", "Transport",
-                        "Entertainment", "Travel", "Gift"}), gbc);
-        y++;
 
         gbc.gridx = 0; gbc.gridy = y;
         form.add(createWhiteLabel("Remark (Optional):"), gbc);
@@ -528,7 +520,7 @@ public class TransactionSystemPlane extends JPanel implements Refreshable {
         y++;
 
         gbc.gridx = 0; gbc.gridy = y;
-        form.add(createWhiteLabel("Category (Purpose):"), gbc);
+        form.add(createWhiteLabel("Category :"), gbc);
         gbc.gridx = 1;
         form.add(categoryField = new LoginRoundedInputField.RoundedTextField(
                 "Enter category (e.g., Household)"), gbc);

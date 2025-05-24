@@ -22,6 +22,7 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableModel;
 
+import Service.DeepSeekService;
 import org.jfree.chart.axis.DateAxis;
 import org.jfree.data.time.Month;
 import org.jfree.data.time.TimeSeries;
@@ -331,13 +332,13 @@ public class TransactionSystemController {
      * Sets up action listeners for adding transactions and document listeners for real-time currency conversion updates.
      */
     private void initializeListeners() {
+        DeepSeekService deepSeekService = new DeepSeekService();
         // Transaction Action Listener (Income/Expense)
         view.setTransactionActionListener(e -> {
             String operation = (String) view.getOperationComboBox().getSelectedItem();
             String amountText = view.getTransactionAmountField().getActualText();
             String timeText = view.getTransactionTimeField().getActualText();
             String merchantText = view.getMerchantField().getActualText();
-            String type = (String) view.getTypeComboBox().getSelectedItem();
             String remark = view.getRemarkField().getActualText();
             String category = view.getCategoryField().getActualText();
             String paymentMethod = view.getPaymentMethodField().getActualText();
@@ -348,15 +349,11 @@ public class TransactionSystemController {
             String password = new String(view.getPasswordField().getPassword());
 
             // Basic Validation
-            if (operation == null || amountText.isEmpty() || timeText.isEmpty() || merchantText.isEmpty() || type == null || password.isEmpty()) {
-                view.showError("Operation, Amount, Time, Merchant, Type, and Password must be filled.");
+            if (operation == null || amountText.isEmpty() || timeText.isEmpty() || merchantText.isEmpty() || category == null || password.isEmpty()) {
+                view.showError("Operation, Amount, Time, Merchant, Category, and Password must be filled.");
                 return;
             }
-             // Add basic check for type "Select Type" from dropdown if applicable
-            if (type != null && "(Select Type)".equals(type.trim())) {
-                 view.showError("Please select a valid Type.");
-                 return;
-            }
+            String type = category;
 
 
             double amount;
@@ -445,6 +442,55 @@ public class TransactionSystemController {
                  // JOptionPane.showMessageDialog(view, "Failed to perform real-time risk check: " + ex.getMessage(), "Risk Check Error", JOptionPane.WARNING_MESSAGE);
              }
             // --- End of Added Real-time Check ---
+            try {
+
+
+                String aiCat = deepSeekService.predictCategory(merchantText.trim(), remark, operation);
+                if (List.of("food", "salary", "rent", "freelance", "investment",
+                                "shopping", "Electronics", "Fitness", "Transport",
+                                "Entertainment", "Travel", "Gift","Other")
+                        .contains(aiCat)) {
+                    category = aiCat;
+                } else {
+                    // fallback
+                    category = "Other";
+                }
+            } catch (Exception ee) {
+                System.err.println("LLM category prediction failed: " + ee.getMessage());
+            }
+            int catConfirm = JOptionPane.showConfirmDialog(
+                    view,
+                    "Detected category: “" + category + "”\nIs this correct?",
+                    "Confirm Category",
+                    JOptionPane.YES_NO_CANCEL_OPTION,
+                    JOptionPane.QUESTION_MESSAGE
+            );
+
+            if (catConfirm == JOptionPane.CANCEL_OPTION) {
+                return;
+            } else if (catConfirm == JOptionPane.NO_OPTION) {
+                String[] options = {
+                        "food", "salary", "rent", "freelance", "investment",
+                        "shopping", "Electronics", "Fitness", "Transport",
+                        "Entertainment", "Travel", "Gift","Other"
+                };
+                String newCat = (String) JOptionPane.showInputDialog(
+                        view,
+                        "Please choose the correct category:",
+                        "Change Category",
+                        JOptionPane.QUESTION_MESSAGE,
+                        null,
+                        options,
+                        category
+                );
+                if (newCat == null) {
+                    // 用户在下拉里按了取消
+                    return;
+                }
+                view.getCategoryField().setText(newCat);
+                category = newCat;
+            } else {
+            }
 
 
             // Add transaction (This code block was already here)

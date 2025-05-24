@@ -111,10 +111,22 @@ public class AIService {
                         }
                     }
 
-                    if ("merchant".equals(slot)|| "category".equals(slot)) {
+                    if ("merchant".equals(slot)) {
                         val = userInput;
                     }
-                    if (val != null && !val.isBlank()) {
+                    if ("category".equals(slot)) {
+                        String desc = ctx.getSlots().getOrDefault("description", userInput);
+                        String predicted = deepSeekService.extractCategory(desc).strip();
+                        if (!"null".equalsIgnoreCase(predicted)) {
+                            ctx.getSlots().put("category", predicted);
+                        }
+                        ctx.getMissingSlots().remove(0);
+                        if (!ctx.getMissingSlots().isEmpty()) {
+                            return new AIResponse("Please tell me " + ctx.getMissingSlots().get(0) + ".", null);
+                        }
+
+                    }
+                        if (val != null && !val.isBlank()) {
                         if ("amount".equals(slot)) {
                             try {
                                 double amt = txUtils.normalizeAmount(val);
@@ -192,9 +204,12 @@ public class AIService {
                     if (slots.containsKey("time")) {
                         slots.put("time", TransactionUtils.normalizeTime(slots.get("time")));
                     }
-                    if(slots.containsKey("category")){
-                        slots.put("category", slots.get("category"));
+                    String desc = slots.getOrDefault("description", userInput);
+                     String llmCat = deepSeekService.extractCategory(desc).strip();
+                    if (!"null".equalsIgnoreCase(llmCat)) {
+                        slots.put("category", llmCat);
                     }
+
                     List<String> required = List.of("amount", "time", "category", "merchant");
                     List<String> missing = required.stream()
                             .filter(k -> !slots.containsKey(k) || slots.get(k).isBlank())

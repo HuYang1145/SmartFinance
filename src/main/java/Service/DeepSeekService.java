@@ -13,6 +13,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import com.google.gson.Gson;
@@ -75,4 +76,85 @@ public class DeepSeekService {
             throw new RuntimeException("Failed to fetch suggestions from DeepSeek API: " + e.getMessage());
         }
     }
+
+    /**
+     * Calls the DeepSeek API to specialise in trade class prediction
+     * * @param merchant
+     * @param merchant merchant name (optional, null-safe)
+     * @param remark remark information (optional, null-safe)
+     * @param transactionType Transaction type (e.g. ‘Expense’, ‘Income’), which can help the model to distinguish between income/expense
+     * @return The predicted category, which is necessarily one of these 11:
+     * [Food, Shopping, Housing, Transportation, Entertainment.
+     * Health, Education, Travel, Investment, Gift, Other]
+     */
+
+    public String predictCategory(String merchant, String remark, String transactionType) {
+        // 1. 拼 prompt
+        StringBuilder promptBuilder = new StringBuilder()
+                .append("Please select the most appropriate category from [")
+                .append("food, salary, rent, freelance, investment,shopping, Electronics ")
+                .append("Fitness, Transport, Entertainment, Travel, Gift, Other")
+                .append("]. Only return the category name. If no information, return \"Other\".")
+                .append("\n\nTransaction info:");
+        if (transactionType != null && !transactionType.isBlank()) {
+            promptBuilder.append(" type=").append(transactionType).append(";");
+        }
+        if (merchant != null && !merchant.isBlank()) {
+            promptBuilder.append(" merchant=").append(merchant).append(";");
+        }
+        if (remark != null && !remark.isBlank()) {
+            promptBuilder.append(" remark=").append(remark).append(";");
+        }
+
+        String prompt = promptBuilder.toString();
+
+        String raw = callDeepSeekApi("", prompt).strip();
+
+        List<String> allowed = Arrays.asList(
+                "food", "salary", "rent", "freelance", "investment",
+                "shopping", "Electronics", "Fitness", "Transport",
+                "Entertainment", "Travel", "Gift","Other"
+        );
+        if (allowed.contains(raw)) {
+            return raw;
+        }
+        return "Other";
+    }
+
+    /**
+     * Extracts transaction categories from the text of a single sentence.
+     *
+     * @param text Any sentence of user input (e.g. ‘I bought a coffee at Starbucks’).
+     * @return from [Food, Shopping, Housing, Transportation.
+     * Entertainment, Health, Education, Travel.
+     * Investment, Gift, Other] from [Food, Shopping, Housing, Transportation, * Entertainment, Health, Education, Travel, * Investment, Gift, Other].
+     */
+
+
+    public String extractCategory(String text) {
+        String prompt = new StringBuilder()
+                .append("Please select the most appropriate category from [")
+                .append("food, salary, rent, freelance, investment,shopping, Electronics ")
+                .append("Fitness, Transport, Entertainment, Travel, Gift, Other")
+                .append("]. Only return the category name. No other words.")
+                .append("\n\nInput: \"").append(text).append("\"")
+                .toString();
+
+        String raw;
+        try {
+            raw = callDeepSeekApi("", prompt).strip();
+        } catch (Exception e) {
+            System.err.println("Category extraction failed: " + e.getMessage());
+            return "Other";
+        }
+
+        List<String> allowed = List.of(
+                "food", "salary", "rent", "freelance", "investment",
+                "shopping", "Electronics", "Fitness", "Transport",
+                "Entertainment", "Travel", "Gift","Other"
+        );
+        return allowed.contains(raw) ? raw : "Other";
+    }
+
+
 }
