@@ -1,10 +1,32 @@
+/**
+ * Provides AI-driven services for processing user inputs, recognizing intents, and managing transactions.
+ * This service integrates with external AI models and transaction systems to handle user requests such as
+ * recording expenses/income, querying balances, and generating suggestions.
+ *
+ * @author Group 19
+ * @version 1.0
+ */
 package Service;
 
+import Model.PredictResult;
+import java.util.ArrayList;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
+
+import Controller.TransactionController;
+import Model.EntityResultModel;
+import com.google.gson.Gson;
+import java.io.IOException;
+
+import Model.AIResponse;
+import Model.IntentResultModel;
+import Model.User;
+import Model.SessionContext;
+import Repository.UserRepository;
+import utils.TransactionUtils;
+
 import java.util.Map;
 import java.util.HashMap;
 import java.util.List;
@@ -13,22 +35,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import com.google.gson.Gson;
-
-import Controller.TransactionController;
-import Model.AIResponse;
-import Model.PredictResult;
-import Model.SessionContext;
-import Model.User;
-import Repository.UserRepository;
-import utils.TransactionUtils;
-import Service.DeepSeekService;
-import Service.ExchangeRateService;
-import Service.TransactionService;
-
-/**
- * 普通 Java 类版本的 AIService，无需 Spring Boot 框架
- */
 public class AIService {
     private static final Gson GSON = new Gson();
     private final TransactionService transactionService;
@@ -38,14 +44,17 @@ public class AIService {
     private final TransactionUtils txUtils;
     private final String baseDir;
     private final ConcurrentHashMap<String, SessionContext> sessions = new ConcurrentHashMap<>();
-    private static final String OUTPUT_NAME = "predict";
-
-
 
     /**
-     * 构造器中手动传入所需依赖，无需依赖注入框架
+     * Constructs an AIService instance with dependencies for transaction processing and AI services.
+     *
+     * @param transactionService    the service for handling transaction-related operations
+     * @param transactionController the controller for managing transaction data
+     * @param deepSeekService       the service for interacting with the DeepSeek AI model
+     * @param userRepository        the repository for user data access
+     * @param rateService           the service for exchange rate conversions
      */
-    public AIService(
+   public AIService(
             TransactionService transactionService,
             TransactionController transactionController,
             DeepSeekService deepSeekService,
@@ -61,9 +70,14 @@ public class AIService {
     }
 
     /**
-     * 主业务入口：识别意图并执行相应操作
+     * Processes user input to predict and respond with appropriate actions, such as recording transactions
+     * or querying balances. Manages session context for multi-turn conversations.
+     *
+     * @param userInput the user's input text
+     * @return an AIResponse containing the response message and optional error
+     * @throws Exception if an error occurs during intent recognition or transaction processing
      */
-    public AIResponse predictReply(String userInput) {
+   public AIResponse predictReply(String userInput) {
         User user = userRepository.getCurrentUser();
         if (user == null) {
             return new AIResponse(null, "Please log in first.");
@@ -72,20 +86,55 @@ public class AIService {
         SessionContext ctx = sessions.get(userKey);
 
         try {
-            // 继续未完成的对话
             if (ctx != null) {
                 PredictResult exitPr = callPredict(userInput);
+                String normalized = userInput.trim().toLowerCase();
+
+                if ("cancel".equals(normalized) || "no".equals(normalized)) {
+                    sessions.remove(userKey);
+                    return new AIResponse("Transaction canceled.", null);
+                }
                 if (!ctx.getMissingSlots().isEmpty()) {
                     PredictResult pr = callPredict(userInput);
                     String slot = ctx.getMissingSlots().get(0);
                     String val = pr.getEntities().get(slot);
-                    if ("merchant".equals(slot)|| "category".equals(slot)) {
+                    if ("amount".equals(slot) && (val == null || val.isBlank())) {
+                        Pattern p = Pattern.compile("([0-9]+(?:\\.[0-9]+)?)(?:\\s*)([a-zA-Z$¥]*)");
+                        Matcher m = p.matcher(userInput.trim());
+                        if (m.matches()) {
+                            val = userInput;
+                        }
+                    }
+                    if (("time".equals(slot) || "date".equals(slot)) && (val == null || val.isBlank())) {
+                        if (userInput.matches(".*(today|yesterday|tomorrow|\\b\\d{1,2}/\\d{1,2}\\b|\\b\\d{4}-\\d{1,2}-\\d{1,2}\\b|\\b(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Sept|Oct|Nov|Dec)[a-z]*\\.?\\s+\\d{1,2}(,\\s*\\d{4})?\\b).*")) {
+                            val = userInput;
+                        }
+                    }
+
+                    if ("merchant".equals(slot)) {
                         val = userInput;
                     }
-                    if (val != null && !val.isBlank()) {
+                    if ("category".equals(slot)) {
+                        String desc = ctx.getSlots().getOrDefault("description", userInput);
+                        String predicted = deepSeekService.extractCategory(desc).strip();
+                        if (!"null".equalsIgnoreCase(predicted)) {
+                            ctx.getSlots().put("category", predicted);
+                        }
+                        ctx.getMissingSlots().remove(0);
+                        if (!ctx.getMissingSlots().isEmpty()) {
+                            return new AIResponse("Please tell me " + ctx.getMissingSlots().get(0) + ".", null);
+                        }
+
+                    }
+                        if (val != null && !val.isBlank()) {
                         if ("amount".equals(slot)) {
-                            double amt = txUtils.normalizeAmount(val);
-                            ctx.getSlots().put("amount", String.format("%.2f", amt));
+                            try {
+                                double amt = txUtils.normalizeAmount(val);
+                                ctx.getSlots().put("amount", String.format("%.2f", amt));
+                            } catch (Exception e) {
+                                return new AIResponse("Sorry, I couldn't understand the amount. Please enter a number like 3000 or 3000 CNY.", null);
+                            }
+
                         } else if ("time".equals(slot)) {
                             ctx.getSlots().put("time", TransactionUtils.normalizeTime(val));
                         } else {
@@ -105,24 +154,31 @@ public class AIService {
                             .map(e -> e.getKey() + ": " + e.getValue())
                             .collect(Collectors.joining("\n"));
                     return new AIResponse(
-                            "Please confirm the transaction:\n" + preview + "\nReply 'yes' to confirm, or tell me what to change.",
+                            "Please confirm the transaction:\n" + preview + "\nReply 'yes' to confirm, 'no' to cancel"
+                                    + "\nor tell me what to change like \"change category to **\"",
                             null
                     );
                 }
                 if (!ctx.isConfirmed()) {
-                    if ("yes".equalsIgnoreCase(userInput.trim()) || "confirm".equalsIgnoreCase(userInput.trim())) {
+                    String input = userInput.trim().toLowerCase();
+                    if ("yes".equals(input) || "confirm".equals(input)) {
                         ctx.setConfirmed(true);
+                    } else if ("no".equals(input) || "cancel".equals(input)) {
+                        sessions.remove(userKey);
+                        return new AIResponse("Transaction canceled.", null);
                     } else {
                         tryModifySlot(ctx, userInput);
                         String preview = ctx.getSlots().entrySet().stream()
                                 .map(e -> e.getKey() + ": " + e.getValue())
                                 .collect(Collectors.joining("\n"));
                         return new AIResponse(
-                                "Updated transaction:\n" + preview + "\nReply 'yes' to confirm, or tell me what to change.",
+                                "Updated transaction:\n" + preview + "\nReply 'yes' to confirm, 'no' to cancel"
+                                        + "\nor tell me what to change like \"change category to **\".",
                                 null
                         );
                     }
                 }
+
                 ctx.getSlots().put("operation",
                         ctx.getIntent().equals("RecordExpense") ? "Expense" : "Income");
                 transactionController.addTransactionFromEntities(user, ctx.getSlots());
@@ -134,7 +190,6 @@ public class AIService {
                 );
             }
 
-            // 初次处理
             PredictResult pr = callPredict(userInput);
             String intent = pr.getIntent();
             Map<String, String> slots = pr.getEntities();
@@ -149,9 +204,12 @@ public class AIService {
                     if (slots.containsKey("time")) {
                         slots.put("time", TransactionUtils.normalizeTime(slots.get("time")));
                     }
-                    if(slots.containsKey("category")){
-                        slots.put("category", slots.get("category"));
+                    String desc = slots.getOrDefault("description", userInput);
+                     String llmCat = deepSeekService.extractCategory(desc).strip();
+                    if (!"null".equalsIgnoreCase(llmCat)) {
+                        slots.put("category", llmCat);
                     }
+
                     List<String> required = List.of("amount", "time", "category", "merchant");
                     List<String> missing = required.stream()
                             .filter(k -> !slots.containsKey(k) || slots.get(k).isBlank())
@@ -192,7 +250,7 @@ public class AIService {
                     return new AIResponse("You spent ¥" + String.format("%.2f", spent) + " this month.", null);
                 }
                 case "Greeting":{
-                    return new AIResponse("HI!  can tell you your balance, monthly spending, or record expense/income.", null);
+                    return new AIResponse("HI! I can tell you your balance, monthly spending, or record expense/income and give you some suggestion.", null);
                 }
                 case "Thanking":{
                     return new AIResponse("My honor.",null);
@@ -214,25 +272,25 @@ public class AIService {
     }
 
     /**
-     * 统一调用 Python 脚本，返回合并后的意图+实体
+     * Recognizes the intent and entity of the user input by invoking an external prediction executable.
+     * @param input The user's natural language input, e.g. "I spent 30 yuan today".
+     * @return {@link PredictResult} object containing the intent type, confidence level, and entity extracted.
+     * @throws IOException If startup of predict.exe fails or an I/O exception occurs while reading output.
+     * @throws InterruptedException If the process is interrupted.
+     * @throws RuntimeException If predict.exe returns a non-zero status code or does not produce valid JSON output.
      */
-    private PredictResult callPredict(String input) throws Exception {
-        // 可执行文件路径（你可以根据打包结构调整）
+   private PredictResult callPredict(String input) throws Exception {
         String exePath = baseDir + File.separator + "dist" + File.separator +"predict"+File.separator+ "predict.exe";
-
-        // 构造进程调用命令，只传文本参数
         ProcessBuilder pb = new ProcessBuilder(
                 exePath,
                 "-t", input
         );
 
-        // 设置工作目录为 exe 所在目录（防止部分依赖找不到）
         pb.directory(new File(baseDir + File.separator + "dist"));
-        pb.redirectErrorStream(true); // stderr 合并进 stdout
+        pb.redirectErrorStream(true); 
 
         Process proc = pb.start();
 
-        // 捕获输出
         StringBuilder fullOutput = new StringBuilder();
         String jsonLine = null;
         try (BufferedReader reader = new BufferedReader(
@@ -250,23 +308,25 @@ public class AIService {
         int exitCode = proc.waitFor();
 
         if (exitCode != 0 || jsonLine == null) {
-            System.err.println("⚠️ [predict.exe 输出内容]：");
+            System.err.println("⚠️ [predict.exe ]：");
             System.err.println(fullOutput.toString());
-            throw new RuntimeException("predict.exe 调用失败，exit=" + exitCode);
+            throw new RuntimeException("predict.exe failed，exit=" + exitCode);
         }
-
-        // 反序列化为 Java 对象
         return GSON.fromJson(jsonLine, PredictResult.class);
     }
 
-
-
+    /**
+     * Attempts to modify a slot in the session context based on user input.
+     *
+     * @param ctx       the session context containing slot data
+     * @param userInput the user's input specifying the slot to modify
+     */
     private void tryModifySlot(SessionContext ctx, String userInput) {
         String input = userInput.trim().toLowerCase();
         Map<String, String> slots = ctx.getSlots();
         Matcher m;
 
-        // 1. 修改金额：change/set amount to <number>
+        // 1.change/set amount to <number>
         m = Pattern.compile("^(?:change|set) amount to ([0-9]+(?:\\.[0-9]+)?)$").matcher(input);
         if (m.find()) {
             double amt = txUtils.normalizeAmount(m.group(1));
@@ -274,7 +334,7 @@ public class AIService {
             return;
         }
 
-        // 2. 修改时间：change/set time to <text>
+        // 2. change/set time to <text>
         m = Pattern.compile("^(?:change|set) (?:time|date) to (.+)$").matcher(input);
         if (m.find()) {
             String rawTime = m.group(1).trim();
@@ -282,20 +342,20 @@ public class AIService {
             return;
         }
 
-        // 3. 修改类别：change/set category to <text>
+        // 3. change/set category to <text>
         m = Pattern.compile("^(?:change|set) category to (.+)$").matcher(input);
         if (m.find()) {
             slots.put("category", m.group(1).trim());
             return;
         }
 
-        // 4. 修改商户：change/set merchant to <text>
+        // 4.change/set merchant to <text>
         m = Pattern.compile("^(?:change|set) merchant to (.+)$").matcher(input);
         if (m.find()) {
             slots.put("merchant", m.group(1).trim());
         }
 
-        //5.修改operation
+        //5.operation
         m = Pattern.compile("^(?:change|set) operation to (income|expense)$").matcher(input);
         if (m.find()) {
             String op = m.group(1).trim().equalsIgnoreCase("income") ? "Income" : "Expense";
