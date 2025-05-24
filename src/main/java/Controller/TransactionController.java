@@ -14,22 +14,54 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 
 import javax.swing.JOptionPane;
 
 import Model.Transaction;
 import Model.User;
 import Service.BudgetService;
+import Service.DeepSeekService;
 
+/**
+ * Controller class for managing transactions in a financial management application.
+ * It handles operations such as adding, removing, importing, and reading transactions
+ * stored in a CSV file. The class also provides functionality to detect abnormal transactions
+ * and supports parsing entities into transaction records.
+ *
+ * @author Group 19
+ * @version 1.0
+ */
 public class TransactionController {
-    private static final String CSV_FILE_PATH = "transactions.csv";
+    /** The file path for storing transactions in CSV format. */
+    private static  String CSV_FILE_PATH = "transactions.csv";
+
+    /** The CSV header defining the structure of transaction records. */
     public static final String CSV_HEADER = "user,operation,amount,time,merchant,type,remark,category,payment_method,location,tag,attachment,recurrence";
+
+    /** Date format used for parsing and formatting transaction timestamps. */
     private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy/MM/dd HH:mm");
+
+    /** Set of allowed transaction operations. */
     private static final Set<String> ALLOWED_OPERATIONS = new HashSet<>(Arrays.asList("Transfer Out", "Transfer In", "Withdrawal", "Deposit"));
+
+    /** Expected number of fields in a valid CSV transaction record. */
     private static final int EXPECTED_FIELD_COUNT = 13;
+
+    /** Index of the operation field in a CSV record. */
     private static final int OPERATION_FIELD_INDEX = 1;
 
+    private static MainPanelController mainPanelController;
+    /**
+     * Ensures the transaction CSV file exists, creating it with the header if it does not.
+     * Displays an error message if file creation fails.
+     */
     private static void ensureFileExists() {
         File file = new File(CSV_FILE_PATH);
         if (!file.exists()) {
@@ -48,6 +80,14 @@ public class TransactionController {
         }
     }
 
+    /**
+     * Checks for abnormal transactions for a given user based on the provided transaction list.
+     * An abnormal transaction is defined as a "Transfer Out" or "Transfer In" with an amount exceeding 500.
+     *
+     * @param username     The username to check transactions for.
+     * @param transactions The list of transactions to analyze.
+     * @return {@code true} if an abnormal transaction is found, {@code false} otherwise.
+     */
     public static boolean hasAbnormalTransactions(String username, List<Transaction> transactions) {
         if (username == null || username.trim().isEmpty()) {
             System.err.println("Received null or empty username.");
@@ -62,9 +102,7 @@ public class TransactionController {
         for (Transaction transaction : transactions) {
             if (transaction == null) {
                 System.err.println("Found null transaction for user " + username + ".");
-                continue;
             }
-
             String transactionType = transaction.getType();
             if (transactionType != null &&
                     ("Transfer Out".equalsIgnoreCase(transactionType) || "Transfer In".equalsIgnoreCase(transactionType)) &&
@@ -79,6 +117,15 @@ public class TransactionController {
         return false;
     }
 
+    /**
+     * Imports transactions from a source CSV file to the destination file, validating the header and data.
+     *
+     * @param sourceFile        The source CSV file containing transactions.
+     * @param destinationFilePath The destination file path to append valid transactions.
+     * @return The number of transactions successfully imported.
+     * @throws IOException           If an I/O error occurs during file reading or writing.
+     * @throws IllegalArgumentException If the source file has an invalid header or lacks valid data.
+     */
     public static int importTransactions(File sourceFile, String destinationFilePath) throws IOException, IllegalArgumentException {
         List<String> validDataLines = new ArrayList<>();
         boolean headerProcessed = false;
@@ -132,10 +179,53 @@ public class TransactionController {
         return importedCount;
     }
 
+    public static double calculateUserBalance(String username) {
+        List<Transaction> txs = readTransactions(username);
+        double balance = 0;
+        for (Transaction tx : txs) {
+            if ("Income".equalsIgnoreCase(tx.getOperation())) {
+                balance += tx.getAmount();
+            } else if ("Expense".equalsIgnoreCase(tx.getOperation())) {
+                balance -= tx.getAmount();
+            }
+        }
+        return balance;
+    }
+
+
+    /**
+     * Adds a transaction with minimal required fields to the CSV file.
+     *
+     * @param username  The username associated with the transaction.
+     * @param operation The operation type (e.g., "Income", "Expense").
+     * @param amount    The transaction amount.
+     * @param time      The timestamp of the transaction.
+     * @param merchant  The merchant involved in the transaction.
+     * @param type      The transaction type.
+     * @return {@code true} if the transaction was added successfully, {@code false} otherwise.
+     */
     public static boolean addTransaction(String username, String operation, double amount, String time, String merchant, String type) {
         return addTransaction(username, operation, amount, time, merchant, type, "", type, "", "", "", "", "");
     }
 
+    /**
+     * Adds a transaction with all possible fields to the CSV file, validating and normalizing the data.
+     *
+     * @param username      The username associated with the transaction.
+     * @param operation     The operation type (e.g., "Income", "Expense").
+     * @param amount        The transaction amount.
+     * @param time          The timestamp of the transaction.
+     * @param merchant      The merchant involved in the transaction.
+     * @param type          The transaction type.
+     * @param remark        Additional remarks for the transaction.
+     * @param category      The category of the transaction.
+     * @param paymentMethod The payment method used.
+     * @param location      The location of the transaction.
+     * @param tag           Tags associated with the transaction.
+     * @param attachment    Any attachment details for the transaction.
+     * @param recurrence    Recurrence details for the transaction.
+     * @return {@code true} if the transaction was added successfully, {@code false} otherwise.
+     */
     public static boolean addTransaction(String username, String operation, double amount, String time, String merchant, String type,
                                          String remark, String category, String paymentMethod, String location, String tag,
                                          String attachment, String recurrence) {
@@ -147,6 +237,7 @@ public class TransactionController {
             System.err.println("Invalid transaction data: username=" + username + ", operation=" + operation + ", amount=" + amount + ", time=" + time);
             return false;
         }
+
 
         String normalizedTime;
         try {
@@ -190,43 +281,58 @@ public class TransactionController {
             JOptionPane.showMessageDialog(null, "Failed to record transaction: " + e.getMessage(), "Transaction Error", JOptionPane.ERROR_MESSAGE);
             return false;
         }
+
     }
 
+    public static boolean addTransaction(String username, String operation, double amount, String time, String merchant, String type,
+                                         String remark, String category, String paymentMethod, String location, String tag,
+                                         String attachment, String recurrence, User user) {
+        boolean ok = addTransaction(username, operation, amount, time, merchant, type, remark, category, paymentMethod, location, tag, attachment, recurrence);
+        if (ok && user != null) {
+            double newBalance = calculateUserBalance(username);
+            user.setBalance(newBalance);
+        }
+        return ok;
+    }
+
+
     /**
-     * 把识别到的实体映射成 CSV 记录并调用静态 addTransaction。
+     * Adds a transaction to the CSV file by mapping entities extracted from external input.
      *
-     * @param user     当前用户
-     * @param entities 识别到的实体 Map，至少包含 operation, amount, timestamp
-     * @return true if saved successfully
+     * @param user     The current user.
+     * @param entities A map of entity names to their values, containing at least operation, amount, and timestamp.
+     * @return {@code true} if the transaction was added successfully.
+     * @throws IllegalArgumentException If required fields are missing or invalid.
+     * @throws RuntimeException        If the transaction cannot be recorded.
      */
     public boolean addTransactionFromEntities(User user, Map<String, String> entities) {
-        // 1. 提取并校验必需字段
-        String username  = user.getUsername();
+        // Extract and validate required fields
+        String username = user.getUsername();
         String operation = entities.get("operation");
-        String amtStr    = entities.get("amount");
-        String time      = entities.get("time");
+        String amtStr = entities.get("amount");
+        String time = entities.get("time");
+        String type = entities.get("category");
+        String category = entities.get("category");
         if (username == null || operation == null || amtStr == null || time == null) {
-            throw new IllegalArgumentException("缺少必需字段");
+            throw new IllegalArgumentException("Missing required fields");
         }
         double amount;
         try {
             amount = Double.parseDouble(amtStr);
         } catch (NumberFormatException e) {
-            throw new IllegalArgumentException("金额格式不正确：" + amtStr, e);
+            throw new IllegalArgumentException("Invalid amount format: " + amtStr, e);
         }
 
-        // 2. 其它可选字段
-        String merchant      = entities.getOrDefault("merchant", "");
-        String type          = entities.getOrDefault("type", "");
-        String remark        = entities.getOrDefault("remark", "");
-        String category      = entities.getOrDefault("category", "");
+        // Extract optional fields
+        String merchant = entities.getOrDefault("merchant", "");
+        String remark = entities.getOrDefault("remark", "");
         String paymentMethod = entities.getOrDefault("paymentMethod", "");
-        String location      = entities.getOrDefault("location", "");
-        String tag           = entities.getOrDefault("tag", "");
-        String attachment    = entities.getOrDefault("attachment", "");
-        String recurrence    = entities.getOrDefault("recurrence", "");
+        String location = entities.getOrDefault("location", "");
+        String tag = entities.getOrDefault("tag", "");
+        String attachment = entities.getOrDefault("attachment", "");
+        String recurrence = entities.getOrDefault("recurrence", "");
 
-        // 3. 调用静态方法写入 CSV
+        // Call static method to write to CSV
         boolean ok = addTransaction(
                 username,
                 operation,
@@ -244,11 +350,24 @@ public class TransactionController {
         );
 
         if (!ok) {
-            throw new RuntimeException("记录交易失败: " + entities);
+            throw new RuntimeException("Failed to record transaction: " + entities);
+        }
+        double newBalance = TransactionController.calculateUserBalance(username);
+        user.setBalance(newBalance);
+        if (mainPanelController != null) {
+            mainPanelController.reloadAllPanels();
         }
         return true;
     }
-    public static boolean removeTransaction(String username, String time) {
+
+    /**
+     * Removes a transaction from the CSV file based on the username and timestamp.
+     *
+     * @param username The username associated with the transaction.
+     * @param time     The timestamp of the transaction to remove.
+     * @return {@code true} if the transaction was removed successfully, {@code false} otherwise.
+     */
+    public static boolean removeTransaction(String username, String time,User user) {
         ensureFileExists();
         File file = new File(CSV_FILE_PATH);
         File tempFile = new File("transactions_temp.csv");
@@ -290,10 +409,22 @@ public class TransactionController {
             }
         } else {
             tempFile.delete();
+
+        }
+        double newBalance = TransactionController.calculateUserBalance(username);
+        user.setBalance(newBalance);
+        if (mainPanelController != null) {
+            mainPanelController.reloadAllPanels();
         }
         return removed;
     }
 
+    /**
+     * Reads all transactions for a specific user from the CSV file.
+     *
+     * @param username The username whose transactions are to be retrieved.
+     * @return A list of {@link Transaction} objects for the specified user.
+     */
     public static List<Transaction> readTransactions(String username) {
         ensureFileExists();
         List<Transaction> transactions = new ArrayList<>();
@@ -350,6 +481,11 @@ public class TransactionController {
         return transactions;
     }
 
+    /**
+     * Reads all transactions from the CSV file, regardless of the user.
+     *
+     * @return A list of all {@link Transaction} objects in the CSV file.
+     */
     public static List<Transaction> readAllTransactions() {
         ensureFileExists();
         List<Transaction> transactions = new ArrayList<>();
@@ -401,6 +537,12 @@ public class TransactionController {
         return transactions;
     }
 
+    /**
+     * Escapes a CSV field to handle commas, quotes, and newlines.
+     *
+     * @param field The field to escape.
+     * @return The escaped field, or an empty string if the field is null.
+     */
     private static String escapeCsvField(String field) {
         if (field == null) return "";
         if (field.contains(",") || field.contains("\"") || field.contains("\n") || field.contains("\r")) {
@@ -409,6 +551,12 @@ public class TransactionController {
         return field;
     }
 
+    /**
+     * Unescapes a CSV field to remove surrounding quotes and handle escaped quotes.
+     *
+     * @param field The field to unescape.
+     * @return The unescaped field, or an empty string if the field is null.
+     */
     private static String unescapeCsvField(String field) {
         if (field == null) return "";
         field = field.trim();
@@ -416,5 +564,10 @@ public class TransactionController {
             return field.substring(1, field.length() - 1).replace("\"\"", "\"");
         }
         return field;
+    }
+
+    public static void setCsvFilePathForTest(String path) { CSV_FILE_PATH = path; }
+    public static void setMainPanelController(MainPanelController ctrl) {
+        mainPanelController = ctrl;
     }
 }
