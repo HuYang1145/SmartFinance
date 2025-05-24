@@ -88,6 +88,12 @@ public class AIService {
         try {
             if (ctx != null) {
                 PredictResult exitPr = callPredict(userInput);
+                String normalized = userInput.trim().toLowerCase();
+
+                if ("cancel".equals(normalized) || "no".equals(normalized)) {
+                    sessions.remove(userKey);
+                    return new AIResponse("Transaction canceled.", null);
+                }
                 if (!ctx.getMissingSlots().isEmpty()) {
                     PredictResult pr = callPredict(userInput);
                     String slot = ctx.getMissingSlots().get(0);
